@@ -1,8 +1,13 @@
-Django==1.7.11
-django-compressor<2.0
-urllib3==1.10.2
-nameparser>=0.2.8
--e git+https://github.com/uw-it-aca/uw-restclients#egg=RestClients
+Django==1.9.6
+ordereddict
+simplejson
+django-compressor
+BeautifulSoup
+urllib3
+unittest2
+nameparser
+-e git+https://github.com/uw-it-aca/uw-restclients@feature/bridge-hrpws#egg=RestClients
 -e git+https://github.com/uw-it-aca/django-supporttools#egg=django_supporttools
 -e git+https://github.com/uw-it-aca/django-userservice#egg=Django-UserService
 -e git+https://github.com/uw-it-aca/authz_group#egg=AuthZ-Group
+-e git://github.com/vegitron/permissions_logging#egg=PermissionsLogging

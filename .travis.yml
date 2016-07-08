@@ -9,8 +9,10 @@ before_script:
   - pip install python-coveralls
   - pip install pep8
   - cp travis-ci/manage.py manage.py
+  - python manage.py migrate --run-syncdb
 script:
-  - pep8 sis_provisioner/ --exclude=migrations,management,test
-  - coverage run --source=sis_provisioner/ manage.py test sis_provisioner
+  - pep8 sis_provisioner/ --exclude=migrations,resources
+  - python -m compileall sis_provisioner
+  - coverage run --source=sis_provisioner/ --omit=sis_provisioner/migrations/* manage.py test sis_provisioner
 after_script:
   - coveralls
