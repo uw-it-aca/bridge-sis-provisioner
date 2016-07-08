@@ -39,7 +39,7 @@ class LoadUsers:
                 continue
 
         # print "Total uw member processed: %d" % self.total_count
-        # print "Total user loaded: %d" % (self.total_count - self.invalid_count)
+        # print "Total loaded: %d" % (self.total_count - self.invalid_count)
         # print "Invalid member: %d" % self.invalid_count
 
     def get_total_count(self):

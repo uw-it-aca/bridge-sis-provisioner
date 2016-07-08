@@ -6,7 +6,7 @@ from sis_provisioner.dao.gws import get_uw_members
 
 class TestGwsDao(TestDao):
 
-     def test_get_uw_members(self):
+    def test_get_uw_members(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS):
             users = get_uw_members()
             self.assertIsNotNone(users)

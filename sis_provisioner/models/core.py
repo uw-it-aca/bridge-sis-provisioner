@@ -1,12 +1,16 @@
 from django.db import models
-from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
+from sis_provisioner.util.time_helper import get_datetime_now
 
 
 def datetime_to_str(d_obj):
     if d_obj is not None:
         return d_obj.strftime("%Y-%m-%d %H:%M:%S")
     return None
+
+
+def get_now():
+    return get_datetime_now()
 
 
 class BridgeUser(models.Model):
@@ -51,11 +55,12 @@ class BridgeUser(models.Model):
     def to_be_purged(self):
         # Return True if the user is ready to be purged from Bridge
         return self.terminate_date is not None and\
-            timezone.now() > self.terminate_date + timedelta(days=15)
+            get_now() > self.terminate_date + timedelta(days=15)
 
     def __str__(self):
-        return "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s, "+\
-            "%s: %s, %s: %s, %s: %s, %s: %s, %s: %s}" % (
+        return (
+            "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s, " +
+            "%s: %s, %s: %s, %s: %s, %s: %s, %s: %s}") % (
             "netid", self.netid,
             "regid", self.regid,
             "last_visited_date", datetime_to_str(self.last_visited_date),

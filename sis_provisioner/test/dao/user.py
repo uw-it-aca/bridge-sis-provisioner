@@ -6,14 +6,13 @@ from sis_provisioner.dao.user import create_user, get_user_from_db
 
 class TestUserDao(TestCase):
 
-     def test_create_user(self):
+    def test_create_user(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
             user = create_user('staff')
             self.assertIsNotNone(user)
             self.assertEqual(user.netid, 'staff')
 
-
-     def test_err_case(self):
+    def test_err_case(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FPWS):
             self.assertRaises(DataFailureException,
                               create_user,

@@ -4,10 +4,9 @@ This module interacts with app's database
 
 import logging
 import traceback
-from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from restclients.exceptions import DataFailureException
-from sis_provisioner.models.core import BridgeUser
+from sis_provisioner.models.core import BridgeUser, get_now
 from sis_provisioner.dao.pws import get_person
 
 
@@ -25,7 +24,7 @@ def create_user(uwnetid):
     person = get_person(uwnetid)
     uwregid = person.uwregid
     updated_values = {'netid': uwnetid,
-                      'last_visited_date': timezone.now(),
+                      'last_visited_date': get_now(),
                       'display_name': person.display_name,
                       'first_name': person.first_name,
                       'last_name': person.surname,
