@@ -8,9 +8,11 @@ class TestPwsDao(TestCase):
 
     def test_get_person(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
-            person = get_person('staff')
+            person = get_person('botgrad')
             self.assertIsNotNone(person)
-            self.assertEqual(person.uwnetid, 'staff')
+            self.assertEqual(person.uwnetid, 'botgrad')
+            self.assertEqual(person.uwregid,
+                             "10000000000000000000000000000003")
 
             self.assertRaises(DataFailureException,
                               get_person,

@@ -23,12 +23,16 @@ def get_user_from_db(uwnetid):
 def create_user(uwnetid):
     person = get_person(uwnetid)
     uwregid = person.uwregid
+    email = person.email1
+    if not email:
+        email = uwnetid + "@washington.edu"
+
     updated_values = {'netid': uwnetid,
                       'last_visited_date': get_now(),
                       'display_name': person.display_name,
                       'first_name': person.first_name,
                       'last_name': person.surname,
-                      'email': person.email1,
+                      'email': email,
                       'home_department': person.home_department,
                       'student_department1': person.student_department1,
                       'student_department2': person.student_department2,

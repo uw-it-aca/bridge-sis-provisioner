@@ -35,14 +35,15 @@
        "VoiceMail":null},
      "HomeDepartment":"OVP OF UW IT",
      "MailStop":"359540"},
-"StudentPersonAffiliation":{
-        "StudentNumber":"1000003",
-        "StudentSystemKey":"1000003",
-        "StudentWhitePages":{"Class":"Phd",
-                             "Department1":"Electrical Engineering",
-                             "Department2":null,
-                             "Department3":null,
-                             "Email":"botgrad@uw.edu",
-                             "Name":"Bothell Graduate Student Employee",
-                             "Phone":"+1 206 123-1234",
-                             "PublishInDirectory":true}}}}
+  "StudentPersonAffiliation":{
+     "StudentNumber":"1000003",
+     "StudentSystemKey":"1000003",
+     "StudentWhitePages":{
+         "Class":"Phd",
+         "Department1":"Electrical Engineering",
+         "Department2":null,
+         "Department3":null,
+         "Email":"botgrad@uw.edu",
+         "Name":"Bothell Graduate Student Employee",
+         "Phone":"+1 206 123-1234",
+         "PublishInDirectory":true}}}}
