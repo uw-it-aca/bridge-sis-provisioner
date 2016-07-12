@@ -1,16 +1,18 @@
 from django.db import models
-from datetime import datetime, timedelta
-from sis_provisioner.util.time_helper import get_datetime_now
+from datetime import timedelta
+from django.utils import timezone
 
 
 def datetime_to_str(d_obj):
     if d_obj is not None:
-        return d_obj.strftime("%Y-%m-%d %H:%M:%S")
+        return d_obj.strftime("%Y-%m-%d %H:%M:%S")  # +00:00
     return None
 
 
 def get_now():
-    return get_datetime_now()
+    # return time-zone-aware datetime objects in UTC time.
+    # Enable time zone support with USE_TZ=True in settings
+    return timezone.now()
 
 
 class BridgeUser(models.Model):

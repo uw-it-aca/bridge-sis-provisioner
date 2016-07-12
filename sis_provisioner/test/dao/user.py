@@ -13,9 +13,9 @@ class TestUserDao(TestCase):
             self.assertEqual(user.netid, 'staff')
             self.assertEqual(user.regid,
                              "10000000000000000000000000000001")
-            self.assertEqual(user.display_name, "JAMES AVERAGE STAFF")
-            self.assertEqual(user.first_name, "JAMES AVERAGE")
-            self.assertEqual(user.last_name, "STAFF")
+            self.assertEqual(user.display_name, "James Average Staff")
+            self.assertEqual(user.first_name, "James Average")
+            self.assertEqual(user.last_name, "Staff")
             self.assertEqual(user.email, "staff@washington.edu")
 
     def test_err_case(self):

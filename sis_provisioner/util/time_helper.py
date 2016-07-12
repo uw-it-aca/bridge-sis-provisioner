@@ -4,12 +4,10 @@ from django.utils import timezone
 from restclients.util.timer import Timer
 
 
-def get_datetime_now(tz_aware=False):
+def convert_to_tzaware_datetime(a_datetime):
     """
-    @return the local timezone awared datetime object if tz_aware is True,
-    otherwise return a datetime object.
+    @return the timezone awared datetime object for the given naive datetime
+    object in current timezone.
     """
-    now = datetime.now()
-    if tz_aware:
-        return local_tz.localize(now.astimezone(pytz.utc))
-    return now
+    local_tz = timezone.get_current_timezone()
+    return local_tz.localize(a_datetime).astimezone(pytz.utc)
