@@ -28,9 +28,9 @@ class Command(BaseCommand):
 
         f = open(outfile, 'w')
         f.write("%s\n" % OUTPUT_FORMAT)
-        
+
         for user in load_users.get_users():
-            if len(user.home_department)> 0:
+            if len(user.home_department) > 0:
                 home_dept = user.home_department
             else:
                 home_dept = ""
