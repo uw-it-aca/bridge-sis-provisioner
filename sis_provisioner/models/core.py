@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
+from nameparser import HumanName
 
 
 def datetime_to_str(d_obj):
@@ -27,10 +28,10 @@ class BridgeUser(models.Model):
     last_import_err = models.CharField(max_length=10, null=True)
     terminate_date = models.DateTimeField(null=True)
 
-    display_name = models.CharField(max_length=256)
+    display_name = models.CharField(max_length=256, null=True)
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
-    email = models.CharField(max_length=64)
+    email = models.CharField(max_length=64, null=True)
     home_department = models.CharField(max_length=255, null=True)
     student_department1 = models.CharField(max_length=255, null=True)
     student_department2 = models.CharField(max_length=255, null=True)
@@ -58,6 +59,18 @@ class BridgeUser(models.Model):
         # Return True if the user is ready to be purged from Bridge
         return self.terminate_date is not None and\
             get_now() > self.terminate_date + timedelta(days=15)
+
+    def get_fullname(self):
+        # Generates the full name for a BridgeUser user.
+        if self.display_name is not None and\
+                len(self.display_name) > 0 and\
+                not self.display_name.isupper():
+            return self.display_name
+        else:
+            full_name = HumanName("%s %s" % (self.first_name, self.last_name))
+            full_name.capitalize()
+            # full_name.string_format = "{first} {last}"
+            return str(full_name)
 
     def __str__(self):
         return (

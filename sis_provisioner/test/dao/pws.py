@@ -13,6 +13,9 @@ class TestPwsDao(TestCase):
             self.assertEqual(person.uwnetid, 'botgrad')
             self.assertEqual(person.uwregid,
                              "10000000000000000000000000000003")
+            self.assertEqual(person.email1, "botgrad@uw.edu")
+            self.assertEqual(person.home_department,
+                             "OVP OF UW IT")
 
             self.assertRaises(DataFailureException,
                               get_person,
