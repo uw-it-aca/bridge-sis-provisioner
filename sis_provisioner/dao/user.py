@@ -20,12 +20,27 @@ def get_user_from_db(uwnetid):
         return None
 
 
+def get_first_name(person):
+    """
+    Return a non NULL first name
+    """
+    if not person.first_name:
+        return ""
+    else:
+        return person.first_name
+
+
 def create_user(uwnetid):
     person = get_person(uwnetid)
+    if not person.first_name:
+        first_name = ""
+    else:
+        first_name = person.first_name
+
     updated_values = {'netid': uwnetid,
                       'last_visited_date': get_now(),
                       'display_name': person.display_name,
-                      'first_name': person.first_name,
+                      'first_name': get_first_name(person),
                       'last_name': person.surname,
                       'email': person.email1,
                       'home_department': person.home_department,
@@ -50,7 +65,7 @@ def get_bridgeuser_obj(person):
     buser.uwregid = person.uwregid
     buser.email = person.email1
     buser.display_name = person.display_name
-    buser.first_name = person.first_name
+    buser.first_name = get_first_name(person)
     buser.last_name = person.surname
     buser.home_department = person.home_department
     buser.student_department1 = person.student_department1

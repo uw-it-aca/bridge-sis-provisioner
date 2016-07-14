@@ -29,7 +29,7 @@ class BridgeUser(models.Model):
     terminate_date = models.DateTimeField(null=True)
 
     display_name = models.CharField(max_length=256, null=True)
-    first_name = models.CharField(max_length=128)
+    first_name = models.CharField(max_length=128, blank=True)
     last_name = models.CharField(max_length=128)
     email = models.CharField(max_length=64, null=True)
     home_department = models.CharField(max_length=255, null=True)
