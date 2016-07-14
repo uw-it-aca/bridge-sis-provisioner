@@ -1,5 +1,6 @@
 import csv
 import logging
+from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.load_users import LoadUsers
 from sis_provisioner.csv_formatter import header_for_users, csv_for_user
@@ -28,8 +29,15 @@ class Command(BaseCommand):
         f = open(outfile, 'w')
         f.write(','.join(header_for_users()))
         f.write("\n")
-
+        user_number = 0
         for user in load_users.get_users():
             f.write(','.join(csv_for_user(user)))
             f.write("\n")
+            user_number += 1
+
+            if (user_number%10000) == 0:
+                print "At %s users processed: %d\n" % (
+                    datetime.now(), user_number)
         f.close()
+        print "All done at %s with total %d users.\n" % (
+            datetime.now(), user_number)
