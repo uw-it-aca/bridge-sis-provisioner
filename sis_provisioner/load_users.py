@@ -31,7 +31,7 @@ class LoadUsers:
             try:
                 user = create_user(uwnetid)
                 self.users.append(user)
-            except DataFailureException as ex:
+            except Exception as ex:
                 log_exception(logger,
                               "Failed to create user (%s)" % uwnetid,
                               traceback.format_exc())

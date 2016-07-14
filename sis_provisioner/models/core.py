@@ -69,7 +69,7 @@ class BridgeUser(models.Model):
         else:
             full_name = HumanName("%s %s" % (self.first_name, self.last_name))
             full_name.capitalize()
-            # full_name.string_format = "{first} {last}"
+            full_name.string_format = "{last}, {first} {middle}"
             return str(full_name)
 
     def __str__(self):

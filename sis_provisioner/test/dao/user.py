@@ -16,7 +16,7 @@ class TestUserDao(TestCase):
             self.assertEqual(user.display_name, "JAMES AVERAGE STAFF")
             self.assertEqual(user.first_name, "JAMES AVERAGE")
             self.assertEqual(user.last_name, "STAFF")
-            self.assertEqual(user.get_fullname(), "James Average Staff")
+            self.assertEqual(user.get_fullname(), "Staff, James Average")
             self.assertEqual(user.email, "staff@uw.edu")
             self.assertEqual(user.home_department,
                              "OVP OF UW IT")
