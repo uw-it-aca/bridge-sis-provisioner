@@ -2,23 +2,23 @@ from django.conf import settings
 from django.test import TransactionTestCase
 from django.test.utils import override_settings
 from sis_provisioner.test import FPWS
-from sis_provisioner.csv_formatter import header_for_users, csv_for_user
+from sis_provisioner.csv.user_formatter import get_headers, get_attr_list
 from sis_provisioner.dao.user import create_user
 
 
-class TestCscFormatter(TransactionTestCase):
+class TestUserFormatter(TransactionTestCase):
 
-    def test_header_for_users(self):
-        self.assertEqual(','.join(header_for_users()),
+    def test_get_headers(self):
+        self.assertEqual(','.join(get_headers()),
                          ("Unique ID,Regid,Name,Email," +
                           "employee_department,student_department," +
                           "alumni,employee,faculty,staff,student"))
 
-    def test_csv_for_user(self):
+    def test_get_attr_list(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
 
             user = create_user('staff')
-            user_attr_list = csv_for_user(user)
+            user_attr_list = get_attr_list(user)
 
             self.assertEqual(len(user_attr_list), 11)
             self.assertEqual(user_attr_list[0],

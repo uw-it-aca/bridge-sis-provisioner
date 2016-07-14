@@ -1,9 +1,8 @@
-import csv
 import logging
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.load_users import LoadUsers
-from sis_provisioner.csv_formatter import header_for_users, csv_for_user
+from sis_provisioner.csv.user_writer import write_files
 
 
 logger = logging.getLogger(__name__)
@@ -11,33 +10,15 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 
-    help = 'Build the csv file  for upload users into BridgeApp'
-    args = "<full path file name>"
+    help = 'Build the csv files for importing users into BridgeApp'
 
     def handle(self, *args, **options):
-        if len(args) < 1:
-            raise CommandError("Invalid parameter %s" % args)
-
         load_users = LoadUsers()
         load_users.fetch_all()
 
         if load_users.get_user_count() == 0:
             print "No user found, abort!"
+            return
 
-        outfile = args[0]
-
-        f = open(outfile, 'w')
-        f.write(','.join(header_for_users()))
-        f.write("\n")
-        user_number = 0
-        for user in load_users.get_users():
-            f.write(','.join(csv_for_user(user)))
-            f.write("\n")
-            user_number += 1
-
-            if (user_number%10000) == 0:
-                print "At %s users processed: %d\n" % (
-                    datetime.now(), user_number)
-        f.close()
-        print "All done at %s with total %d users.\n" % (
-            datetime.now(), user_number)
+        dir_path = write_files(load_users.get_users())
+        print "The csv files are in %s\n" % dir_path

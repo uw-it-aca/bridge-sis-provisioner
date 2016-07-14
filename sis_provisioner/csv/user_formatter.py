@@ -4,13 +4,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def header_for_users():
+def get_headers():
     return ['Unique ID', 'Regid', 'Name', 'Email',
             'employee_department', 'student_department',
             'alumni', 'employee', 'faculty', 'staff', 'student']
 
 
-def csv_for_user(user):
+def get_attr_list(user):
     """
     Returns a list of data for creating a line of csv for a user
     matching the headers in header_for_users for the given BridgeUser object.
