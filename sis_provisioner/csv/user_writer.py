@@ -48,22 +48,25 @@ def write_files(users):
     f.write(get_aline_csv(get_headers()))
 
     for user in users:
+        aline = get_aline_csv(get_attr_list(user))
         try:
-            f.write(get_aline_csv(get_attr_list(user)))
-            user_number += 1
-
-            if user_number < total_users and\
-                    (user_number % _get_file_size()) == 0:
-                f.close()
-                f_index += 1
-                f = open_file(get_file_name(filepath, f_index))
-                f.write(get_aline_csv(get_headers()))
+            f.write(aline)
         except Exception:
             log_exception(
                 logger,
-                ("Error when writing %user to the %dth file" % (str(user),
-                                                                f_index)),
+                ("Failed to write \"%s\" to the %dth file, skip it." % (
+                        aline, f_index)),
                 traceback.format_exc())
+            continue
+
+        user_number += 1
+        if user_number < total_users and\
+                (user_number % _get_file_size()) == 0:
+            f.close()
+            f_index += 1
+            f = open_file(get_file_name(filepath, f_index))
+            f.write(get_aline_csv(get_headers()))
+
     f.close()
 
     logger.info("Total %d users wrote into %s.\n" % (
