@@ -5,18 +5,22 @@ import os
 import stat
 import re
 import shutil
+import logging
+import traceback
 from datetime import datetime
+from sis_provisioner.util.log import log_exception
 
 
 FILEMODE = (stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP |
             stat.S_IROTH)
 # ugo+x
 DIRMODE = FILEMODE | (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+logger = logging.getLogger(__name__)
 
 
 def get_aline_csv(data):
     """
-    Creates a line of csv data from the passed list of data.
+    Create a line of csv data from the passed list of data.
     """
     s = StringIO.StringIO()
 
@@ -25,7 +29,9 @@ def get_aline_csv(data):
     try:
         writer.writerow(data)
     except UnicodeEncodeError:
-        print "Caught unicode error: %s" % data
+        log_exception(logger,
+                      "get_aline_csv [%s]" % ','.join(data),
+                      traceback.format_exc())
 
     line = s.getvalue()
     s.close()
@@ -37,10 +43,9 @@ def get_filepath(path_prefix):
     Create a fresh directory for the csv files
     """
     suffix = datetime.now().strftime('%Y%m%d-%H%M%S')
-    print suffix
     filepath = os.path.join(path_prefix, suffix)
-    os.makedirs(filepath)
-    os.chmod(filepath, DIRMODE)
+    os.makedirs(filepath, DIRMODE)
+    # makes all intermediate-level directories needed
     return filepath
 
 
