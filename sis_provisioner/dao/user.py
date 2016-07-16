@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from restclients.exceptions import DataFailureException
 from restclients.hrpws.appointee import get_appointee_by_eid
 from sis_provisioner.models.core import BridgeUser, get_now
+from sis_provisioner.dao.hrp import get_appointee
 from sis_provisioner.dao.pws import get_person
 
 
@@ -54,12 +55,13 @@ def create_user(uwnetid):
                       }
     appointee = None
     if person.is_employee:
-        appointee = get_appointee_by_eid(person.employee_id)
-        updated_values['hrp_home_dept_org_code'] =\
-            appointee.home_dept_org_code
-        updated_values['hrp_home_dept_org_name'] =\
-            appointee.home_dept_org_name
-        updated_values['hrp_emp_status'] = appointee.status
+        appointee = get_appointee(person)
+        if appointee is not None:
+            updated_values['hrp_home_dept_org_code'] =\
+                appointee.home_dept_org_code
+            updated_values['hrp_home_dept_org_name'] =\
+                appointee.home_dept_org_name
+            updated_values['hrp_emp_status'] = appointee.status
 
     b_user, created = BridgeUser.objects.update_or_create(
         regid=person.uwregid,

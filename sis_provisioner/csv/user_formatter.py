@@ -46,7 +46,7 @@ def get_attr_list(user):
 
     return [uid,
             user.regid,
-            user.get_sortable_name(),
+            user.get_sortable_name(use_title=True),
             email,
             'y' if user.is_alum else 'n',
             'y' if user.is_employee else 'n',

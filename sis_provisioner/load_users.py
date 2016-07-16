@@ -19,7 +19,7 @@ class LoadUsers:
     def fetch_all(self):
         try:
             members = get_uw_members()
-        except DataFailureException:
+        except Exception:
             log_exception(logger,
                           "Failed to get uw_member from GWS",
                           traceback.format_exc())

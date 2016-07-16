@@ -76,7 +76,10 @@ class BridgeUser(models.Model):
             len(self.display_name) > 0 and\
             not self.display_name.isupper()
 
-    def get_sortable_name(self):
+    def get_sortable_name(self, use_title=False):
+        if use_title:
+            return "%s, %s" % (self.last_name.title(), self.first_name.title())
+
         name = HumanName("%s %s" % (self.first_name, self.last_name))
         name.capitalize()
         name.string_format = "{last}, {first}"

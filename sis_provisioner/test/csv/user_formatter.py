@@ -28,7 +28,7 @@ class TestUserFormatter(TransactionTestCase):
             self.assertEqual(user_attr_list[1],
                              "10000000000000000000000000000001")
             self.assertEqual(user_attr_list[2],
-                             "Staff, James")
+                             "Staff, James Average")
             self.assertEqual(user_attr_list[3],
                              "staff@uw.edu")
             self.assertEqual(user_attr_list[4], "y")
