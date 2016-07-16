@@ -1,0 +1,22 @@
+{
+ "Person":
+   {"CampusMailAddress":null,
+    "DirectoryListingPreference":"",
+    "DirectoryListingPreferenceDescription":"",
+    "EmployeeID":"100000001",
+    "EmploymentStatus":"S",
+    "EmploymentStatusDescription":"SEPARATED",
+    "FirstName":"JAMES AVERAGE",
+    "HomeDepartmentBudgetName":"LIBRARY",
+    "HomeDepartmentBudgetNumber":"054256",
+    "HomeDepartmentOrganizationCode":"2070001000",
+    "HomeDepartmentOrganizationName":"LIBRARY",
+    "LastName":"STAFF",
+    "MiddleName":"",
+    "OnOffCampusCode":"1",
+    "OnOffCampusCodeDescription":"On Campus",
+    "UWNetID":"staff",
+    "UWRegID":"10000000000000000000000000000001",
+    "WorkPhone":"0"},
+    "Appointments":[]
+}

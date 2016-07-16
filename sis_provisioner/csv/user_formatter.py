@@ -6,8 +6,12 @@ logger = logging.getLogger(__name__)
 
 def get_headers():
     return ['Unique ID', 'Regid', 'Name', 'Email',
-            'employee_department', 'student_department',
-            'alumni', 'employee', 'faculty', 'staff', 'student']
+            'alumni', 'employee', 'faculty', 'staff', 'student',
+            'emp_status',
+            'emp_home_dept_name',
+            'emp_campus_code', 'emp_home_college_code', 'emp_home_dept_code',
+            'student_dept_name',
+            ]
 
 
 def get_attr_list(user):
@@ -22,21 +26,37 @@ def get_attr_list(user):
     else:
         email = user.email
 
-    if not user.student_department1:
-        stud_dept = ""
-    else:
-        stud_dept = user.student_department1
+    student_dept_name = ""
+    if user.student_department1:
+        student_dept_name = user.student_department1
 
-    if not user.home_department:
-        emp_dept = ""
-    else:
-        emp_dept = user.home_department
+    emp_status = user.hrp_emp_status if user.hrp_emp_status else ""
 
-    return [uid, user.regid, user.get_fullname(), email,
-            emp_dept, stud_dept,
+    emp_home_dept_code = ""
+    emp_campus_code = ""
+    emp_home_college_code = ""
+    if user.hrp_home_dept_org_code:
+        emp_home_dept_code = user.hrp_home_dept_org_code
+        emp_campus_code = emp_home_dept_code[0:1]
+        emp_home_college_code = emp_home_dept_code[0:3]
+
+    emp_home_dept_name = ""
+    if user.hrp_home_dept_org_name:
+        emp_home_dept_name = user.hrp_home_dept_org_name
+
+    return [uid,
+            user.regid,
+            user.get_sortable_name(),
+            email,
             'y' if user.is_alum else 'n',
             'y' if user.is_employee else 'n',
             'y' if user.is_faculty else 'n',
             'y' if user.is_staff else 'n',
             'y' if user.is_student else 'n',
+            emp_status,
+            emp_home_dept_name,
+            emp_campus_code,
+            emp_home_college_code,
+            emp_home_dept_code,
+            student_dept_name,
             ]

@@ -6,6 +6,7 @@ import logging
 import traceback
 from django.core.exceptions import ObjectDoesNotExist
 from restclients.exceptions import DataFailureException
+from restclients.hrpws.appointee import get_appointee_by_eid
 from sis_provisioner.models.core import BridgeUser, get_now
 from sis_provisioner.dao.pws import get_person
 
@@ -32,9 +33,8 @@ def get_first_name(person):
 
 def create_user(uwnetid):
     person = get_person(uwnetid)
-    if not person.first_name:
-        first_name = ""
-    else:
+    first_name = ""
+    if person.first_name:
         first_name = person.first_name
 
     updated_values = {'netid': uwnetid,
@@ -43,37 +43,25 @@ def create_user(uwnetid):
                       'first_name': get_first_name(person),
                       'last_name': person.surname,
                       'email': person.email1,
-                      'home_department': person.home_department,
-                      'student_department1': person.student_department1,
-                      'student_department2': person.student_department2,
-                      'student_department3': person.student_department3,
                       'is_alum': person.is_alum,
                       'is_employee': person.is_employee,
                       'is_faculty': person.is_faculty,
                       'is_staff': person.is_staff,
                       'is_student': person.is_student,
+                      'student_department1': person.student_department1,
+                      'student_department2': person.student_department2,
+                      'student_department3': person.student_department3,
                       }
+    appointee = None
+    if person.is_employee:
+        appointee = get_appointee_by_eid(person.employee_id)
+        updated_values['hrp_home_dept_org_code'] =\
+            appointee.home_dept_org_code
+        updated_values['hrp_home_dept_org_name'] =\
+            appointee.home_dept_org_name
+        updated_values['hrp_emp_status'] = appointee.status
+
     b_user, created = BridgeUser.objects.update_or_create(
         regid=person.uwregid,
         defaults=updated_values)
     return b_user
-
-
-def get_bridgeuser_obj(person):
-    buser = BridgeUser()
-    buser.netid = person.uwnetid
-    buser.uwregid = person.uwregid
-    buser.email = person.email1
-    buser.display_name = person.display_name
-    buser.first_name = get_first_name(person)
-    buser.last_name = person.surname
-    buser.home_department = person.home_department
-    buser.student_department1 = person.student_department1
-    buser.student_department2 = person.student_department2
-    buser.student_department3 = person.student_department3
-    buser.is_student = person.is_student
-    buser.is_faculty = person.is_faculty
-    buser.is_staff = person.is_staff
-    buser.is_employee = person.is_employee
-    buser.is_alum = person.is_alum
-    return buser

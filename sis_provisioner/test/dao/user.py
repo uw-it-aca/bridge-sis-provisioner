@@ -13,13 +13,16 @@ class TestUserDao(TestCase):
             self.assertEqual(user.netid, 'staff')
             self.assertEqual(user.regid,
                              "10000000000000000000000000000001")
-            self.assertEqual(user.display_name, "JAMES AVERAGE STAFF")
+            self.assertEqual(user.display_name, "James Staff")
             self.assertEqual(user.first_name, "JAMES AVERAGE")
             self.assertEqual(user.last_name, "STAFF")
-            self.assertEqual(user.get_fullname(), "Staff, James Average")
+            self.assertEqual(user.get_sortable_name(), "Staff, James")
             self.assertEqual(user.email, "staff@uw.edu")
-            self.assertEqual(user.home_department,
-                             "OVP OF UW IT")
+            self.assertEqual(user.hrp_home_dept_org_code,
+                             "2070001000")
+            self.assertEqual(user.hrp_home_dept_org_name,
+                             "LIBRARY")
+            self.assertEqual(user.hrp_emp_status, 'S')
 
     def test_err_case(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FPWS):
