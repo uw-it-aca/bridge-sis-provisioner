@@ -37,6 +37,7 @@ class LoadUsers:
                               traceback.format_exc())
                 self.invalid_count = self.invalid_count + 1
                 continue
+        logger.info("Finish loading %d users." % self.get_user_count())
 
     def get_total_count(self):
         return self.total_count

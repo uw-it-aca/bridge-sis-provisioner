@@ -63,6 +63,7 @@ def write_files(users):
         if user_number < total_users and\
                 (user_number % _get_file_size()) == 0:
             f.close()
+            logger.info("Finish writing %d entries." % user_number)
             f_index += 1
             f = open_file(get_file_name(filepath, f_index))
             f.write(get_aline_csv(get_headers()))
