@@ -35,7 +35,7 @@ def get_first_name(person):
 
 def normalize_email(email_str):
     if email_str:
-        return re.sub(".$", "", email_str, flags=re.IGNORECASE)
+        return re.sub("\.$", "", email_str, flags=re.IGNORECASE)
     return email_str
 
 
