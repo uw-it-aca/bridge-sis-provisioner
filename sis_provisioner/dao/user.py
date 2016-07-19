@@ -3,6 +3,7 @@ This module interacts with app's database
 """
 
 import logging
+import re
 import traceback
 from django.core.exceptions import ObjectDoesNotExist
 from restclients.exceptions import DataFailureException
@@ -32,6 +33,12 @@ def get_first_name(person):
         return person.first_name
 
 
+def normalize_email(email_str):
+    if email_str:
+        return re.sub("\.$", "", email_str, flags=re.IGNORECASE)
+    return email_str
+
+
 def create_user(uwnetid):
     person = get_person(uwnetid)
     first_name = ""
@@ -43,7 +50,7 @@ def create_user(uwnetid):
                       'display_name': person.display_name,
                       'first_name': get_first_name(person),
                       'last_name': person.surname,
-                      'email': person.email1,
+                      'email': normalize_email(person.email1),
                       'is_alum': person.is_alum,
                       'is_employee': person.is_employee,
                       'is_faculty': person.is_faculty,

@@ -1,13 +1,15 @@
 from restclients.exceptions import DataFailureException
 from django.test import TestCase
-from sis_provisioner.test import FPWS
-from sis_provisioner.dao.user import create_user, get_user_from_db
+from sis_provisioner.test import FPWS, FHRP
+from sis_provisioner.dao.user import create_user, get_user_from_db,\
+    normalize_email
 
 
 class TestUserDao(TestCase):
 
     def test_create_user(self):
-        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS,
+                           RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
             user = create_user('staff')
             self.assertIsNotNone(user)
             self.assertEqual(user.netid, 'staff')
@@ -23,6 +25,17 @@ class TestUserDao(TestCase):
             self.assertEqual(user.hrp_home_dept_org_name,
                              "LIBRARY")
             self.assertEqual(user.hrp_emp_status, 'S')
+
+            user = get_user_from_db('staff')
+            self.assertIsNotNone(user)
+            self.assertEqual(user.netid, 'staff')
+            self.assertEqual(user.regid,
+                             "10000000000000000000000000000001")
+
+    def test_normalize_email(self):
+        self.assertEqual(normalize_email("x@uw.edu"), "x@uw.edu")
+        self.assertEqual(normalize_email("x@uw.edu."), "x@uw.edu")
+        self.assertIsNone(normalize_email(None))
 
     def test_err_case(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FPWS):
