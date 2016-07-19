@@ -24,7 +24,7 @@ def get_file_name(filepath, index):
                         filename + str(index) + '.csv')
 
 
-def write_files(users):
+def write_files(users, include_hrp):
     """
     Writes all csv files. Returns a path to the csv files, or None
     if no data was written.
@@ -45,10 +45,10 @@ def write_files(users):
     f_index = 1
     user_number = 0
     f = open_file(get_file_name(filepath, f_index))
-    f.write(get_aline_csv(get_headers()))
+    f.write(get_aline_csv(get_headers(include_hrp)))
 
     for user in users:
-        aline = get_aline_csv(get_attr_list(user))
+        aline = get_aline_csv(get_attr_list(user, include_hrp))
         try:
             f.write(aline)
         except Exception:
@@ -66,7 +66,7 @@ def write_files(users):
             logger.info("Finish writing %d entries." % user_number)
             f_index += 1
             f = open_file(get_file_name(filepath, f_index))
-            f.write(get_aline_csv(get_headers()))
+            f.write(get_aline_csv(get_headers(include_hrp)))
 
     f.close()
 

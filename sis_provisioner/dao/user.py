@@ -39,7 +39,7 @@ def normalize_email(email_str):
     return email_str
 
 
-def create_user(uwnetid):
+def create_user(uwnetid, include_hrp=False):
     person = get_person(uwnetid)
     first_name = ""
     if person.first_name:
@@ -60,8 +60,8 @@ def create_user(uwnetid):
                       'student_department2': person.student_department2,
                       'student_department3': person.student_department3,
                       }
-    appointee = None
-    if person.is_employee:
+
+    if include_hrp and person.is_employee:
         appointee = get_appointee(person)
         if appointee is not None:
             updated_values['hrp_home_dept_org_code'] =\

@@ -12,11 +12,11 @@ def get_campus(emp_campus_code):
     return emp_campus_code
 
 
-def get_headers(include_emp_data=False,
+def get_headers(include_hrp=False,
                 include_student_dept=False):
     headers = ['UNIQUE ID', 'NAME', 'EMAIL', 'regid',
                'alumni', 'employee', 'faculty', 'staff', 'student']
-    if include_emp_data:
+    if include_hrp:
         headers.append('emp home campus')
 
     if include_student_dept:
@@ -26,7 +26,7 @@ def get_headers(include_emp_data=False,
 
 
 def get_attr_list(user,
-                  include_emp_data=False,
+                  include_hrp=False,
                   include_student_dept=False):
     """
     Returns a list of data for creating a line of csv for a user
@@ -43,7 +43,7 @@ def get_attr_list(user,
             'y' if user.is_student else 'n',
             ]
 
-    if include_emp_data:
+    if include_hrp:
         emp_campus_code = ""
         # emp_home_college_code = ""
         if user.hrp_home_dept_org_code:
