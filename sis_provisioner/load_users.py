@@ -11,10 +11,11 @@ logger = logging.getLogger(__name__)
 
 class LoadUsers:
 
-    def __init__(self):
+    def __init__(self, include_hrp=False):
         self.invalid_count = 0
         self.total_count = 0
         self.users = []
+        self.include_hrp_data = include_hrp
 
     def fetch_all(self):
         try:
@@ -29,7 +30,8 @@ class LoadUsers:
 
         for uwnetid in members:
             try:
-                user = create_user(uwnetid)
+                user = create_user(uwnetid,
+                                   include_hrp=self.include_hrp_data)
                 self.users.append(user)
             except Exception as ex:
                 log_exception(logger,
@@ -38,6 +40,9 @@ class LoadUsers:
                 self.invalid_count = self.invalid_count + 1
                 continue
         logger.info("Finish loading %d users." % self.get_user_count())
+
+    def include_hrp(self):
+        return self.include_hrp_data
 
     def get_total_count(self):
         return self.total_count

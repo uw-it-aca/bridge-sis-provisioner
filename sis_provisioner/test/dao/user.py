@@ -7,10 +7,10 @@ from sis_provisioner.dao.user import create_user, get_user_from_db,\
 
 class TestUserDao(TestCase):
 
-    def test_create_user(self):
+    def test_create_user_withhrp(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS,
                            RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
-            user = create_user('staff')
+            user = create_user('staff', include_hrp=True)
             self.assertIsNotNone(user)
             self.assertEqual(user.netid, 'staff')
             self.assertEqual(user.regid,
@@ -31,6 +31,16 @@ class TestUserDao(TestCase):
             self.assertEqual(user.netid, 'staff')
             self.assertEqual(user.regid,
                              "10000000000000000000000000000001")
+
+    def test_create_user(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS,
+                           RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
+            user = create_user('faculty')
+            self.assertIsNotNone(user)
+            self.assertEqual(user.netid, 'faculty')
+            self.assertIsNone(user.hrp_home_dept_org_code)
+            self.assertIsNone(user.hrp_home_dept_org_name)
+            self.assertIsNone(user.hrp_emp_status)
 
     def test_normalize_email(self):
         self.assertEqual(normalize_email("x@uw.edu"), "x@uw.edu")

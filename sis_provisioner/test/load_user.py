@@ -11,7 +11,13 @@ class TestLoadUsers(TransactionTestCase):
     def test_get_uw_members(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS,
                            RESTCLIENTS_PWS_DAO_CLASS=FPWS):
-            load_users = LoadUsers()
+            load_users = LoadUsers(include_hrp=False)
+            load_users.fetch_all()
+
+            self.assertEqual(load_users.get_total_count(), 7)
+            self.assertEqual(load_users.get_invalid_count(), 1)
+
+            load_users = LoadUsers(include_hrp=True)
             load_users.fetch_all()
 
             self.assertEqual(load_users.get_total_count(), 7)
