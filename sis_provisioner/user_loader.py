@@ -33,8 +33,8 @@ class UserLoader:
         self.total_count = len(members)
         for uwnetid in members:
             try:
-                user_add, deletes = create_user(uwnetid,
-                                    include_hrp=self.include_hrp_data)
+                user_add, deletes = create_user(
+                    uwnetid, include_hrp=self.include_hrp_data)
 
                 if user_add is not None and\
                         not user_add.no_action():

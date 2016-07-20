@@ -31,6 +31,7 @@ PRIORITY_CHOICES = (
     (PRIORITY_CHANGE_NETID, 'netid changed'),
 )
 
+
 class BridgeUser(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
@@ -103,7 +104,7 @@ class BridgeUser(models.Model):
         if use_title:
             return "%s %s" % (self.first_name.title(),
                               self.last_name.title())
-        
+
         name = HumanName("%s %s" % (self.first_name, self.last_name))
         name.capitalize()
         name.string_format = "{first} {last}"

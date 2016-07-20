@@ -2,8 +2,9 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-CAMPUS = ["", "", 
-          "Seattle", "Seattle Health Sciences", "Seattle", "Bothell", "Tacoma"]
+CAMPUS = ["", "",
+          "Seattle", "Seattle Health Sciences",
+          "Seattle", "Bothell", "Tacoma"]
 
 
 def get_campus(emp_campus_code):

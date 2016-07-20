@@ -27,7 +27,7 @@ class Command(BaseCommand):
         del_user_total = csv_maker.make_delete_user_file()
         netid_changed_user_total = csv_maker.make_netid_change_user_file()
         regid_changed_user_total = csv_maker.make_regid_change_user_file()
-        
+
         print "%d users to add\n" % add_user_total
         print "%d users to delete\n" % del_user_total
         print "%d users changed netid\n" % netid_changed_user_total

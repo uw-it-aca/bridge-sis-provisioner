@@ -33,4 +33,3 @@ class TestLoadUsers(TransactionTestCase):
             self.assertEqual(load_users.get_netid_changed_count(), 0)
             self.assertEqual(load_users.get_regid_changed_count(), 0)
             self.assertEqual(len(load_users.get_users_to_add()), 6)
-

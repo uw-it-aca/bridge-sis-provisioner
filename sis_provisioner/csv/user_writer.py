@@ -102,7 +102,7 @@ def get_regid_changed_file_name(filepath):
 
 def make_import_netid_changed_user_csv_file(users, filepath, include_hrp):
     return make_key_changed_user_csv_files(
-        users, 
+        users,
         get_netid_changed_file_name(filepath),
         include_hrp)
 
@@ -134,4 +134,3 @@ def make_key_changed_user_csv_files(users, filename, include_hrp):
     f.close()
     logger.info("Finish writing %d entries to %s." % (user_number, filename))
     return user_number
-
