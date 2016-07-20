@@ -32,7 +32,7 @@ def get_uw_members():
     """
     ret_list = []
     for gm in get_members_of_group(UW_GROUP):
-        if gm.is_uwnetid():
+        if gm.is_uwnetid() and gm.name is not None and len(gm.name) > 0:
             ret_list.append(gm.name)
 
     return ret_list
