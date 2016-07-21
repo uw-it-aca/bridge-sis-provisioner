@@ -71,6 +71,10 @@ def get_del_users(users):
     return users_deleted
 
 
+def get_all_users():
+    return BridgeUser.objects.all()
+
+
 def save_user(person, include_hrp):
     users_to_del = None
     user_in_db = None

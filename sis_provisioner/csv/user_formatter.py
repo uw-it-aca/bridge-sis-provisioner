@@ -38,7 +38,7 @@ def get_attr_list(user,
     matching the headers in header_for_users for the given BridgeUser object.
     """
     data = [user.netid + "@washington.edu",
-            user.get_display_name(use_title=True),
+            user.get_display_name(use_title=False),
             user.email if user.email else "%s@uw.edu" % user.netid,
             user.regid,
             'y' if user.is_alum else 'n',
