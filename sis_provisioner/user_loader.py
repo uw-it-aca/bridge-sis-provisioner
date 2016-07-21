@@ -13,6 +13,8 @@ class UserLoader:
 
     def __init__(self, include_hrp=False):
         self.include_hrp_data = include_hrp
+
+    def init_set(self):
         self.total_count = 0
         # a list of BridgeUser objects
         self.users_to_add = []
@@ -23,6 +25,7 @@ class UserLoader:
         self.users_to_del = []
 
     def fetch_all(self):
+        self.init_set()
         try:
             members = get_uw_members()
         except Exception:

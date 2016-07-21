@@ -19,6 +19,10 @@ class TestLoadUsers(TransactionTestCase):
             self.assertEqual(load_users.get_netid_changed_count(), 0)
             self.assertEqual(load_users.get_regid_changed_count(), 0)
             self.assertEqual(len(load_users.get_users_to_add()), 6)
+            # reload should find no changed user to add
+            load_users.fetch_all()
+            self.assertEqual(load_users.get_total_count(), 9)
+            self.assertEqual(load_users.get_add_count(), 0)
 
     def test_load_users_with_hrp(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS,
@@ -26,10 +30,13 @@ class TestLoadUsers(TransactionTestCase):
                            RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
             load_users = UserLoader(include_hrp=True)
             load_users.fetch_all()
-
             self.assertEqual(load_users.get_total_count(), 9)
             self.assertEqual(load_users.get_add_count(), 6)
             self.assertEqual(load_users.get_delete_count(), 0)
             self.assertEqual(load_users.get_netid_changed_count(), 0)
             self.assertEqual(load_users.get_regid_changed_count(), 0)
             self.assertEqual(len(load_users.get_users_to_add()), 6)
+            # reload should find no changed user to add
+            load_users.fetch_all()
+            self.assertEqual(load_users.get_total_count(), 9)
+            self.assertEqual(load_users.get_add_count(), 0)
