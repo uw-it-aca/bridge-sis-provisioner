@@ -7,7 +7,7 @@ from sis_provisioner.dao.hrp import get_appointee
 
 class TestHrpDao(TestCase):
 
-    def test_get_person(self):
+    def test_get_appointee(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS,
                            RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
             person = get_person('staff')
