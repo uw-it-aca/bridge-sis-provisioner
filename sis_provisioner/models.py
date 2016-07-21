@@ -17,6 +17,21 @@ def get_now():
     return timezone.now()
 
 
+PRIORITY_NONE = 0
+PRIORITY_NORMAL = 1
+PRIORITY_HIGH = 2
+PRIORITY_CHANGE_REGID = 3
+PRIORITY_CHANGE_NETID = 4
+
+PRIORITY_CHOICES = (
+    (PRIORITY_NONE, 'none'),
+    (PRIORITY_NORMAL, 'normal'),
+    (PRIORITY_HIGH, 'high'),
+    (PRIORITY_CHANGE_REGID, 'regid changed'),
+    (PRIORITY_CHANGE_NETID, 'netid changed'),
+)
+
+
 class BridgeUser(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
@@ -25,8 +40,8 @@ class BridgeUser(models.Model):
                              db_index=True,
                              unique=True)
     last_visited_date = models.DateTimeField()
-    last_import_date = models.DateTimeField(null=True)
-    last_import_err = models.CharField(max_length=10, null=True)
+    import_priority = models.SmallIntegerField(default=1,
+                                               choices=PRIORITY_CHOICES)
     terminate_date = models.DateTimeField(null=True)
 
     display_name = models.CharField(max_length=256, null=True)
@@ -43,9 +58,6 @@ class BridgeUser(models.Model):
     student_department3 = models.CharField(max_length=255, null=True)
 
     hrp_home_dept_org_code = models.CharField(max_length=16, null=True)
-    hrp_home_dept_org_name = models.CharField(max_length=96, null=True)
-    hrp_job_class_code = models.CharField(max_length=16, null=True)
-    hrp_job_class_title = models.CharField(max_length=96, null=True)
     hrp_emp_status = models.CharField(max_length=2, null=True)
     # hrp_appointee = models.ForeignKey(Appointee, null=True)
 
@@ -57,44 +69,54 @@ class BridgeUser(models.Model):
         return other is not None and\
             self.regid == other.regid
 
-    def has_netid_changed(self, uwnetid):
-        return self.netid != uwnetid
+    def no_action(self):
+        return self.import_priority == PRIORITY_NONE
 
-    def to_import(self):
-        # Return True if the user needs to be added into Bridge
-        return self.last_import_date is None or\
-            self.last_import_err is not None or\
-            self.last_visited_date > self.last_import_date
+    def set_import_done(self):
+        self.import_priority = PRIORITY_NONE
 
-    def to_be_purged(self):
-        # Return True if the user is ready to be purged from Bridge
+    def is_priority_import(self):
+        return self.import_priority == PRIORITY_HIGH
+
+    def netid_changed(self):
+        return self.import_priority == PRIORITY_CHANGE_NETID
+
+    def regid_changed(self):
+        return self.import_priority == PRIORITY_CHANGE_REGID
+
+    def set_terminate_date(self):
+        self.terminate_date = get_now() + timedelta(days=15)
+
+    def is_terminated(self):
+        # Return True if the user should be purged from Bridge
         return self.terminate_date is not None and\
-            get_now() > self.terminate_date + timedelta(days=15)
+            get_now() > self.terminate_date
 
     def has_display_name(self):
         return self.display_name is not None and\
             len(self.display_name) > 0 and\
             not self.display_name.isupper()
 
-    def get_sortable_name(self, use_title=False):
+    def get_display_name(self, use_title=False):
+        if self.has_display_name():
+            return self.display_name
+
         if use_title:
-            return "%s, %s" % (self.last_name.title(), self.first_name.title())
+            return "%s %s" % (self.first_name.title(),
+                              self.last_name.title())
 
         name = HumanName("%s %s" % (self.first_name, self.last_name))
         name.capitalize()
-        name.string_format = "{last}, {first}"
+        name.string_format = "{first} {last}"
         return str(name)
 
     def __str__(self):
         return (
             "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
-            " %s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
             " %s: %s, %s: %s, %s: %s, %s: %s, %s: %s}") % (
             "netid", self.netid,
             "regid", self.regid,
             "last_visited_date", datetime_to_str(self.last_visited_date),
-            "last_import_date", datetime_to_str(self.last_import_date),
-            "last_import_err", self.last_import_err,
             "terminate_date", datetime_to_str(self.terminate_date),
             "display_name", self.display_name,
             "first_name", self.first_name,
@@ -102,9 +124,6 @@ class BridgeUser(models.Model):
             "email", self.email,
             # "appointee", str(self.hrp_appointee)
             "hrp_home_dept_org_code", self.hrp_home_dept_org_code,
-            "hrp_home_dept_org_name", self.hrp_home_dept_org_name,
-            "hrp_job_class_code", self.hrp_job_class_code,
-            "hrp_job_class_title", self.hrp_job_class_title,
             "hrp_emp_status", self.hrp_emp_status,
             )
 
@@ -113,17 +132,13 @@ class BridgeUser(models.Model):
             "netid": self.netid,
             "regid": self.regid,
             "last_visited_date": datetime_to_str(self.last_visited_date),
-            "last_import_date": datetime_to_str(self.last_import_date),
-            "last_import_err": self.last_import_err,
+            "import_priority": self.import_priority,
             "terminate_date": datetime_to_str(self.terminate_date),
             "display_name": self.display_name,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "email": self.email,
             "hrp_home_dept_org_code": self.hrp_home_dept_org_code,
-            "hrp_home_dept_org_name": self.hrp_home_dept_org_name,
-            "hrp_job_class_code": self.hrp_job_class_code,
-            "hrp_job_class_title": self.hrp_job_class_title,
             "hrp_emp_status": self.hrp_emp_status,
             }
 

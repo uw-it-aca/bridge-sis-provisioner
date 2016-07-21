@@ -2,7 +2,8 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-CAMPUS = ["", "", "Seattle", "Seattle Health Sciences",
+CAMPUS = ["", "",
+          "Seattle", "Seattle Health Sciences",
           "Seattle", "Bothell", "Tacoma"]
 
 
@@ -25,6 +26,10 @@ def get_headers(include_hrp=False,
     return headers
 
 
+def get_header_for_user_del():
+    return ['UNIQUE ID']
+
+
 def get_attr_list(user,
                   include_hrp=False,
                   include_student_dept=False):
@@ -33,7 +38,7 @@ def get_attr_list(user,
     matching the headers in header_for_users for the given BridgeUser object.
     """
     data = [user.netid + "@washington.edu",
-            user.get_sortable_name(use_title=True),
+            user.get_display_name(use_title=True),
             user.email if user.email else "%s@uw.edu" % user.netid,
             user.regid,
             'y' if user.is_alum else 'n',
@@ -44,12 +49,9 @@ def get_attr_list(user,
             ]
 
     if include_hrp:
-        emp_campus_code = ""
-        # emp_home_college_code = ""
+        emp_campus_code = 0
         if user.hrp_home_dept_org_code:
-            emp_home_dept_code = user.hrp_home_dept_org_code
-            emp_campus_code = emp_home_dept_code[0:1]
-            # emp_home_college_code = emp_home_dept_code[0:3]
+            emp_campus_code = user.hrp_home_dept_org_code[0:1]
         data.append(get_campus(emp_campus_code))
 
     if include_student_dept:
