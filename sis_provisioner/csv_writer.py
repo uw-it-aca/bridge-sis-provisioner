@@ -7,7 +7,6 @@ from sis_provisioner.csv.user_writer import make_import_user_csv_files,\
     make_import_regid_changed_user_csv_file,\
     make_import_netid_changed_user_csv_file, make_delete_user_csv_file
 from sis_provisioner.util.log import log_exception
-from sis_provisioner.user_loader import UserLoader
 
 
 logger = logging.getLogger(__name__)
@@ -29,13 +28,14 @@ def get_file_path():
 
 
 class CsvFileMaker:
-
-    def __init__(self, include_hrp=False):
+    """
+    For the given loader, create the corresponsing csv files.
+    """
+    def __init__(self, loader, include_hrp=False):
         self.file_wrote = False
         self.include_hrp_data = include_hrp
         self.filepath = get_file_path()
-
-        self.loader = UserLoader(self.include_hrp_data)
+        self.loader = loader
         self.loader.fetch_all()
 
     def get_file_path(self):

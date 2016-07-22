@@ -7,7 +7,7 @@ from sis_provisioner.test import FPWS, FHRP
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.user import create_user, save_user,\
     normalize_email, normalize_first_name, delete_user, get_del_users,\
-    set_terminate_date, set_verified
+    set_terminate_date, set_verified, get_all_users
 
 
 class TestUserDao(TransactionTestCase):
@@ -34,7 +34,7 @@ class TestUserDao(TransactionTestCase):
         self.assertFalse(user.regid_changed())
         self.assertIsNotNone(user.terminate_date)
         dtime = user.terminate_date - timedelta(days=15)
-        self.assertTrue(get_now() < (dtime + timedelta(minutes=1)))
+        self.assertTrue(get_now() < (dtime + timedelta(seconds=3)))
 
     def test_set_verified(self):
         user, deletes = create_user('staff')
@@ -44,7 +44,7 @@ class TestUserDao(TransactionTestCase):
         user = BridgeUser.objects.get(netid='staff')
         self.assertTrue(user.no_action())
         self.assertTrue(
-            get_now() < (user.last_visited_date + timedelta(minutes=1)))
+            get_now() < (user.last_visited_date + timedelta(seconds=3)))
 
     def test_save_user_without_hrp(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
@@ -56,11 +56,15 @@ class TestUserDao(TransactionTestCase):
             self.assertTrue(user.is_priority_normal())
             self.assertFalse(user.netid_changed())
             self.assertFalse(user.regid_changed())
-            self.assertFalse(user.is_terminated())
+            self.assertFalse(user.passed_terminate_date())
             self.assertTrue(user.has_display_name())
             self.assertEqual(user.get_display_name(), 'James Faculty')
             self.assertIsNone(user.hrp_home_dept_org_code)
             self.assertIsNone(user.hrp_emp_status)
+
+            users = get_all_users()
+            self.assertIsNotNone(users)
+            self.assertEqual(len(users), 1)
 
     def test_save_user_withhrp(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
@@ -122,3 +126,6 @@ class TestUserDao(TransactionTestCase):
             user, deleted_list = create_user("none")
             self.assertIsNone(deleted_list)
             self.assertIsNone(user)
+
+            users = get_all_users()
+            self.assertEqual(len(users), 0)

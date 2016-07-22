@@ -3,11 +3,19 @@ from django.test import TransactionTestCase
 from django.test.utils import override_settings
 from sis_provisioner.test import FPWS, FHRP
 from sis_provisioner.csv.user_formatter import get_headers, get_attr_list,\
-    get_header_for_user_del
+    get_header_for_user_del, get_campus
 from sis_provisioner.dao.user import create_user
 
 
 class TestUserFormatter(TransactionTestCase):
+
+    def test_get_campus(self):
+        self.assertEqual(get_campus(1), "")
+        self.assertEqual(get_campus(2), "Seattle")
+        self.assertEqual(get_campus(3), "Seattle Health Sciences")
+        self.assertEqual(get_campus(4), "Seattle")
+        self.assertEqual(get_campus(5), "Bothell")
+        self.assertEqual(get_campus(6), "Tacoma")
 
     def test_get_headers_for_user_del(self):
         self.assertEqual(len(get_header_for_user_del()), 1)
@@ -82,6 +90,16 @@ class TestUserFormatter(TransactionTestCase):
             self.assertEqual(user_attr_list[0],
                              "tacgrad@washington.edu")
             self.assertEqual(user_attr_list[9], "Tacoma")
+
+            user, deleted = create_user('retiree', include_hrp=True)
+            user_attr_list = get_attr_list(user, include_hrp=True)
+            self.assertEqual(user_attr_list[1], "Ellen Louise Retiree")
+            self.assertEqual(user_attr_list[9], "")
+
+            user, deleted = create_user('leftuw', include_hrp=True)
+            user_attr_list = get_attr_list(user, include_hrp=True)
+            self.assertEqual(user_attr_list[1], "Nina LEFT")
+            self.assertEqual(user_attr_list[9], "")
 
     def test_get_attr_list_nohrp(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
