@@ -1,11 +1,13 @@
 from django.test import TransactionTestCase, TestCase
 from django.db.models import Q
+from datetime import timedelta
 from restclients.exceptions import DataFailureException
-from sis_provisioner.models import BridgeUser
+from sis_provisioner.models import BridgeUser, get_now
 from sis_provisioner.test import FPWS, FHRP
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.user import create_user, save_user,\
-    normalize_email, normalize_first_name, delete_user, get_del_users
+    normalize_email, normalize_first_name, delete_user, get_del_users,\
+    set_terminate_date, set_verified
 
 
 class TestUserDao(TransactionTestCase):
@@ -20,6 +22,30 @@ class TestUserDao(TransactionTestCase):
         self.assertEqual(normalize_first_name(None), "")
         self.assertEqual(normalize_first_name(""), "")
 
+    def test_set_terminate_date(self):
+        user, deletes = create_user('staff')
+        set_terminate_date(user)
+
+        user = BridgeUser.objects.get(netid='staff')
+        self.assertTrue(user.is_priority_normal())
+        self.assertFalse(user.no_action())
+        self.assertFalse(user.is_priority_high())
+        self.assertFalse(user.netid_changed())
+        self.assertFalse(user.regid_changed())
+        self.assertIsNotNone(user.terminate_date)
+        dtime = user.terminate_date - timedelta(days=15)
+        self.assertTrue(get_now() < (dtime + timedelta(minutes=1)))
+
+    def test_set_verified(self):
+        user, deletes = create_user('staff')
+        self.assertFalse(user.no_action())
+        set_verified(user)
+
+        user = BridgeUser.objects.get(netid='staff')
+        self.assertTrue(user.no_action())
+        self.assertTrue(
+            get_now() < (user.last_visited_date + timedelta(minutes=1)))
+
     def test_save_user_without_hrp(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
             person = get_person('faculty')
@@ -27,7 +53,7 @@ class TestUserDao(TransactionTestCase):
             user, deletes = save_user(person, False)
             self.assertIsNotNone(user)
             self.assertEqual(user.netid, 'faculty')
-            self.assertFalse(user.is_priority_import())
+            self.assertTrue(user.is_priority_normal())
             self.assertFalse(user.netid_changed())
             self.assertFalse(user.regid_changed())
             self.assertFalse(user.is_terminated())
@@ -75,6 +101,11 @@ class TestUserDao(TransactionTestCase):
             self.assertEqual(user.regid,
                              "10000000000000000000000000000001")
             self.assertEqual(user.hrp_emp_status, 'S')
+
+            # call create again should return nothing
+            user, deletes = create_user('staff', include_hrp=True)
+            self.assertIsNone(user)
+            self.assertIsNone(deletes)
 
             deleted = delete_user('staff')
             self.assertIsNotNone(deleted)

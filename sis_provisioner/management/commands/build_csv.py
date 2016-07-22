@@ -32,4 +32,5 @@ class Command(BaseCommand):
         print "%d users to delete\n" % del_user_total
         print "%d users changed netid\n" % netid_changed_user_total
         print "%d users changed regid\n" % regid_changed_user_total
-        print "The csv files are in %s\n" % csv_maker.get_file_path()
+        if csv_maker.is_file_wrote():
+            print "The csv files are in %s\n" % csv_maker.get_file_path()

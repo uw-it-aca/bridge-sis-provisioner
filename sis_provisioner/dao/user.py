@@ -71,6 +71,10 @@ def get_del_users(users):
     return users_deleted
 
 
+def get_all_users():
+    return BridgeUser.objects.all()
+
+
 def save_user(person, include_hrp):
     users_to_del = None
     user_in_db = None
@@ -97,8 +101,9 @@ def save_user(person, include_hrp):
         appointee = get_appointee(person)
 
     if user_in_db is not None and\
-            not person_attr_changed(user_in_db, person) and\
-            not emp_attr_changed(user_in_db, appointee):
+            person_attr_not_changed(user_in_db, person) and\
+            (appointee is None or emp_attr_not_changed(user_in_db, appointee)):
+        set_verified(user_in_db)
         return None, users_to_del
 
     updated_values = {'netid': person.uwnetid,
@@ -129,24 +134,24 @@ def save_user(person, include_hrp):
     return b_user, users_to_del
 
 
-def emp_attr_changed(buser, appointee):
-    return buser.hrp_home_dept_org_code != appointee.home_dept_org_code or\
-        buser.hrp_emp_status != appointee.status
+def emp_attr_not_changed(buser, appointee):
+    return buser.hrp_home_dept_org_code == appointee.home_dept_org_code and\
+        buser.hrp_emp_status == appointee.status
 
 
-def person_attr_changed(buser, person):
-    return buser.display_name != person.display_name or\
-        buser.first_name != normalize_first_name(person.first_name) or\
-        buser.last_name != person.surname or\
-        buser.email != normalize_email(person.email1) or\
-        buser.is_alum != person.is_alum or\
-        buser.is_employee != person.is_employee or\
-        buser.is_faculty != person.is_faculty or\
-        buser.is_staff != person.is_staff or\
-        buser.is_student != person.is_student or\
-        buser.student_department1 != person.student_department1 or\
-        buser.student_department2 != person.student_department2 or\
-        buser.student_department3 != person.student_department3
+def person_attr_not_changed(buser, person):
+    return buser.display_name == person.display_name and\
+        buser.first_name == normalize_first_name(person.first_name) and\
+        buser.last_name == person.surname and\
+        buser.email == normalize_email(person.email1) and\
+        buser.is_alum == person.is_alum and\
+        buser.is_employee == person.is_employee and\
+        buser.is_faculty == person.is_faculty and\
+        buser.is_staff == person.is_staff and\
+        buser.is_student == person.is_student and\
+        buser.student_department1 == person.student_department1 and\
+        buser.student_department2 == person.student_department2 and\
+        buser.student_department3 == person.student_department3
 
 
 def changed_netid(busers, person):
@@ -162,6 +167,16 @@ def set_terminate_date(user):
     There are 15 days grace period normally.
     """
     user.set_terminate_date()
+    user.set_priority_normal()
+    user.save()
+
+
+def set_verified(user):
+    """
+    Set the last_visited_date
+    """
+    user.set_verified_date()
+    user.set_no_action()
     user.save()
 
 

@@ -69,13 +69,22 @@ class BridgeUser(models.Model):
         return other is not None and\
             self.regid == other.regid
 
+    def set_verified_date(self):
+        last_visited_date = get_now()
+
     def no_action(self):
         return self.import_priority == PRIORITY_NONE
 
-    def set_import_done(self):
+    def set_no_action(self):
         self.import_priority = PRIORITY_NONE
 
-    def is_priority_import(self):
+    def set_priority_normal(self):
+        self.import_priority = PRIORITY_NORMAL
+
+    def is_priority_normal(self):
+        return self.import_priority == PRIORITY_NORMAL
+
+    def is_priority_high(self):
         return self.import_priority == PRIORITY_HIGH
 
     def netid_changed(self):

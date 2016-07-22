@@ -19,6 +19,10 @@ class TestLoadUsers(TransactionTestCase):
             self.assertEqual(load_users.get_netid_changed_count(), 0)
             self.assertEqual(load_users.get_regid_changed_count(), 0)
             self.assertEqual(len(load_users.get_users_to_add()), 6)
+            self.assertEqual(len(load_users.get_users_to_delete()), 0)
+            self.assertEqual(len(load_users.get_users_netid_changed()), 0)
+            self.assertEqual(len(load_users.get_users_regid_changed()), 0)
+            self.assertFalse(load_users.include_hrp())
             # reload should find no changed user to add
             load_users.fetch_all()
             self.assertEqual(load_users.get_total_count(), 9)
@@ -36,6 +40,7 @@ class TestLoadUsers(TransactionTestCase):
             self.assertEqual(load_users.get_netid_changed_count(), 0)
             self.assertEqual(load_users.get_regid_changed_count(), 0)
             self.assertEqual(len(load_users.get_users_to_add()), 6)
+            self.assertTrue(load_users.include_hrp())
             # reload should find no changed user to add
             load_users.fetch_all()
             self.assertEqual(load_users.get_total_count(), 9)

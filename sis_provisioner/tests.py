@@ -4,5 +4,6 @@ from sis_provisioner.test.dao.pws import TestPwsDao
 from sis_provisioner.test.dao.hrp import TestHrpDao
 from sis_provisioner.test.dao.user import TestUserDao
 from sis_provisioner.test.user_loader import TestLoadUsers
+from sis_provisioner.test.user_checker import TestUserChecker
 from sis_provisioner.test.csv.user_formatter import TestUserFormatter
 from sis_provisioner.test.util.time_helper import TestTimeHelper
