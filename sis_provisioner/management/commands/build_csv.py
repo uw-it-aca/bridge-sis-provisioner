@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.csv_writer import CsvFileMaker
+from sis_provisioner.user_loader import UserLoader
 
 
 logger = logging.getLogger(__name__)
@@ -17,10 +18,11 @@ class Command(BaseCommand):
         if len(args) == 1:
             include_hrp = (args[0] == "include-hrp")
 
-        csv_maker = CsvFileMaker(include_hrp=include_hrp)
+        loader = UserLoader(include_hrp)
+        csv_maker = CsvFileMaker(loader, include_hrp=include_hrp)
         file_path = csv_maker.get_file_path()
         if file_path is None:
-            print "Cannot create CSV dir, abort."
+            print "Build-csv: Can't create CSV dir, abort."
             return
 
         add_user_total = csv_maker.make_add_user_files()
@@ -33,4 +35,4 @@ class Command(BaseCommand):
         print "%d users changed netid\n" % netid_changed_user_total
         print "%d users changed regid\n" % regid_changed_user_total
         if csv_maker.is_file_wrote():
-            print "The csv files are in %s\n" % csv_maker.get_file_path()
+            print "The csv files are in directory: %s\n" % file_path

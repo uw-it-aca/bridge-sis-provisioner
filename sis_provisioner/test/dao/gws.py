@@ -10,7 +10,7 @@ class TestGwsDao(TestDao):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS):
             users = get_uw_members()
             self.assertIsNotNone(users)
-            self.assertEqual(len(users), 9)
+            self.assertEqual(len(users), 11)
 
             self.assertEqual(users[0], "botgrad")
             self.assertEqual(users[1], "faculty")
@@ -21,3 +21,5 @@ class TestGwsDao(TestDao):
             self.assertEqual(users[6], "tacgrad")
             self.assertEqual(users[7], "renamed")
             self.assertEqual(users[8], "none")
+            self.assertEqual(users[9], "retiree")
+            self.assertEqual(users[10], "leftuw")

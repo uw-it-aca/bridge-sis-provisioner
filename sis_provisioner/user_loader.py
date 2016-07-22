@@ -4,12 +4,14 @@ from restclients.exceptions import DataFailureException
 from sis_provisioner.dao.gws import get_uw_members
 from sis_provisioner.dao.user import create_user
 from sis_provisioner.util.log import log_exception
+from sis_provisioner.user_checker import delete_terminated_users
+from sis_provisioner.loader import AbsLoader
 
 
 logger = logging.getLogger(__name__)
 
 
-class UserLoader:
+class UserLoader(AbsLoader):
 
     def __init__(self, include_hrp=False):
         self.include_hrp_data = include_hrp
@@ -92,3 +94,29 @@ class UserLoader:
 
     def get_users_regid_changed(self):
         return self.users_changed_regid
+
+
+class PurgeUserLoader(AbsLoader):
+
+    def __init__(self):
+        pass
+
+    def init_set(self):
+        self.total_count = 0
+        self.users_to_del = []
+
+    def fetch_all(self):
+        self.init_set()
+        self.total_count, self.users_to_del = delete_terminated_users()
+
+    def include_hrp(self):
+        return False
+
+    def get_total_count(self):
+        return self.total_count
+
+    def get_delete_count(self):
+        return len(self.users_to_del)
+
+    def get_users_to_delete(self):
+        return self.users_to_del

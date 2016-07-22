@@ -12,9 +12,9 @@ class Command(BaseCommand):
     help = 'Check existing users and mark those no longer affiliated with UW'
 
     def handle(self, *args, **options):
-        users_nolonger_with_uw = mark_terminated_users()
-        print "Check terminated users: found %d users" %\
-            len(users_nolonger_with_uw)
+        total_users, users_nolonger_with_uw = mark_terminated_users()
+        print "Checked total %d uses, terminated %d users" %\
+            (total_users, len(users_nolonger_with_uw))
         if len(users_nolonger_with_uw) > 0:
-            print "These users can be removed in 15 days: %s" %\
+            print "These users can be removed in 15 days: [%s]" %\
                 ','.join(users_nolonger_with_uw)

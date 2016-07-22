@@ -96,7 +96,7 @@ class BridgeUser(models.Model):
     def set_terminate_date(self):
         self.terminate_date = get_now() + timedelta(days=15)
 
-    def is_terminated(self):
+    def passed_terminate_date(self):
         # Return True if the user should be purged from Bridge
         return self.terminate_date is not None and\
             get_now() > self.terminate_date

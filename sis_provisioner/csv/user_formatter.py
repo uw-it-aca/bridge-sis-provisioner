@@ -49,7 +49,7 @@ def get_attr_list(user,
             ]
 
     if include_hrp:
-        emp_campus_code = 0
+        emp_campus_code = 1
         if user.hrp_home_dept_org_code:
             emp_campus_code = user.hrp_home_dept_org_code[0:1]
         data.append(get_campus(emp_campus_code))
