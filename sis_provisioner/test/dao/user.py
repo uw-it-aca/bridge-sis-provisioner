@@ -7,7 +7,7 @@ from sis_provisioner.test import FPWS, FHRP
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.user import create_user, save_user,\
     normalize_email, normalize_first_name, delete_user, get_del_users,\
-    set_terminate_date, set_verified, get_all_users
+    get_all_users
 
 
 class TestUserDao(TransactionTestCase):
@@ -24,9 +24,7 @@ class TestUserDao(TransactionTestCase):
 
     def test_set_terminate_date(self):
         user, deletes = create_user('staff')
-        set_terminate_date(user)
-
-        user = BridgeUser.objects.get(netid='staff')
+        user.set_terminate_date()
         self.assertTrue(user.is_priority_normal())
         self.assertFalse(user.no_action())
         self.assertFalse(user.is_priority_high())
@@ -35,12 +33,15 @@ class TestUserDao(TransactionTestCase):
         self.assertIsNotNone(user.terminate_date)
         dtime = user.terminate_date - timedelta(days=15)
         self.assertTrue(get_now() < (dtime + timedelta(seconds=3)))
+        user.set_terminate_date(is_netid_changed=True)
+        self.assertTrue(user.netid_changed())
+        dtime = user.terminate_date
+        self.assertTrue(get_now() < (dtime + timedelta(seconds=3)))
 
     def test_set_verified(self):
         user, deletes = create_user('staff')
         self.assertFalse(user.no_action())
-        set_verified(user)
-
+        user.set_verified()
         user = BridgeUser.objects.get(netid='staff')
         self.assertTrue(user.no_action())
         self.assertTrue(

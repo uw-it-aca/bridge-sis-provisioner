@@ -69,8 +69,10 @@ class BridgeUser(models.Model):
         return other is not None and\
             self.regid == other.regid
 
-    def set_verified_date(self):
+    def set_verified(self):
         last_visited_date = get_now()
+        self.set_no_action()
+        self.save()
 
     def no_action(self):
         return self.import_priority == PRIORITY_NONE
@@ -80,6 +82,12 @@ class BridgeUser(models.Model):
 
     def set_priority_normal(self):
         self.import_priority = PRIORITY_NORMAL
+
+    def set_priority_netid_changed(self):
+        self.import_priority = PRIORITY_CHANGE_NETID
+
+    def set_priority_regid_changed(self):
+        self.import_priority = PRIORITY_CHANGE_REGID
 
     def is_priority_normal(self):
         return self.import_priority == PRIORITY_NORMAL
@@ -93,11 +101,20 @@ class BridgeUser(models.Model):
     def regid_changed(self):
         return self.import_priority == PRIORITY_CHANGE_REGID
 
-    def set_terminate_date(self):
-        self.terminate_date = get_now() + timedelta(days=15)
+    def set_terminate_date(self, is_netid_changed=False):
+        if self.terminate_date is not None and\
+                self.terminate_date < get_now():
+            # previously already set
+            return
+        self.terminate_date = get_now()
+        if is_netid_changed:
+            self.set_priority_netid_changed()
+        else:
+            self.terminate_date += timedelta(days=15)
+            self.set_priority_normal()
+        self.save()
 
     def passed_terminate_date(self):
-        # Return True if the user should be purged from Bridge
         return self.terminate_date is not None and\
             get_now() > self.terminate_date
 

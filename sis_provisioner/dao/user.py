@@ -27,23 +27,16 @@ def create_user(uwnetid, include_hrp=False):
     try:
         person = get_person(uwnetid)
     except DataFailureException as ex:
-        if ex.status == 301:
-            # renamed uwnetid should be removed
-            logger.error("%s has been renamed!" % uwnetid)
-            return None, delete_user(uwnetid)
-        elif ex.status == 404:
-            # shared uwnetid should be excluded
-            logger.error("%s is not valid netid!" % uwnetid)
-            return None, delete_user(uwnetid)
+        if ex.status == 404:
+            logger.error("%s is not valid netid, skip!" % uwnetid)
         else:
-            # other issue, skip it
             log_exception(logger,
-                          "pws.person(%s) failed" % uwnetid,
+                          "pws.person(%s) failed, skip" % uwnetid,
                           traceback.format_exc())
         return None, None
 
     if person.uwregid is None or len(person.uwregid) == 0:
-        logger.error("%s has invalid uwregid!" % uwnetid)
+        logger.error("%s has invalid uwregid, skip!" % uwnetid)
         return None, None
     return save_user(person, include_hrp)
 
@@ -103,7 +96,7 @@ def save_user(person, include_hrp):
     if user_in_db is not None and\
             person_attr_not_changed(user_in_db, person) and\
             (appointee is None or emp_attr_not_changed(user_in_db, appointee)):
-        set_verified(user_in_db)
+        user_in_db.set_verified()
         return None, users_to_del
 
     updated_values = {'netid': person.uwnetid,
@@ -159,25 +152,6 @@ def changed_netid(busers, person):
         if u.netid != person.uwnetid:
             return True
     return False
-
-
-def set_terminate_date(user):
-    """
-    Set the terminate date in the user attribute.
-    There are 15 days grace period normally.
-    """
-    user.set_terminate_date()
-    user.set_priority_normal()
-    user.save()
-
-
-def set_verified(user):
-    """
-    Set the last_visited_date
-    """
-    user.set_verified_date()
-    user.set_no_action()
-    user.save()
 
 
 def normalize_email(email_str):

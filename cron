@@ -3,5 +3,4 @@ PYTHONPATH=/usr/lib/python2.7/site-packages
 DJANGO_SETTINGS_MODULE=project.settings
 #1 7 * * 1-5 cd /data/bridge/live && source ./bin/activate && python manage.py build_csv include-hrp
 1 7 * * 1-5 cd /data/bridge/live && source ./bin/activate && python manage.py build_csv
-1 9 * * 1-5 cd /data/bridge/live && source ./bin/activate && python manage.py check_user
 30 8 * * 1-5 cd /data/bridge/live && source ./bin/activate && python manage.py build_purge_user_csv
