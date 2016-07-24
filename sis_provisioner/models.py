@@ -112,8 +112,8 @@ class BridgeUser(models.Model):
             self.save()
 
     def save_terminate_date(self, graceful=True):
-        if self.terminate_date is not None:
-            # not to change previously already set date
+        if graceful and self.terminate_date is not None:
+            # not to change previously set date unless not graceful
             return
         self.terminate_date = get_now()
         if graceful:

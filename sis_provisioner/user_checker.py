@@ -90,8 +90,8 @@ class PurgeUserLoader(AbsLoader):
 
         if user.passed_terminate_date():
             netids_removed = delete_user(uwnetid)
+            self.users_to_del.append(uwnetid)
             logger.error("Removed %s from DB!" % uwnetid)
             if len(netids_removed) != 1:
                 logger.error("Delete user (%s) found %d records" % (
                         uwnetid, len(netids_removed)))
-            self.users_to_del.append(uwnetid)
