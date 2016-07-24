@@ -27,9 +27,9 @@ class TestPurgeUserLoader(TransactionTestCase):
             self.assertEqual(users_left_uw[1], "leftuw")
             # change terminate_date
             user = BridgeUser.objects.get(netid='retiree')
-            user.set_terminate_date(is_netid_changed=True)
+            user.save_terminate_date(graceful=False)
             user = BridgeUser.objects.get(netid='leftuw')
-            user.set_terminate_date(is_netid_changed=True)
+            user.save_terminate_date(graceful=False)
 
             d_loader.fetch_all()
             self.assertEqual(d_loader.get_total_count(), 8)

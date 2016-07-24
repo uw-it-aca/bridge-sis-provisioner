@@ -96,7 +96,7 @@ def save_user(person, include_hrp):
     if user_in_db is not None and\
             person_attr_not_changed(user_in_db, person) and\
             (appointee is None or emp_attr_not_changed(user_in_db, appointee)):
-        user_in_db.set_verified()
+        user_in_db.save_verified()
         return None, users_to_del
 
     updated_values = {'netid': person.uwnetid,

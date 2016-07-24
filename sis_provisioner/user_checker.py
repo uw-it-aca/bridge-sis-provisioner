@@ -69,20 +69,24 @@ class PurgeUserLoader(AbsLoader):
         uwnetid = user.netid
         try:
             get_person_by_regid(user.regid)
+            user.clear_terminate_date()
         except DataFailureException as ex:
             if ex.status == 301:
                 # renamed uwnetid should be removed immediately
                 logger.error("%s has been renamed, delete!" % uwnetid)
-                user.set_terminate_date(is_netid_changed=True)
+                user.save_terminate_date(graceful=False)
             elif ex.status == 404:
                 logger.error("%s is not valid netid!" % uwnetid)
-                user.set_terminate_date(is_netid_changed=False)
+                user.save_terminate_date(graceful=True)
                 self.users_left_uw.append(uwnetid)
             else:
                 log_exception(logger,
                               "pws.person(%s) failed" % uwnetid,
                               traceback.format_exc())
-                # skip it
+                if user.is_stalled():
+                    # stalled user can be removed now
+                    user.save_terminate_date(graceful=False)
+
         if user.passed_terminate_date():
             netids_removed = delete_user(uwnetid)
             if len(netids_removed) != 1:

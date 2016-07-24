@@ -69,9 +69,14 @@ class BridgeUser(models.Model):
         return other is not None and\
             self.regid == other.regid
 
-    def set_verified(self):
-        last_visited_date = get_now()
+    def is_stalled(self):
+        # not validated for 15 days
+        return self.last_visited_date + timedelta(days=15) < get_now()
+
+    def save_verified(self):
+        self.last_visited_date = get_now()
         self.set_no_action()
+        self.terminate_date = None
         self.save()
 
     def no_action(self):
@@ -101,17 +106,18 @@ class BridgeUser(models.Model):
     def regid_changed(self):
         return self.import_priority == PRIORITY_CHANGE_REGID
 
-    def set_terminate_date(self, is_netid_changed=False):
-        if self.terminate_date is not None and\
-                self.terminate_date < get_now():
-            # previously already set
+    def clear_terminate_date(self):
+        if self.terminate_date:
+            self.terminate_date = None
+            self.save()
+
+    def save_terminate_date(self, graceful=True):
+        if self.terminate_date is not None:
+            # not to change previously already set date
             return
         self.terminate_date = get_now()
-        if is_netid_changed:
-            self.set_priority_netid_changed()
-        else:
+        if graceful:
             self.terminate_date += timedelta(days=15)
-            self.set_priority_normal()
         self.save()
 
     def passed_terminate_date(self):
