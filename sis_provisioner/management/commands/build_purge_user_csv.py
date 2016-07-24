@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.csv_writer import CsvFileMaker
-from sis_provisioner.user_loader import PurgeUserLoader
+from sis_provisioner.user_checker import PurgeUserLoader
 
 
 logger = logging.getLogger(__name__)
@@ -22,12 +22,10 @@ class Command(BaseCommand):
             return
 
         del_user_total = csv_maker.make_delete_user_file()
-        print ("Checked all %d users in DB," +
-               " found %d should be deleted," +
-               " and deleted %d users.") % (
-            loader.get_total_count(),
-            loader.get_delete_count(),
-            del_user_total)
+        print "Checked all %d users in DB," % loader.get_total_count()
+        print "Found %d users left UW," % loader.get_users_left_uw_count()
+        print "Deleted %d users from DB," % loader.get_delete_count()
+        print "%d users should be remove from Bridge asap." % del_user_total
 
         if csv_maker.is_file_wrote():
             print "The csv file is in directory: %s\n" % file_path
