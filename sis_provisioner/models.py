@@ -69,8 +69,15 @@ class BridgeUser(models.Model):
         return other is not None and\
             self.regid == other.regid
 
-    def set_verified_date(self):
-        last_visited_date = get_now()
+    def is_stalled(self):
+        # not validated for 15 days
+        return self.last_visited_date + timedelta(days=15) < get_now()
+
+    def save_verified(self):
+        self.last_visited_date = get_now()
+        self.set_no_action()
+        self.terminate_date = None
+        self.save()
 
     def no_action(self):
         return self.import_priority == PRIORITY_NONE
@@ -80,6 +87,12 @@ class BridgeUser(models.Model):
 
     def set_priority_normal(self):
         self.import_priority = PRIORITY_NORMAL
+
+    def set_priority_netid_changed(self):
+        self.import_priority = PRIORITY_CHANGE_NETID
+
+    def set_priority_regid_changed(self):
+        self.import_priority = PRIORITY_CHANGE_REGID
 
     def is_priority_normal(self):
         return self.import_priority == PRIORITY_NORMAL
@@ -93,11 +106,21 @@ class BridgeUser(models.Model):
     def regid_changed(self):
         return self.import_priority == PRIORITY_CHANGE_REGID
 
-    def set_terminate_date(self):
-        self.terminate_date = get_now() + timedelta(days=15)
+    def clear_terminate_date(self):
+        if self.terminate_date:
+            self.terminate_date = None
+            self.save()
+
+    def save_terminate_date(self, graceful=True):
+        if graceful and self.terminate_date is not None:
+            # not to change previously set date unless not graceful
+            return
+        self.terminate_date = get_now()
+        if graceful:
+            self.terminate_date += timedelta(days=15)
+        self.save()
 
     def passed_terminate_date(self):
-        # Return True if the user should be purged from Bridge
         return self.terminate_date is not None and\
             get_now() > self.terminate_date
 
