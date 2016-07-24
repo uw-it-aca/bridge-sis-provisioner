@@ -73,10 +73,10 @@ class PurgeUserLoader(AbsLoader):
         except DataFailureException as ex:
             if ex.status == 301:
                 # renamed uwnetid should be removed immediately
-                logger.error("%s has been renamed, delete!" % uwnetid)
+                logger.error("%s has been renamed!" % uwnetid)
                 user.save_terminate_date(graceful=False)
             elif ex.status == 404:
-                logger.error("%s is not valid netid!" % uwnetid)
+                logger.error("%s became an invalid netid!" % uwnetid)
                 user.save_terminate_date(graceful=True)
                 self.users_left_uw.append(uwnetid)
             else:
@@ -85,10 +85,12 @@ class PurgeUserLoader(AbsLoader):
                               traceback.format_exc())
                 if user.is_stalled():
                     # stalled user can be removed now
+                    logger.error("%s is stalled!" % uwnetid)
                     user.save_terminate_date(graceful=False)
 
         if user.passed_terminate_date():
             netids_removed = delete_user(uwnetid)
+            logger.error("Removed %s from DB!" % uwnetid)
             if len(netids_removed) != 1:
                 logger.error("Delete user (%s) found %d records" % (
                         uwnetid, len(netids_removed)))
