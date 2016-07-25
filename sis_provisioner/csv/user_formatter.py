@@ -37,6 +37,7 @@ def get_attr_list(user,
     Returns a list of data for creating a line of csv for a user
     matching the headers in header_for_users for the given BridgeUser object.
     """
+    # The 1st item matches the eduPersonPrincipalName (ePPN) attribute
     data = [user.netid + "@washington.edu",
             user.get_display_name(use_title=False),
             user.email if user.email else "%s@uw.edu" % user.netid,
