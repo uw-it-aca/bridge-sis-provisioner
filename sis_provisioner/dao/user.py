@@ -59,7 +59,9 @@ def get_del_users(users):
     # having existing record, remove them
     users_deleted = []
     for user in users:
-        users_deleted.append(user.netid)
+        uwnetid = user.netid
+        logger.info("Delete user: %s" % uwnetid)
+        users_deleted.append(uwnetid)
     users.delete()
     return users_deleted
 
@@ -85,6 +87,7 @@ def save_user(person, include_hrp):
             if changed_netid(bri_users, person):
                 priority = PRIORITY_CHANGE_NETID
             else:
+                logger.info("%s has changed regid." % str(bri_users[0]))
                 priority = PRIORITY_CHANGE_REGID
             # having multi records or netid/regid changed
             users_to_del = get_del_users(bri_users)
@@ -150,6 +153,8 @@ def person_attr_not_changed(buser, person):
 def changed_netid(busers, person):
     for u in busers:
         if u.netid != person.uwnetid:
+            logger.info("%s has changed netid to %s" %
+                        (u.netid, person.uwnetid))
             return True
     return False
 
