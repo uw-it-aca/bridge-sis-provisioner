@@ -18,3 +18,8 @@ class TestHrpDao(TestCase):
             self.assertEqual(appointee.status, 'S')
             self.assertEqual(appointee.home_dept_org_code,
                              '2070001000')
+
+            person = get_person('retiree')
+            self.assertIsNotNone(person)
+            appointee = get_appointee(person)
+            self.assertIsNone(appointee)

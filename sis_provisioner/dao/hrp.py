@@ -18,8 +18,11 @@ def get_appointee(person):
     """
     try:
         return get_appointee_by_regid(person.uwregid)
-    except Exception:
-        log_exception(logger,
-                      "Failed to get appointee for %s" % person.uwnetid,
-                      traceback.format_exc())
+    except Exception as ex:
+        if ex.status == 404:
+            logger.error("No appointee found for netid: %s!" % person.uwnetid)
+        else:
+            log_exception(logger,
+                          "Failed to get appointee for %s" % person.uwnetid,
+                          traceback.format_exc())
         return None
