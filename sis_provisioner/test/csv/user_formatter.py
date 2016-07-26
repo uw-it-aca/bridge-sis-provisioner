@@ -42,7 +42,7 @@ class TestUserFormatter(TransactionTestCase):
 
             self.assertEqual(len(user_attr_list), 10)
             self.assertEqual(user_attr_list[0],
-                             "staff@washington.edu")
+                             "staff@uw.edu")
             self.assertEqual(user_attr_list[1],
                              "James Staff")
             self.assertEqual(user_attr_list[2],
@@ -61,7 +61,7 @@ class TestUserFormatter(TransactionTestCase):
 
             self.assertEqual(len(user_attr_list), 10)
             self.assertEqual(user_attr_list[0],
-                             "faculty@washington.edu")
+                             "faculty@uw.edu")
             self.assertEqual(user_attr_list[1],
                              "James Faculty")
             self.assertEqual(user_attr_list[2],
@@ -80,7 +80,7 @@ class TestUserFormatter(TransactionTestCase):
 
             self.assertEqual(len(user_attr_list), 10)
             self.assertEqual(user_attr_list[0],
-                             "botgrad@washington.edu")
+                             "botgrad@uw.edu")
             self.assertEqual(user_attr_list[9], "Bothell")
 
             user, deleted = create_user('tacgrad', include_hrp=True)
@@ -88,7 +88,7 @@ class TestUserFormatter(TransactionTestCase):
 
             self.assertEqual(len(user_attr_list), 10)
             self.assertEqual(user_attr_list[0],
-                             "tacgrad@washington.edu")
+                             "tacgrad@uw.edu")
             self.assertEqual(user_attr_list[9], "Tacoma")
 
             user, deleted = create_user('retiree', include_hrp=True)
@@ -109,13 +109,13 @@ class TestUserFormatter(TransactionTestCase):
             user_attr_list = get_attr_list(user)
             self.assertEqual(len(user_attr_list), 9)
             self.assertEqual(user_attr_list[0],
-                             "staff@washington.edu")
+                             "staff@uw.edu")
 
             user, deleted = create_user('faculty')
             user_attr_list = get_attr_list(user)
             self.assertEqual(len(user_attr_list), 9)
             self.assertEqual(user_attr_list[0],
-                             "faculty@washington.edu")
+                             "faculty@uw.edu")
             self.assertEqual(user_attr_list[1],
                              "James Faculty")
             self.assertEqual(user_attr_list[2],
@@ -132,10 +132,10 @@ class TestUserFormatter(TransactionTestCase):
             user_attr_list = get_attr_list(user)
             self.assertEqual(len(user_attr_list), 9)
             self.assertEqual(user_attr_list[0],
-                             "botgrad@washington.edu")
+                             "botgrad@uw.edu")
 
             user, deleted = create_user('tacgrad')
             user_attr_list = get_attr_list(user)
             self.assertEqual(len(user_attr_list), 9)
             self.assertEqual(user_attr_list[0],
-                             "tacgrad@washington.edu")
+                             "tacgrad@uw.edu")

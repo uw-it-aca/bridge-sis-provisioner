@@ -3,7 +3,8 @@ import os
 from django.conf import settings
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.csv import get_aline_csv, open_file
-from sis_provisioner.csv.user_formatter import get_headers, get_attr_list
+from sis_provisioner.csv.user_formatter import get_headers, get_attr_list,\
+    get_header_for_user_del
 
 
 logger = logging.getLogger(__name__)
