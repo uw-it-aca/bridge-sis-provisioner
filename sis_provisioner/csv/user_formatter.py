@@ -6,6 +6,16 @@ CAMPUS = ["", "",
           "Seattle", "Seattle Health Sciences",
           "Seattle", "Bothell", "Tacoma"]
 
+BASIC_HEADERS = ['UNIQUE ID', 'NAME', 'EMAIL', 'regid',
+                 ]
+EMP_HEADERS = ['emp campus 1', 'emp coll 1', 'emp dept 1',
+               'emp campus 2', 'emp coll 2', 'emp dept 2',
+               'emp campus 3', 'emp coll 3', 'emp dept 3',
+               ]
+STUD_HEADERS = ['student campus',
+                'stud dept1', 'stud dept2', 'stud dept3'
+                ]
+
 
 def get_campus(emp_campus_code):
     if emp_campus_code:
@@ -15,13 +25,12 @@ def get_campus(emp_campus_code):
 
 def get_headers(include_hrp=False,
                 include_student_dept=False):
-    headers = ['UNIQUE ID', 'NAME', 'EMAIL', 'regid',
-               'alumni', 'employee', 'faculty', 'staff', 'student']
+    headers = BASIC_HEADERS
     if include_hrp:
-        headers.append('emp home campus')
+        headers += EMP_HEADERS
 
     if include_student_dept:
-        headers.append('student dept name')
+        headers += STUD_HEADERS
 
     return headers
 
@@ -42,22 +51,39 @@ def get_attr_list(user,
             user.get_display_name(use_title=False),
             user.email if user.email else "%s@uw.edu" % user.netid,
             user.regid,
-            'y' if user.is_alum else 'n',
-            'y' if user.is_employee else 'n',
-            'y' if user.is_faculty else 'n',
-            'y' if user.is_staff else 'n',
-            'y' if user.is_student else 'n',
             ]
-
     if include_hrp:
-        emp_campus_code = 1
-        if user.hrp_home_dept_org_code:
-            emp_campus_code = user.hrp_home_dept_org_code[0:1]
-        data.append(get_campus(emp_campus_code))
+        data += get_emp_app_att_list(user.get_emp_appointments())
 
     if include_student_dept:
-        student_dept_name = ""
-        if user.student_department1:
-            data.append(user.student_department1)
+        pass
 
     return data
+
+
+def get_campus_from_org_code(org_code):
+    return get_campus(org_code[0:1])
+
+
+def get_coll_from_org_code(org_code):
+    return org_code[0:3]
+
+
+def get_dept_from_org_code(org_code):
+    return org_code[0:7]
+
+
+def get_emp_app_att_list(emp_appointments):
+    ret_alist = []
+    i = 0
+    while i < 3:
+        if emp_appointments is not None and\
+                i < len(emp_appointments):
+            app = emp_appointments[i]
+            ret_alist.append(get_campus_from_org_code(app.org_code))
+            ret_alist.append(get_coll_from_org_code(app.org_code))
+            ret_alist.append(get_dept_from_org_code(app.org_code))
+        else:
+            ret_alist += ["", "", ""]
+        i += 1
+    return ret_alist

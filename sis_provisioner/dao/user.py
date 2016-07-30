@@ -3,6 +3,7 @@ This module interacts with app's database
 """
 
 from datetime import timedelta
+import json
 import logging
 import re
 import traceback
@@ -12,7 +13,7 @@ from restclients.exceptions import DataFailureException
 from restclients.hrpws.appointee import get_appointee_by_eid
 from sis_provisioner.models import BridgeUser, get_now,\
     PRIORITY_NORMAL, PRIORITY_CHANGE_REGID, PRIORITY_CHANGE_NETID
-from sis_provisioner.dao.hrp import get_appointee
+from sis_provisioner.dao.hrp import get_appointments
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.util.log import log_exception
 
@@ -92,13 +93,17 @@ def save_user(person, include_hrp):
             # having multi records or netid/regid changed
             users_to_del = get_del_users(bri_users)
 
-    appointee = None
+    emp_apps_json_dump = None
+    emp_apps_not_changed = True
     if include_hrp and person.is_employee:
-        appointee = get_appointee(person)
+        emp_apps_json_dump = appointments_json_dump(get_appointments(person))
+        if user_in_db is not None:
+            emp_apps_not_changed = emp_attr_not_changed(
+                user_in_db.emp_appointments_data, emp_apps_json_dump)
 
     if user_in_db is not None and\
             person_attr_not_changed(user_in_db, person) and\
-            (appointee is None or emp_attr_not_changed(user_in_db, appointee)):
+            emp_apps_not_changed:
         user_in_db.save_verified()
         return None, users_to_del
 
@@ -119,10 +124,8 @@ def save_user(person, include_hrp):
                       'student_department3': person.student_department3,
                       }
 
-    if appointee is not None:
-        updated_values['hrp_home_dept_org_code'] =\
-            appointee.home_dept_org_code
-        updated_values['hrp_emp_status'] = appointee.status
+    if user_in_db is None or not emp_apps_not_changed:
+        updated_values['emp_appointments_data'] = emp_apps_json_dump
 
     b_user, created = BridgeUser.objects.update_or_create(
         regid=person.uwregid,
@@ -130,9 +133,19 @@ def save_user(person, include_hrp):
     return b_user, users_to_del
 
 
-def emp_attr_not_changed(buser, appointee):
-    return buser.hrp_home_dept_org_code == appointee.home_dept_org_code and\
-        buser.hrp_emp_status == appointee.status
+def appointments_json_dump(appointments):
+    apps_json = []
+    if len(appointments) > 0:
+        for app in appointments:
+            apps_json.append(app.to_json())
+    return json.dumps(apps_json, separators=(',', ':'), sort_keys=True)
+
+
+def emp_attr_not_changed(old_appointments_json_dump,
+                         upt_appointments_json_dump):
+    return ((old_appointments_json_dump is None and
+             upt_appointments_json_dump is None) or
+            old_appointments_json_dump == upt_appointments_json_dump)
 
 
 def person_attr_not_changed(buser, person):

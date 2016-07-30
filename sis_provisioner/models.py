@@ -1,4 +1,5 @@
 from django.db import models
+import json
 from datetime import timedelta
 from django.utils import timezone
 from nameparser import HumanName
@@ -32,6 +33,49 @@ PRIORITY_CHOICES = (
 )
 
 
+class EmployeeAppointment(models.Model):
+    app_number = models.PositiveSmallIntegerField()
+    job_class_code = models.CharField(max_length=96)
+    org_code = models.CharField(max_length=16)
+
+    def __cmp__(self, other):
+        if other is not None:
+            return self.app_number.__cmp__(other.app_number)
+
+    def __eq__(self, other):
+        return self.app_number == other.app_number and\
+            self.job_class_code == other.job_class_code and\
+            self.org_code == other.org_code
+
+    def __lt__(self, other):
+        return self.app_number < other.app_number
+
+    def to_json(self):
+        return {
+            'an': self.app_number,
+            'jc': self.job_class_code,
+            'oc': self.org_code,
+            }
+
+    def json_dump_compact(self):
+        return json.dumps(self.to_json(),
+                          separators=(',', ':'),
+                          sort_keys=True)
+
+    def load_from_json(self, json_data):
+        if json_data:
+            self.app_number = json_data.get("an")
+            self.job_class_code = json_data.get("jc")
+            self.org_code = json_data.get("oc")
+        return self
+
+    def __str__(self):
+        return ("{%s: %s, %s: %s, %s: %s}" % (
+                'app_number', self.app_number,
+                'job_class_code', self.job_class_code,
+                'org_code', self.org_code))
+
+
 class BridgeUser(models.Model):
     regid = models.CharField(max_length=32,
                              db_index=True,
@@ -56,14 +100,7 @@ class BridgeUser(models.Model):
     student_department1 = models.CharField(max_length=255, null=True)
     student_department2 = models.CharField(max_length=255, null=True)
     student_department3 = models.CharField(max_length=255, null=True)
-
-    hrp_home_dept_org_code = models.CharField(max_length=16, null=True)
-    hrp_emp_status = models.CharField(max_length=2, null=True)
-    # hrp_appointee = models.ForeignKey(Appointee, null=True)
-
-    def __init__(self, *args, **kwargs):
-        super(BridgeUser, self).__init__(*args, **kwargs)
-        # self.hrp_appointee = None
+    emp_appointments_data = models.TextField(max_length=2048, null=True)
 
     def __eq__(self, other):
         return other is not None and\
@@ -142,6 +179,31 @@ class BridgeUser(models.Model):
         name.string_format = "{first} {last}"
         return str(name)
 
+    def has_emp_appointments(self):
+        return self.emp_appointments_data is not None and\
+            len(self.emp_appointments_data) > 2
+
+    def get_emp_appointments_json(self):
+        if self.has_emp_appointments():
+            return json.loads(self.emp_appointments_data)
+        return None
+
+    def get_total_emp_apps(self):
+        if self.has_emp_appointments():
+            return len(self.get_emp_appointments_json())
+        return 0
+
+    def get_emp_appointments(self):
+        emp_apps = []
+        json_data = self.get_emp_appointments_json()
+        if json_data is not None:
+            i = 0
+            while i < len(json_data):
+                emp_apps.append(
+                    EmployeeAppointment().load_from_json(json_data[i]))
+                i += 1
+        return emp_apps
+
     def __str__(self):
         return (
             "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
@@ -149,15 +211,13 @@ class BridgeUser(models.Model):
             "netid", self.netid,
             "regid", self.regid,
             "last_visited_date", datetime_to_str(self.last_visited_date),
+            "import_priority", self.import_priority,
             "terminate_date", datetime_to_str(self.terminate_date),
             "display_name", self.display_name,
             "first_name", self.first_name,
             "last_name", self.last_name,
             "email", self.email,
-            # "appointee", str(self.hrp_appointee)
-            "hrp_home_dept_org_code", self.hrp_home_dept_org_code,
-            "hrp_emp_status", self.hrp_emp_status,
-            )
+            "emp_appointments", self.emp_appointments_data)
 
     def json_data(self):
         return {
@@ -170,8 +230,7 @@ class BridgeUser(models.Model):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "email": self.email,
-            "hrp_home_dept_org_code": self.hrp_home_dept_org_code,
-            "hrp_emp_status": self.hrp_emp_status,
+            "emp_appointments": self.get_emp_appointments_json()
             }
 
     class Meta:
