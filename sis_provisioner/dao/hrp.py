@@ -1,11 +1,12 @@
 """
-This module interacts with app's database
+This module interacts with hrpws restclient for employee appointments
 """
 
 import logging
 import traceback
 from restclients.exceptions import DataFailureException
 from restclients.hrpws.appointee import get_appointee_by_regid
+from sis_provisioner.models import EmployeeAppointment
 from sis_provisioner.util.log import log_exception
 
 
@@ -26,3 +27,20 @@ def get_appointee(person):
                           "Failed to get appointee for %s" % person.uwnetid,
                           traceback.format_exc())
         return None
+
+
+def get_appointments(person):
+    """
+    Return a list of EmployeeAppointment object.
+    If no appointment, return an empty list.
+    """
+    emp_apps = []
+    appointee = get_appointee(person)
+    if appointee is not None:
+        for app in sorted(appointee.appointments):
+            emp_app = EmployeeAppointment(
+                app_number=app.app_number,
+                job_class_code=app.job_class_code,
+                org_code=app.org_code)
+            emp_apps.append(emp_app)
+    return emp_apps
