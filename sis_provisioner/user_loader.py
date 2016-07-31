@@ -68,8 +68,9 @@ class UserLoader(AbsLoader):
         logger.info("%d users changed netid." % self.get_netid_changed_count())
         logger.info("%d users changed regid." % self.get_regid_changed_count())
         logger.info("%d users to delete." % self.get_delete_count())
-        counts_dict = get_item_counts_dict(self.emp_app_totals)
-        logger.info("appointments counts: %s" % json.dumps(counts_dict))
+        if self.include_hrp():
+            counts_dict = get_item_counts_dict(self.emp_app_totals)
+            logger.info("appointments counts: %s" % json.dumps(counts_dict))
 
     def include_hrp(self):
         return self.include_hrp_data
