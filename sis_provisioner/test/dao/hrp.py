@@ -2,7 +2,7 @@ from django.test import TestCase
 from restclients.exceptions import DataFailureException
 from sis_provisioner.test import FHRP, FPWS
 from sis_provisioner.dao.pws import get_person
-from sis_provisioner.dao.hrp import get_appointee
+from sis_provisioner.dao.hrp import get_appointee, get_appointments
 
 
 class TestHrpDao(TestCase):
@@ -15,10 +15,37 @@ class TestHrpDao(TestCase):
             appointee = get_appointee(person)
             self.assertEqual(appointee.employee_id,
                              '100000001')
-            self.assertEqual(appointee.status, 'S')
-            self.assertEqual(appointee.home_dept_org_code,
-                             '2070001000')
 
+    def test_get_appointments(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS,
+                           RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
+            person = get_person('staff')
+            apps = get_appointments(person)
+            self.assertIsNotNone(apps)
+            self.assertEqual(len(apps), 0)
+
+            person = get_person('faculty')
+            apps = get_appointments(person)
+            self.assertIsNotNone(apps)
+            self.assertEqual(len(apps), 1)
+
+            person = get_person('botgrad')
+            apps = get_appointments(person)
+            self.assertIsNotNone(apps)
+            self.assertEqual(len(apps), 3)
+            self.assertEqual(apps[0].app_number, 1)
+            self.assertEqual(apps[0].job_class_code, "7777")
+            self.assertEqual(apps[0].org_code, "5200005000")
+            self.assertEqual(apps[1].app_number, 2)
+            self.assertEqual(apps[1].job_class_code, "7940")
+            self.assertEqual(apps[1].org_code, "5200005000")
+            self.assertEqual(apps[2].app_number, 3)
+            self.assertEqual(apps[2].job_class_code, "7926")
+            self.assertEqual(apps[2].org_code, "5100001000")
+
+    def test_none_appointee(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS,
+                           RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
             person = get_person('retiree')
             self.assertIsNotNone(person)
             appointee = get_appointee(person)

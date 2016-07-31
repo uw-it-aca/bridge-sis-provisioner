@@ -5,9 +5,11 @@ from restclients.exceptions import DataFailureException
 from sis_provisioner.models import BridgeUser, get_now
 from sis_provisioner.test import FPWS, FHRP
 from sis_provisioner.dao.pws import get_person
+from sis_provisioner.dao.hrp import get_appointments
 from sis_provisioner.dao.user import create_user, save_user,\
     normalize_email, normalize_first_name, delete_user, get_del_users,\
-    get_all_users
+    get_all_users, emp_attr_not_changed, person_attr_not_changed,\
+    appointments_json_dump
 
 
 class TestUserDao(TransactionTestCase):
@@ -54,8 +56,14 @@ class TestUserDao(TransactionTestCase):
             self.assertFalse(user.passed_terminate_date())
             self.assertTrue(user.has_display_name())
             self.assertEqual(user.get_display_name(), 'James Faculty')
-            self.assertIsNone(user.hrp_home_dept_org_code)
-            self.assertIsNone(user.hrp_emp_status)
+            self.assertFalse(user.has_emp_appointments())
+            self.assertEqual(user.get_total_emp_apps(), 0)
+
+            person1 = get_person('faculty')
+            self.assertTrue(person_attr_not_changed(user, person1))
+
+            person1 = get_person('staff')
+            self.assertFalse(person_attr_not_changed(user, person1))
 
             users = get_all_users()
             self.assertIsNotNone(users)
@@ -68,8 +76,15 @@ class TestUserDao(TransactionTestCase):
             user, deletes = save_user(person, True)
             self.assertIsNotNone(user)
             self.assertEqual(user.netid, 'faculty')
-            self.assertEqual(user.hrp_home_dept_org_code, '2540574070')
-            self.assertEqual(user.hrp_emp_status, 'R')
+            self.assertTrue(user.has_emp_appointments())
+            self.assertEqual(user.get_total_emp_apps(), 1)
+            self.assertEqual(user.emp_appointments_data,
+                             '[{"an":2,"jc":"0191","oc":"2540574070"}]')
+            apps = user.get_emp_appointments()
+            self.assertEqual(len(apps), 1)
+            self.assertEqual(apps[0].app_number, 2)
+            self.assertEqual(apps[0].job_class_code, "0191")
+            self.assertEqual(apps[0].org_code, "2540574070")
 
             users = BridgeUser.objects.filter(Q(regid=person.uwregid) |
                                               Q(netid=person.uwnetid))
@@ -91,19 +106,60 @@ class TestUserDao(TransactionTestCase):
             self.assertEqual(user.last_name, "STAFF")
             self.assertEqual(user.get_display_name(), "James Staff")
             self.assertEqual(user.email, "staff@uw.edu")
-            self.assertEqual(user.hrp_home_dept_org_code,
-                             "2070001000")
-            self.assertEqual(user.hrp_emp_status, 'S')
+            self.assertFalse(user.has_emp_appointments())
+            self.assertEqual(user.emp_appointments_data, "[]")
+            self.assertIsNone(user.get_emp_appointments_json())
+            self.assertEqual(len(user.get_emp_appointments()), 0)
+            self.assertEqual(user.get_total_emp_apps(), 0)
 
             user = BridgeUser.objects.get(netid='staff')
             self.assertIsNotNone(user)
             self.assertEqual(user.regid,
                              "10000000000000000000000000000001")
-            self.assertEqual(user.hrp_emp_status, 'S')
 
+            user, deletes = create_user('botgrad', include_hrp=True)
+            self.assertIsNotNone(user)
+            self.assertEqual(user.netid, 'botgrad')
+            self.assertEqual(user.regid,
+                             "10000000000000000000000000000003")
+            self.assertEqual(user.get_display_name(),
+                             "Bothell Student")
+            self.assertEqual(user.email, "botgrad@uw.edu")
+            self.assertTrue(user.has_emp_appointments())
+            self.assertEqual(user.get_total_emp_apps(), 3)
+            self.assertIsNotNone(user.emp_appointments_data)
+            person1 = get_person('botgrad')
+            self.assertEqual(user.emp_appointments_data,
+                             appointments_json_dump(get_appointments(person1)))
+            self.assertEqual(len(user.get_emp_appointments()), 3)
+
+            user, deletes = create_user('faculty', include_hrp=True)
+            self.assertIsNotNone(user)
+            self.assertEqual(user.netid, 'faculty')
+            self.assertEqual(user.regid,
+                             "10000000000000000000000000000005")
+            self.assertEqual(user.get_display_name(),
+                             "James Faculty")
+            self.assertEqual(user.email, "")
+            self.assertTrue(user.has_emp_appointments())
+            self.assertEqual(user.get_total_emp_apps(), 1)
+            self.assertTrue(emp_attr_not_changed(
+                    user.emp_appointments_data,
+                    '[{"an":2,"jc":"0191","oc":"2540574070"}]'))
+            self.assertEqual(len(user.get_emp_appointments()), 1)
+
+    def test_emp_attr_not_changed(self):
+            self.assertTrue(emp_attr_not_changed("[]", "[]"))
+            self.assertTrue(emp_attr_not_changed(None, None))
+            self.assertFalse(emp_attr_not_changed(None, "[]"))
+            self.assertFalse(emp_attr_not_changed(None, ""))
+
+    def test_delete_user(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS,
+                           RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
             # call create again should return nothing
             user, deletes = create_user('staff', include_hrp=True)
-            self.assertIsNone(user)
+            self.assertIsNotNone(user)
             self.assertIsNone(deletes)
 
             deleted = delete_user('staff')
