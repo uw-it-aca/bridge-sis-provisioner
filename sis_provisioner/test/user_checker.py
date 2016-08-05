@@ -2,7 +2,7 @@ from django.conf import settings
 from django.test import TransactionTestCase
 from datetime import timedelta
 from django.utils import timezone
-from sis_provisioner.test import FGWS, FPWS, set_pass_terminate_date
+from sis_provisioner.test import FGWS, FPWS
 from sis_provisioner.models import BridgeUser, get_now
 from sis_provisioner.user_checker import PurgeUserLoader
 from sis_provisioner.user_loader import UserLoader
