@@ -41,9 +41,14 @@ class UserLoader(AbsLoader):
             try:
                 user_add, deletes = create_user(
                     uwnetid, include_hrp=self.include_hrp_data)
+
                 if user_add is not None and\
                         not user_add.no_action():
-                    self.emp_app_totals.append(user_add.get_total_emp_apps())
+
+                    if self.include_hrp() and user_add.is_employee:
+                        self.emp_app_totals.append(
+                            user_add.get_total_emp_apps())
+
                     if user_add.netid_changed():
                         self.users_changed_netid.append(user_add)
                     elif user_add.regid_changed():

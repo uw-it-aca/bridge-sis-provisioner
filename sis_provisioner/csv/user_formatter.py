@@ -2,16 +2,17 @@ import logging
 
 
 logger = logging.getLogger(__name__)
+
 CAMPUS = ["", "",
           "Seattle", "Seattle Health Sciences",
           "Seattle", "Bothell", "Tacoma"]
 
-BASIC_HEADERS = ['UNIQUE ID', 'NAME', 'EMAIL', 'regid',
-                 ]
+BASIC_HEADERS = ['UNIQUE ID', 'NAME', 'EMAIL', 'regid']
+
 EMP_HEADERS = ['emp campus 1', 'emp coll 1', 'emp dept 1',
                'emp campus 2', 'emp coll 2', 'emp dept 2',
-               'emp campus 3', 'emp coll 3', 'emp dept 3',
-               ]
+               'emp campus 3', 'emp coll 3', 'emp dept 3']
+
 STUD_HEADERS = ['student campus',
                 'stud dept1', 'stud dept2', 'stud dept3'
                 ]
@@ -25,14 +26,14 @@ def get_campus(emp_campus_code):
 
 def get_headers(include_hrp=False,
                 include_student_dept=False):
-    headers = BASIC_HEADERS
+    retv = BASIC_HEADERS
     if include_hrp:
-        headers += EMP_HEADERS
+        retv = retv + EMP_HEADERS
 
     if include_student_dept:
-        headers += STUD_HEADERS
+        retv = retv + STUD_HEADERS
 
-    return headers
+    return retv
 
 
 def get_header_for_user_del():
