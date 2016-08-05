@@ -34,8 +34,9 @@ def make_import_user_csv_files(users, filepath, include_hrp):
     total_users = len(users)
     f_index = 1
     user_number = 0
+    csv_headers = get_aline_csv(get_headers(include_hrp))
     f = open_file(get_user_file_name(filepath, f_index))
-    f.write(get_aline_csv(get_headers(include_hrp)))
+    f.write(csv_headers)
 
     for user in users:
         aline = get_aline_csv(get_attr_list(user, include_hrp))
@@ -56,7 +57,7 @@ def make_import_user_csv_files(users, filepath, include_hrp):
             logger.info("Finish writing %d entries." % user_number)
             f_index += 1
             f = open_file(get_user_file_name(filepath, f_index))
-            f.write(get_aline_csv(get_headers(include_hrp)))
+            f.write(csv_headers)
 
     f.close()
     logger.info("Finish writing %d entries." % user_number)
@@ -75,7 +76,7 @@ def make_delete_user_csv_file(netids, filepath):
     f.write(get_aline_csv(get_header_for_user_del()))
 
     for netid in netids:
-        aline = get_aline_csv([netids + "@washington.edu"])
+        aline = netid + "@uw.edu\n"
         try:
             f.write(aline)
             user_number += 1
@@ -91,9 +92,9 @@ def make_delete_user_csv_file(netids, filepath):
     return user_number
 
 
-def get_regid_changed_file_name(filepath):
+def get_netid_changed_file_name(filepath):
     return os.path.join(filepath,
-                        _get_file_name_prefix() + '_regid_changed.csv')
+                        _get_file_name_prefix() + '_netid_changed.csv')
 
 
 def get_regid_changed_file_name(filepath):
