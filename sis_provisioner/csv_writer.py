@@ -24,7 +24,7 @@ def get_file_path():
         log_exception(logger,
                       "Cannot create CSV dir %s" % path_prefix,
                       traceback.format_exc())
-        return None
+        raise
 
 
 class CsvFileMaker:

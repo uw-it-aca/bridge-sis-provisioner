@@ -11,12 +11,14 @@ from sis_provisioner.models import EmployeeAppointment, BridgeUser, get_now
 class TestUserFormatter(TestCase):
 
     def test_get_campus(self):
+        self.assertEqual(get_campus(None), "")
         self.assertEqual(get_campus(1), "")
         self.assertEqual(get_campus(2), "Seattle")
         self.assertEqual(get_campus(3), "Seattle Health Sciences")
         self.assertEqual(get_campus(4), "Seattle")
         self.assertEqual(get_campus(5), "Bothell")
         self.assertEqual(get_campus(6), "Tacoma")
+        self.assertEqual(get_campus(7), "")
 
     def test_get_campus_from_org_code(self):
         self.assertEqual(get_campus_from_org_code("2000000000"), "Seattle")
