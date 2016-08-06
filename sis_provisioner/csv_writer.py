@@ -44,57 +44,81 @@ class CsvFileMaker:
     def is_file_wrote(self):
         return self.file_wrote
 
-    def set_file_wrote(self):
+    def _set_file_wrote(self):
         if not self.file_wrote:
             self.file_wrote = True
 
     def make_add_user_files(self):
         if self.loader.get_add_count() == 0:
             return 0
-
-        number_users_wrote = make_import_user_csv_files(
-            self.loader.get_users_to_add(),
-            self.filepath,
-            self.include_hrp_data)
-        self.set_file_wrote()
-        logger.info("Total %d users (to add/upd) wrote into %s.\n" % (
-            number_users_wrote, self.filepath))
-        return number_users_wrote
+        try:
+            number_users_wrote = make_import_user_csv_files(
+                self.loader.get_users_to_add(),
+                self.filepath,
+                self.include_hrp_data)
+            self._set_file_wrote()
+            logger.info("Total %d users (to add/upd) wrote into %s.\n" % (
+                    number_users_wrote, self.filepath))
+            return number_users_wrote
+        except Exception:
+            log_exception(logger,
+                          "Failed to make user csv file in %s" %
+                          self.filepath,
+                          traceback.format_exc())
+            raise
 
     def make_netid_change_user_file(self):
         if self.loader.get_netid_changed_count() == 0:
             return 0
-
-        number_users_wrote = make_import_netid_changed_user_csv_file(
-            self.loader.get_users_netid_changed(),
-            self.filepath,
-            self.include_hrp_data)
-        self.set_file_wrote()
-        logger.info("Total %d users (netid changed) wrote into %s.\n" % (
-            number_users_wrote, self.filepath))
-        return number_users_wrote
+        try:
+            number_users_wrote = make_import_netid_changed_user_csv_file(
+                self.loader.get_users_netid_changed(),
+                self.filepath,
+                self.include_hrp_data)
+            self._set_file_wrote()
+            logger.info("Total %d users (netid changed) wrote into %s.\n" % (
+                    number_users_wrote, self.filepath))
+            return number_users_wrote
+        except Exception:
+            log_exception(logger,
+                          "Failed to make netid changed user file in %s" %
+                          self.filepath,
+                          traceback.format_exc())
+            raise
 
     def make_regid_change_user_file(self):
         if self.loader.get_regid_changed_count() == 0:
             return 0
-
-        number_users_wrote = make_import_regid_changed_user_csv_file(
-            self.loader.get_users_regid_changed(),
-            self.filepath,
-            self.include_hrp_data)
-        self.set_file_wrote()
-        logger.info("Total %d users (regid changed) wrote into %s.\n" % (
-            number_users_wrote, self.filepath))
-        return number_users_wrote
+        try:
+            number_users_wrote = make_import_regid_changed_user_csv_file(
+                self.loader.get_users_regid_changed(),
+                self.filepath,
+                self.include_hrp_data)
+            self._set_file_wrote()
+            logger.info("Total %d users (regid changed) wrote into %s.\n" % (
+                    number_users_wrote, self.filepath))
+            return number_users_wrote
+        except Exception:
+            log_exception(logger,
+                          "Failed to make regid changed user file in %s" %
+                          self.filepath,
+                          traceback.format_exc())
+            raise
 
     def make_delete_user_file(self):
         if self.loader.get_delete_count() == 0:
             return 0
-
-        number_users_wrote = make_delete_user_csv_file(
-            self.loader.get_users_to_delete(),
-            self.filepath)
-        self.set_file_wrote()
-        logger.info("Total %d users (to delete) wrote into %s.\n" % (
-            number_users_wrote, self.filepath))
-        return number_users_wrote
+        try:
+            number_users_wrote = make_delete_user_csv_file(
+                self.loader.get_users_to_delete(),
+                self.filepath)
+            self._set_file_wrote()
+            logger.info("Total %d users (to delete) wrote into %s.\n" % (
+                    number_users_wrote, self.filepath))
+            return number_users_wrote
+        except Exception:
+            log_exception(logger,
+                          "Failed to make delete user file in %s" %
+                          self.filepath,
+                          traceback.format_exc())
+            raise
