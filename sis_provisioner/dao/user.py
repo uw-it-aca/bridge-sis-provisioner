@@ -77,9 +77,7 @@ def save_user(person, include_hrp):
     priority = PRIORITY_NORMAL
     bri_users = BridgeUser.objects.filter(Q(regid=person.uwregid) |
                                           Q(netid=person.uwnetid))
-    if not bri_users or len(bri_users) == 0:
-        pass
-    else:
+    if bri_users and len(bri_users) > 0:
         if len(bri_users) == 1 and\
                 bri_users[0].netid == person.uwnetid and\
                 bri_users[0].regid == person.uwregid:

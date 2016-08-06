@@ -19,9 +19,10 @@ STUD_HEADERS = ['student campus',
 
 
 def get_campus(emp_campus_code):
-    if emp_campus_code:
+    try:
         return CAMPUS[int(emp_campus_code)]
-    return emp_campus_code
+    except Exception:
+        return ""
 
 
 def get_headers(include_hrp=False,

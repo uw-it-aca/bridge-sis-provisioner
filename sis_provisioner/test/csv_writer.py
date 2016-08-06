@@ -96,6 +96,10 @@ class TestCsvWriter(TransactionTestCase):
             maker = CsvFileMaker(duser_loader)
             fp = maker.get_file_path()
             self.assertTrue(re.match("/tmp/fl_test/[2-9]\d{7}-\d{6}", fp))
+
+            number_users_wrote = maker.make_add_user_files()
+            self.assertEqual(number_users_wrote, 0)
+
             number_users_wrote = maker.make_delete_user_file()
             self.assertEqual(duser_loader.get_total_count(), 1)
             self.assertEqual(duser_loader.get_delete_count(), 1)

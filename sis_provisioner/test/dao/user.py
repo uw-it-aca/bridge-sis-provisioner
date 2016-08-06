@@ -93,6 +93,9 @@ class TestUserDao(TransactionTestCase):
             self.assertEqual(len(deleted), 1)
             self.assertEqual(deleted[0], 'faculty')
 
+            deleted = get_del_users([])
+            self.assertIsNone(deleted)
+
     def test_create_user_withhrp(self):
         with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS,
                            RESTCLIENTS_HRPWS_DAO_CLASS=FHRP):
