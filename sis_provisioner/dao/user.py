@@ -77,19 +77,19 @@ def save_user(person, include_hrp):
     priority = PRIORITY_NORMAL
     bri_users = BridgeUser.objects.filter(Q(regid=person.uwregid) |
                                           Q(netid=person.uwnetid))
-    if not bri_users or len(bri_users) == 0:
-        pass
-    else:
+    if bri_users and len(bri_users) > 0:
         if len(bri_users) == 1 and\
                 bri_users[0].netid == person.uwnetid and\
                 bri_users[0].regid == person.uwregid:
             user_in_db = bri_users[0]
         else:
+            if changed_regid(bri_users, person):
+                priority = PRIORITY_CHANGE_REGID
+
             if changed_netid(bri_users, person):
                 priority = PRIORITY_CHANGE_NETID
-            else:
-                logger.info("%s has changed regid." % str(bri_users[0]))
-                priority = PRIORITY_CHANGE_REGID
+                # netid change has higher priority
+
             # having multi records or netid/regid changed
             users_to_del = get_del_users(bri_users)
 
@@ -168,6 +168,15 @@ def changed_netid(busers, person):
         if u.netid != person.uwnetid:
             logger.info("%s has changed netid to %s" %
                         (u.netid, person.uwnetid))
+            return True
+    return False
+
+
+def changed_regid(busers, person):
+    for u in busers:
+        if u.regid != person.uwregid:
+            logger.info("%s has changed regid to %s" %
+                        (u.regid, person.uwregid))
             return True
     return False
 

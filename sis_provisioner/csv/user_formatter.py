@@ -19,9 +19,10 @@ STUD_HEADERS = ['student campus',
 
 
 def get_campus(emp_campus_code):
-    if emp_campus_code:
+    try:
         return CAMPUS[int(emp_campus_code)]
-    return emp_campus_code
+    except Exception:
+        return ""
 
 
 def get_headers(include_hrp=False,
@@ -54,7 +55,7 @@ def get_attr_list(user,
             user.regid,
             ]
     if include_hrp:
-        data += get_emp_app_att_list(user.get_emp_appointments())
+        data = data + get_emp_app_att_list(user.get_emp_appointments())
 
     if include_student_dept:
         pass
@@ -85,6 +86,6 @@ def get_emp_app_att_list(emp_appointments):
             ret_alist.append(get_coll_from_org_code(app.org_code))
             ret_alist.append(get_dept_from_org_code(app.org_code))
         else:
-            ret_alist += ["", "", ""]
+            ret_alist = ret_alist + ["", "", ""]
         i += 1
     return ret_alist
