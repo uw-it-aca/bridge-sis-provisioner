@@ -104,3 +104,69 @@ class TestCsvWriter(TransactionTestCase):
             self.assertTrue(os.path.exists(fp + "/busrs_delete.csv"))
             os.remove(fp + "/busrs_delete.csv")
             os.removedirs(fp)
+
+    def test_make_netid_change_user_file(self):
+        with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS,
+                           RESTCLIENTS_PWS_DAO_CLASS=FPWS,
+                           BRIDGE_IMPORT_CSV_ROOT="/tmp/fl_test",
+                           BRIDGE_IMPORT_USER_FILENAME='busrs',
+                           BRIDGE_IMPORT_USER_FILE_SIZE=3):
+            user = BridgeUser(netid='renamed',
+                              regid="10000000000000000000000000000006",
+                              last_visited_date=get_now(),
+                              first_name="Changed",
+                              last_name="Netid")
+            user.save()
+            user_loader = UserLoader(include_hrp=False)
+            maker = CsvFileMaker(user_loader)
+            fp = maker.get_file_path()
+            self.assertEqual(user_loader.get_add_count(), 7)
+            self.assertEqual(user_loader.get_delete_count(), 1)
+            self.assertEqual(user_loader.get_netid_changed_count(), 1)
+            self.assertEqual(user_loader.get_regid_changed_count(), 0)
+
+            number_users_wrote = maker.make_netid_change_user_file()
+            self.assertEqual(number_users_wrote, 1)
+            fn = fp + "/busrs_netid_changed.csv"
+            self.assertTrue(os.path.exists(fn))
+            os.remove(fn)
+
+            number_users_wrote = maker.make_delete_user_file()
+            self.assertEqual(number_users_wrote, 1)
+            fn = fp + "/busrs_delete.csv"
+            self.assertTrue(os.path.exists(fn))
+            os.remove(fn)
+            os.removedirs(fp)
+
+    def test_make_regid_change_user_file(self):
+        with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS,
+                           RESTCLIENTS_PWS_DAO_CLASS=FPWS,
+                           BRIDGE_IMPORT_CSV_ROOT="/tmp/fl_test",
+                           BRIDGE_IMPORT_USER_FILENAME='busrs',
+                           BRIDGE_IMPORT_USER_FILE_SIZE=3):
+            user = BridgeUser(netid='staff',
+                              regid="10000000000000000000000000000009",
+                              last_visited_date=get_now(),
+                              first_name="Changed",
+                              last_name="Regid")
+            user.save()
+            user_loader = UserLoader(include_hrp=False)
+            maker = CsvFileMaker(user_loader)
+            fp = maker.get_file_path()
+            self.assertEqual(user_loader.get_add_count(), 7)
+            self.assertEqual(user_loader.get_delete_count(), 1)
+            self.assertEqual(user_loader.get_netid_changed_count(), 0)
+            self.assertEqual(user_loader.get_regid_changed_count(), 1)
+
+            number_users_wrote = maker.make_regid_change_user_file()
+            self.assertEqual(number_users_wrote, 1)
+            fn = fp + "/busrs_regid_changed.csv"
+            self.assertTrue(os.path.exists(fn))
+            os.remove(fn)
+
+            number_users_wrote = maker.make_delete_user_file()
+            self.assertEqual(number_users_wrote, 1)
+            fn = fp + "/busrs_delete.csv"
+            self.assertTrue(os.path.exists(fn))
+            os.remove(fn)
+            os.removedirs(fp)

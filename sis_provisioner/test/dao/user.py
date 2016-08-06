@@ -9,7 +9,7 @@ from sis_provisioner.dao.hrp import get_appointments
 from sis_provisioner.dao.user import create_user, save_user,\
     normalize_email, normalize_first_name, delete_user, get_del_users,\
     get_all_users, emp_attr_not_changed, person_attr_not_changed,\
-    appointments_json_dump
+    appointments_json_dump, changed_regid, changed_netid
 
 
 class TestUserDao(TransactionTestCase):
@@ -180,3 +180,63 @@ class TestUserDao(TransactionTestCase):
 
             users = get_all_users()
             self.assertEqual(len(users), 0)
+
+    def test_netid_change(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+            user = BridgeUser(netid='renamed',
+                              regid="10000000000000000000000000000006",
+                              last_visited_date=get_now(),
+                              first_name="Ellen Louise",
+                              last_name="Renamed")
+            user.save()
+            person = get_person('retiree')
+            self.assertIsNotNone(person)
+            self.assertTrue(changed_netid([user], person))
+            self.assertFalse(changed_regid([user], person))
+            user, deletes = save_user(person, True)
+            self.assertIsNotNone(user)
+            self.assertTrue(user.netid_changed())
+            self.assertFalse(user.regid_changed())
+            self.assertEqual(len(deletes), 1)
+
+    def test_regid_change(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+            user = BridgeUser(netid='retiree',
+                              regid="10000000000000000000000000000009",
+                              last_visited_date=get_now(),
+                              first_name="Ellen Louise",
+                              last_name="Renamed")
+            user.save()
+            person = get_person('retiree')
+            self.assertFalse(changed_netid([user], person))
+            self.assertTrue(changed_regid([user], person))
+            self.assertIsNotNone(person)
+            user, deletes = save_user(person, True)
+            self.assertIsNotNone(user)
+            self.assertTrue(user.regid_changed())
+            self.assertFalse(user.netid_changed())
+            self.assertEqual(len(deletes), 1)
+
+    def test_netid_regid_change(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+            user1 = BridgeUser(netid='staff',
+                               regid="10000000000000000000000000000009",
+                               last_visited_date=get_now(),
+                               first_name="Changed",
+                               last_name="Regid")
+            user1.save()
+            user2 = BridgeUser(netid='retiree',
+                               regid="10000000000000000000000000000001",
+                               last_visited_date=get_now(),
+                               first_name="Changed",
+                               last_name="Netid")
+            user2.save()
+            person = get_person('staff')
+            self.assertIsNotNone(person)
+            self.assertTrue(changed_netid([user1, user2], person))
+            self.assertTrue(changed_regid([user1, user2], person))
+            user, deletes = save_user(person, True)
+            self.assertIsNotNone(user)
+            self.assertTrue(user.netid_changed())
+            self.assertFalse(user.regid_changed())
+            self.assertEqual(len(deletes), 2)
