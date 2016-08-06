@@ -25,6 +25,10 @@ class TestCsvWriter(TransactionTestCase):
             self.assertTrue(os.path.exists(fp))
             os.rmdir(fp)
 
+    def test_get_file_path_exce(self):
+        with self.settings(BRIDGE_IMPORT_CSV_ROOT="/usr"):
+            self.assertRaises(OSError, get_file_path)
+
     def test_csv_file_maker_with_user_loader(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS,
                            RESTCLIENTS_PWS_DAO_CLASS=FPWS,
