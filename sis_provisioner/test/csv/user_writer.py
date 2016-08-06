@@ -43,6 +43,10 @@ class TestUserWriter(TestCase):
         with self.settings(BRIDGE_IMPORT_USER_FILENAME="blah",
                            BRIDGE_IMPORT_USER_FILE_SIZE=1):
             file_path = "/tmp"
+            user_number = make_import_user_csv_files(None,
+                                                     file_path,
+                                                     False)
+            self.assertEqual(user_number, 0)
             user_number = make_import_user_csv_files(get_users(3),
                                                      file_path,
                                                      False)

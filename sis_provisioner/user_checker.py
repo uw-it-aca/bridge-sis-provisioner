@@ -50,7 +50,7 @@ class PurgeUserLoader(AbsLoader):
         existing_users = get_all_users()
         self.total_count = len(existing_users)
         for user in existing_users:
-            self.check_auser(user)
+            self._validate(user)
 
         logger.info("Checked %d users in DB," % self.total_count)
         logger.info("Found %d users left UW," %
@@ -61,7 +61,7 @@ class PurgeUserLoader(AbsLoader):
                 "Users who should be removed from Bridg asap: %s" %
                 ','.join(self.get_users_to_delete()))
 
-    def check_auser(self, user):
+    def _validate(self, user):
         """
         Check the existing user against PWS, set a termination date on
         those no longer in PWS.

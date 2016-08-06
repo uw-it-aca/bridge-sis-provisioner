@@ -44,7 +44,7 @@ class CsvFileMaker:
     def is_file_wrote(self):
         return self.file_wrote
 
-    def set_file_wrote(self):
+    def _set_file_wrote(self):
         if not self.file_wrote:
             self.file_wrote = True
 
@@ -56,7 +56,7 @@ class CsvFileMaker:
                 self.loader.get_users_to_add(),
                 self.filepath,
                 self.include_hrp_data)
-            self.set_file_wrote()
+            self._set_file_wrote()
             logger.info("Total %d users (to add/upd) wrote into %s.\n" % (
                     number_users_wrote, self.filepath))
             return number_users_wrote
@@ -75,7 +75,7 @@ class CsvFileMaker:
                 self.loader.get_users_netid_changed(),
                 self.filepath,
                 self.include_hrp_data)
-            self.set_file_wrote()
+            self._set_file_wrote()
             logger.info("Total %d users (netid changed) wrote into %s.\n" % (
                     number_users_wrote, self.filepath))
             return number_users_wrote
@@ -94,7 +94,7 @@ class CsvFileMaker:
                 self.loader.get_users_regid_changed(),
                 self.filepath,
                 self.include_hrp_data)
-            self.set_file_wrote()
+            self._set_file_wrote()
             logger.info("Total %d users (regid changed) wrote into %s.\n" % (
                     number_users_wrote, self.filepath))
             return number_users_wrote
@@ -112,7 +112,7 @@ class CsvFileMaker:
             number_users_wrote = make_delete_user_csv_file(
                 self.loader.get_users_to_delete(),
                 self.filepath)
-            self.set_file_wrote()
+            self._set_file_wrote()
             logger.info("Total %d users (to delete) wrote into %s.\n" % (
                     number_users_wrote, self.filepath))
             return number_users_wrote
