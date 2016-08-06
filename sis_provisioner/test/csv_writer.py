@@ -41,16 +41,27 @@ class TestCsvWriter(TransactionTestCase):
             maker = CsvFileMaker(user_loader)
             fp = maker.get_file_path()
             self.assertTrue(re.match("/tmp/[2-9]\d{7}-\d{6}", fp))
+            self.assertEqual(user_loader.get_add_count(), 8)
+            self.assertEqual(user_loader.get_delete_count(), 0)
+            self.assertEqual(user_loader.get_netid_changed_count(), 0)
+            self.assertEqual(user_loader.get_regid_changed_count(), 0)
+
+            number_users_wrote = maker.make_netid_change_user_file()
+            self.assertEqual(number_users_wrote, 0)
+
+            number_users_wrote = maker.make_regid_change_user_file()
+            self.assertEqual(number_users_wrote, 0)
+            self.assertFalse(maker.is_file_wrote())
 
             number_users_wrote = maker.make_add_user_files()
+            self.assertTrue(maker.is_file_wrote())
             self.assertEqual(number_users_wrote, 8)
             self.assertTrue(os.path.exists(fp + "/busrs1.csv"))
             self.assertTrue(os.path.exists(fp + "/busrs2.csv"))
             self.assertTrue(os.path.exists(fp + "/busrs3.csv"))
-            os.remove(fp + "/busrs1.csv")
-            os.remove(fp + "/busrs2.csv")
-            os.remove(fp + "/busrs3.csv")
-            os.removedirs(fp)
+
+            number_users_wrote = maker.make_delete_user_file()
+            self.assertEqual(number_users_wrote, 0)
 
             number_users_wrote = maker.make_netid_change_user_file()
             self.assertEqual(number_users_wrote, 0)
@@ -58,19 +69,24 @@ class TestCsvWriter(TransactionTestCase):
             number_users_wrote = maker.make_regid_change_user_file()
             self.assertEqual(number_users_wrote, 0)
 
-            number_users_wrote = maker.make_delete_user_file()
-            self.assertEqual(number_users_wrote, 0)
+            os.remove(fp + "/busrs1.csv")
+            os.remove(fp + "/busrs2.csv")
+            os.remove(fp + "/busrs3.csv")
+            os.removedirs(fp)
 
-    def test_csv_file_maker_with_user_checker(self):
+    def test_make_delete_user_file(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS,
                            RESTCLIENTS_PWS_DAO_CLASS=FPWS,
                            BRIDGE_IMPORT_CSV_ROOT="/tmp/fl_test",
                            BRIDGE_IMPORT_USER_FILENAME='busrs',
                            BRIDGE_IMPORT_USER_FILE_SIZE=3):
-            # pre-load users into database
-            loader = UserLoader(include_hrp=False)
-            loader.fetch_all()
-            # check existing users
+            # pre-load user into database
+            user = BridgeUser(netid='retiree',
+                              regid="10000000000000000000000000000006",
+                              last_visited_date=get_now(),
+                              first_name="Ellen Louise",
+                              last_name="Retiree")
+            user.save()
             duser_loader = PurgeUserLoader()
             duser_loader.init_set()
             self.assertEqual(duser_loader.get_total_count(), 0)
@@ -81,6 +97,9 @@ class TestCsvWriter(TransactionTestCase):
             fp = maker.get_file_path()
             self.assertTrue(re.match("/tmp/fl_test/[2-9]\d{7}-\d{6}", fp))
             number_users_wrote = maker.make_delete_user_file()
+            self.assertEqual(duser_loader.get_total_count(), 1)
+            self.assertEqual(duser_loader.get_delete_count(), 1)
+            self.assertEqual(duser_loader.get_users_left_uw_count(), 0)
             self.assertEqual(number_users_wrote, 1)
             self.assertTrue(os.path.exists(fp + "/busrs_delete.csv"))
             os.remove(fp + "/busrs_delete.csv")
