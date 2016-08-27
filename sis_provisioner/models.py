@@ -83,6 +83,8 @@ class BridgeUser(models.Model):
     netid = models.SlugField(max_length=32,
                              db_index=True,
                              unique=True)
+    prev_netid = models.SlugField(max_length=32,
+                                  null=True)
     last_visited_date = models.DateTimeField()
     import_priority = models.SmallIntegerField(default=1,
                                                choices=PRIORITY_CHOICES)
@@ -97,10 +99,10 @@ class BridgeUser(models.Model):
     is_faculty = models.NullBooleanField()
     is_staff = models.NullBooleanField()
     is_student = models.NullBooleanField()
+    emp_appointments_data = models.TextField(max_length=2048, null=True)
     student_department1 = models.CharField(max_length=255, null=True)
     student_department2 = models.CharField(max_length=255, null=True)
     student_department3 = models.CharField(max_length=255, null=True)
-    emp_appointments_data = models.TextField(max_length=2048, null=True)
 
     def __eq__(self, other):
         return other is not None and\
@@ -206,9 +208,10 @@ class BridgeUser(models.Model):
 
     def __str__(self):
         return (
-            "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
+            "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
             " %s: %s, %s: %s, %s: %s, %s: %s, %s: %s}") % (
             "netid", self.netid,
+            "prev_netid", self.prev_netid,
             "regid", self.regid,
             "last_visited_date", datetime_to_str(self.last_visited_date),
             "import_priority", self.import_priority,
