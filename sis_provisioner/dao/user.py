@@ -61,7 +61,7 @@ def get_del_users(users):
     users_deleted = []
     for user in users:
         uwnetid = user.netid
-        logger.info("Delete user: %s" % uwnetid)
+        logger.info("Delete user: %s from database." % uwnetid)
         users_deleted.append(uwnetid)
     users.delete()
     return users_deleted
@@ -75,6 +75,8 @@ def save_user(person, include_hrp):
     users_to_del = None
     user_in_db = None
     priority = PRIORITY_NORMAL
+    prev_netid = None
+
     bri_users = BridgeUser.objects.filter(Q(regid=person.uwregid) |
                                           Q(netid=person.uwnetid))
     if bri_users and len(bri_users) > 0:
@@ -86,7 +88,8 @@ def save_user(person, include_hrp):
             if changed_regid(bri_users, person):
                 priority = PRIORITY_CHANGE_REGID
 
-            if changed_netid(bri_users, person):
+            netid_changed, prev_netid = changed_netid(bri_users, person)
+            if netid_changed:
                 priority = PRIORITY_CHANGE_NETID
                 # netid change has higher priority
 
@@ -108,6 +111,7 @@ def save_user(person, include_hrp):
         return None, users_to_del
 
     updated_values = {'netid': person.uwnetid,
+                      'prev_netid': prev_netid,
                       'last_visited_date': get_now(),
                       'import_priority': priority,
                       'display_name': person.display_name,
@@ -168,8 +172,8 @@ def changed_netid(busers, person):
         if u.netid != person.uwnetid:
             logger.info("%s has changed netid to %s" %
                         (u.netid, person.uwnetid))
-            return True
-    return False
+            return True, u.netid
+    return False, person.uwnetid
 
 
 def changed_regid(busers, person):
