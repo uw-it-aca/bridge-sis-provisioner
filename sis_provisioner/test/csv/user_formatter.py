@@ -2,10 +2,10 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.utils import override_settings
 from sis_provisioner.csv.user_formatter import get_headers, get_attr_list,\
-    get_header_for_user_del, get_campus, get_emp_app_att_list,\
+    get_campus, get_emp_app_att_list,\
     get_campus_from_org_code, get_coll_from_org_code,\
     get_dept_from_org_code
-from sis_provisioner.models import EmployeeAppointment, BridgeUser, get_now
+from sis_provisioner.models import EmployeeAppointment, UwBridgeUser, get_now
 
 
 class TestUserFormatter(TestCase):
@@ -34,11 +34,6 @@ class TestUserFormatter(TestCase):
     def test_get_dept_from_org_code(self):
         self.assertEqual(get_dept_from_org_code("2000000000"), "2000000")
 
-    def test_get_headers_for_user_del(self):
-        self.assertEqual(len(get_header_for_user_del()), 1)
-        self.assertEqual(','.join(get_header_for_user_del()),
-                         ("UNIQUE ID"))
-
     def test_get_emp_app_att_list(self):
         self.assertEqual(','.join(get_emp_app_att_list([])),
                          ',,,,,,,,')
@@ -62,6 +57,10 @@ class TestUserFormatter(TestCase):
         self.assertEqual(emp_attrs[8], "")
 
     def test_get_headers(self):
+        headers1 = get_headers(changed_uid=True)
+        self.assertEqual(len(headers1), 5)
+        self.assertEqual(','.join(headers1),
+                         ("prev uid,UNIQUE ID,NAME,EMAIL,regid"))
         headers1 = get_headers()
         self.assertEqual(len(headers1), 4)
         self.assertEqual(','.join(headers1),
@@ -76,12 +75,19 @@ class TestUserFormatter(TestCase):
                           ))
 
     def test_get_attr_list_withhrp(self):
-        user = BridgeUser(netid='staff',
-                          regid="10000000000000000000000000000001",
-                          last_visited_date=get_now(),
-                          display_name="James Staff",
-                          last_name="Staf",
-                          emp_appointments_data=None)
+        user = UwBridgeUser(netid='staff',
+                            regid="10000000000000000000000000000001",
+                            last_visited_at=get_now(),
+                            display_name="James Staff",
+                            last_name="Staf",
+                            emp_appointments_data=None)
+        user_attr_list = get_attr_list(user,
+                                       changed_uid=True,
+                                       include_hrp=True)
+        self.assertEqual(len(user_attr_list), 14)
+        self.assertEqual(user_attr_list[0], '')
+        self.assertEqual(user_attr_list[1],
+                         "staff@uw.edu")
         user_attr_list = get_attr_list(user, include_hrp=True)
         self.assertEqual(len(user_attr_list), 13)
         self.assertEqual(user_attr_list[0],
@@ -95,12 +101,12 @@ class TestUserFormatter(TestCase):
         self.assertEqual(user_attr_list[4], "")
 
         apps_data = '[{"an":2,"jc":"0191","oc":"2540574070"}]'
-        user = BridgeUser(netid='faculty',
-                          regid="10000000000000000000000000000005",
-                          last_visited_date=get_now(),
-                          first_name="James",
-                          last_name="Faculty",
-                          emp_appointments_data=apps_data)
+        user = UwBridgeUser(netid='faculty',
+                            regid="10000000000000000000000000000005",
+                            last_visited_at=get_now(),
+                            first_name="James",
+                            last_name="Faculty",
+                            emp_appointments_data=apps_data)
         self.assertEqual(user.emp_appointments_data, apps_data)
         self.assertEqual(user.get_total_emp_apps(), 1)
         user_attr_list = get_attr_list(user, include_hrp=True)
@@ -116,12 +122,12 @@ class TestUserFormatter(TestCase):
         self.assertEqual(user_attr_list[4], "Seattle")
 
         apps_data = '[{"an":2,"jc":"0875","oc":"5100001000"}]'
-        user = BridgeUser(netid='botgrad',
-                          regid="10000000000000000000000000000002",
-                          last_visited_date=get_now(),
-                          first_name="Bothell Graduate",
-                          last_name="student",
-                          emp_appointments_data=apps_data)
+        user = UwBridgeUser(netid='botgrad',
+                            regid="10000000000000000000000000000002",
+                            last_visited_at=get_now(),
+                            first_name="Bothell Graduate",
+                            last_name="student",
+                            emp_appointments_data=apps_data)
         user_attr_list = get_attr_list(user, include_hrp=True)
         self.assertEqual(len(user_attr_list), 13)
         self.assertEqual(user_attr_list[0],
@@ -129,44 +135,44 @@ class TestUserFormatter(TestCase):
         self.assertEqual(user_attr_list[4], "Bothell")
 
         apps_data = '[{"an":2,"jc":"0875","oc":"6100002000"}]'
-        user = BridgeUser(netid='tacgrad',
-                          regid="10000000000000000000000000000004",
-                          last_visited_date=get_now(),
-                          first_name="Tacoma Graduate",
-                          last_name="student",
-                          emp_appointments_data=apps_data)
+        user = UwBridgeUser(netid='tacgrad',
+                            regid="10000000000000000000000000000004",
+                            last_visited_at=get_now(),
+                            first_name="Tacoma Graduate",
+                            last_name="student",
+                            emp_appointments_data=apps_data)
         user_attr_list = get_attr_list(user, include_hrp=True)
         self.assertEqual(len(user_attr_list), 13)
         self.assertEqual(user_attr_list[0],
                          "tacgrad@uw.edu")
         self.assertEqual(user_attr_list[4], "Tacoma")
 
-        user = BridgeUser(netid='retiree',
-                          regid="10000000000000000000000000000006",
-                          last_visited_date=get_now(),
-                          first_name="Ellen Louise",
-                          last_name="Retiree")
+        user = UwBridgeUser(netid='retiree',
+                            regid="10000000000000000000000000000006",
+                            last_visited_at=get_now(),
+                            first_name="Ellen Louise",
+                            last_name="Retiree")
         user_attr_list = get_attr_list(user, include_hrp=True)
         self.assertEqual(len(user_attr_list), 13)
         self.assertEqual(user_attr_list[1], "Ellen Retiree")
         self.assertEqual(user_attr_list[4], "")
 
     def test_get_attr_list_nohrp(self):
-        user = BridgeUser(netid='staff',
-                          regid="10000000000000000000000000000001",
-                          last_visited_date=get_now(),
-                          display_name="James Staff",
-                          last_name="Staf")
+        user = UwBridgeUser(netid='staff',
+                            regid="10000000000000000000000000000001",
+                            last_visited_at=get_now(),
+                            display_name="James Staff",
+                            last_name="Staf")
         user_attr_list = get_attr_list(user)
         self.assertEqual(len(user_attr_list), 4)
         self.assertEqual(user_attr_list[0],
                          "staff@uw.edu")
 
-        user = BridgeUser(netid='faculty',
-                          regid="10000000000000000000000000000005",
-                          last_visited_date=get_now(),
-                          first_name="James",
-                          last_name="Faculty")
+        user = UwBridgeUser(netid='faculty',
+                            regid="10000000000000000000000000000005",
+                            last_visited_at=get_now(),
+                            first_name="James",
+                            last_name="Faculty")
         user_attr_list = get_attr_list(user)
         self.assertEqual(len(user_attr_list), 4)
         self.assertEqual(user_attr_list[0],

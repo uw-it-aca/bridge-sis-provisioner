@@ -1,3 +1,4 @@
 FGWS = 'restclients.dao_implementation.gws.File'
 FPWS = 'restclients.dao_implementation.pws.File'
 FHRP = 'restclients.dao_implementation.hrpws.File'
+FBRI = 'restclients.dao_implementation.bridge.File'

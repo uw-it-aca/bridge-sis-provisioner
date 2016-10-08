@@ -1,10 +1,10 @@
 from restclients.exceptions import DataFailureException
+from django.test import TestCase
 from sis_provisioner.test import FGWS
-from sis_provisioner.test.dao import TestDao
-from sis_provisioner.dao.gws import get_uw_members
+from sis_provisioner.dao.gws import get_uw_members, is_uw_member
 
 
-class TestGwsDao(TestDao):
+class TestGwsDao(TestCase):
 
     def test_get_uw_members(self):
         with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS):
@@ -23,3 +23,9 @@ class TestGwsDao(TestDao):
             self.assertEqual(users[8], "none")
             self.assertEqual(users[9], "retiree")
             self.assertEqual(users[10], "leftuw")
+
+    def test_is_uw_member(self):
+        with self.settings(RESTCLIENTS_GWS_DAO_CLASS=FGWS):
+            self.assertTrue(is_uw_member("javerage"))
+            self.assertFalse(is_uw_member("none"))
+            self.assertFalse(is_uw_member("leftuw"))

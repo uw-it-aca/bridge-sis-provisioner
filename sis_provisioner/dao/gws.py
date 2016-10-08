@@ -36,3 +36,16 @@ def get_uw_members():
             ret_list.append(gm.name)
 
     return ret_list
+
+
+def is_uw_member(uwnetid):
+    """
+    Return True if the user netid is an effective member of the uw_member group
+    """
+    timer = Timer()
+    try:
+        return gws.is_effective_member(UW_GROUP, uwnetid)
+    finally:
+        log_resp_time(logger,
+                      '%s is_effective_member of %s ' % (uwnetid, UW_GROUP),
+                      timer)
