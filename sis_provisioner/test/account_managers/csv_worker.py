@@ -1,0 +1,48 @@
+from django.conf import settings
+from django.test import TransactionTestCase
+from sis_provisioner.account_managers.csv_worker import CsvWorker
+from sis_provisioner.models import ACTION_CHANGE_REGID
+from sis_provisioner.test import FPWS, FHRP, FBRI
+from sis_provisioner.test.dao.user import new_uw_bridge_test_user
+
+
+class TestCsvWorker(TransactionTestCase):
+
+    def test_add_new_user(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+            uw_user, person = new_uw_bridge_test_user('javerage')
+            worker = CsvWorker()
+            self.assertTrue(worker.add_new_user(uw_user))
+            self.assertEqual(worker.get_new_user_count(), 1)
+            self.assertEqual(worker.get_loaded_count(), 1)
+
+    def test_netid_change_user(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+            uw_user, person = new_uw_bridge_test_user('javerage')
+            uw_user.netid = 'changed'
+            uw_user.prev_netid = 'javerage'
+            worker = CsvWorker()
+            self.assertTrue(worker.update_uid(uw_user))
+            self.assertTrue(worker.get_netid_changed_count(), 1)
+
+    def test_regid_change_user(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+            uw_user, person = new_uw_bridge_test_user('javerage')
+            uw_user.action_priority = ACTION_CHANGE_REGID
+            worker = CsvWorker()
+            self.assertTrue(worker.update_user(uw_user))
+            self.assertEqual(worker.get_regid_changed_count(), 1)
+
+    def test_delete_user(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+            uw_user, person = new_uw_bridge_test_user('javerage')
+            worker = CsvWorker()
+            self.assertTrue(worker.delete_user(uw_user))
+            self.assertEqual(worker.get_deleted_count(), 1)
+
+    def test_restore_user(self):
+        with self.settings(RESTCLIENTS_PWS_DAO_CLASS=FPWS):
+            uw_user, person = new_uw_bridge_test_user('javerage')
+            worker = CsvWorker()
+            self.assertTrue(worker.restore_user(uw_user))
+            self.assertEqual(worker.get_restored_count(), 1)
