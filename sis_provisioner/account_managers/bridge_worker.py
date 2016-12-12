@@ -48,8 +48,7 @@ class BridgeWorker(Worker):
 
     def delete_user(self, user_to_del):
         try:
-            if user_to_del is not None and\
-                    delete_bridge_user(user_to_del):
+            if delete_bridge_user(user_to_del):
                 logger.info("Deleted user %s from Bridge" % user_to_del)
                 self.total_deleted_count += 1
                 return True

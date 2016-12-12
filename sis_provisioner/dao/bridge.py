@@ -25,14 +25,30 @@ def add_bridge_user(uw_bridge_user):
         "add bridge user: %s" % uw_bridge_user)
 
 
-def delete_bridge_user(bridge_user):
+def delete_bridge_user(bridge_user, conditional=True):
     """
-    @param: bridge_user a valid BridgeUser or UwBridgeUser object
+    @param: bridge_user a valid BridgeUser or UwBridgeUser object.
+    @param: if conditional is True, delete only when this user has
+            no learning history.
     Return True if the user is deleted successfully
     """
-    if bridge_user.bridge_id:
-        return delete_user_by_id(bridge_user.bridge_id)
-    return delete_user(bridge_user.netid)
+    if not conditional or _no_learning_history(bridge_user):
+        if bridge_user.bridge_id:
+            return delete_user_by_id(bridge_user.bridge_id)
+        return delete_user(bridge_user.netid)
+    return False
+
+
+def _no_learning_history(bridge_user):
+    """
+    Check the user's learning history and return True if the user
+    has zero completed course.
+    """
+    ret_users = get_bridge_user(bridge_user)
+    if len(ret_users) == 1:
+        user = ret_users[0]
+        return user.no_learning_history()
+    return False
 
 
 def change_uwnetid(uw_bridge_user):
@@ -52,25 +68,30 @@ def change_uwnetid(uw_bridge_user):
                                                   uw_bridge_user.netid))
 
 
-def get_bridge_user(uw_bridge_user, include_course_summary=False):
+def get_user_bridge_id(uw_bridge_user):
+    ret_users = get_bridge_user(uw_bridge_user)
+    if len(ret_users) == 1:
+        return ret_users[0].bridge_id
+    return 0
+
+
+def get_bridge_user(uw_bridge_user):
     """
     @param: uw_bridge_user a valid UwBridgeUser object
     Return a list of BridgeUser objects with custom fields
     """
     if uw_bridge_user.bridge_id:
         bridge_id = uw_bridge_user.bridge_id
-        return _log_result(get_user_by_id(bridge_id,
-                                          include_course_summary),
+        return _log_result(get_user_by_id(bridge_id),
                            "get bridge user: %s" % bridge_id)
     uwnetid = uw_bridge_user.netid
-    return _log_result(get_user(uwnetid,
-                                include_course_summary),
+    return _log_result(get_user(uwnetid),
                        "get bridge user: %s" % uwnetid)
 
 
-def get_all_bridge_users(include_course_summary=False):
+def get_all_bridge_users():
     """
-    Return a list of BridgeUser objects with custom fields
+    Return a list of (active) BridgeUser objects with custom fields
     """
     return _log_result(get_all_users(),
                        "get all bridge users")

@@ -1,5 +1,4 @@
 from django.test import TestCase
-from sis_provisioner.test.dao import TestDao
 from sis_provisioner.test.dao.gws import TestGwsDao
 from sis_provisioner.test.dao.pws import TestPwsDao
 from sis_provisioner.test.dao.hrp import TestHrpDao
@@ -30,3 +29,7 @@ from sis_provisioner.test.account_managers.bridge_checker_csv\
 from sis_provisioner.test.csv_writer import TestCsvWriter
 from sis_provisioner.test.util.time_helper import TestTimeHelper
 from sis_provisioner.test.util.list_helper import TestListHelper
+from sis_provisioner.test.management.commands.load_user_csv\
+    import TestLoadUserViaCsv
+from sis_provisioner.test.management.commands.load_user_to_bridge\
+    import TestLoadUserViaBridgeApi

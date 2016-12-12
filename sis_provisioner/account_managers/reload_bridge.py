@@ -4,10 +4,7 @@ in the last load, re-apply it.
 """
 
 import logging
-import traceback
 from sis_provisioner.dao.user import save_user
-from sis_provisioner.util.log import log_exception
-from sis_provisioner.models import UwBridgeUser, get_now
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 
 
@@ -21,10 +18,11 @@ class Reloader(UserUpdater):
 
     def process_users(self):
         for uw_bri_user in self.get_users_to_process():
+
             if uw_bri_user.passed_terminate_date() and\
-                    not uw_bri_user.disabled and\
-                    self.worker.delete_user(uw_bri_user):
-                self.logger.info("Disable user in db %s" % uw_bri_user)
-                uw_bri_user.disable()
+                    not uw_bri_user.disabled:
+                if self.worker.delete_user(uw_bri_user):
+                    logger.info("Disable user in db %s" % uw_bri_user)
+                    uw_bri_user.disable()
             else:
                 self.apply_change_to_bridge(uw_bri_user)

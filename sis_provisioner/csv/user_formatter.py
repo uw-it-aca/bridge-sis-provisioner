@@ -58,7 +58,7 @@ def get_attr_list(user,
     data = data + [
         user.netid + "@uw.edu",
         user.get_display_name(),
-        user.email if user.email else "%s@uw.edu" % user.netid,
+        user.get_email(),
         user.regid]
 
     if include_hrp:

@@ -123,20 +123,12 @@ class UwBridgeUser(models.Model):
             self.first_name == other.first_name and\
             self.last_name == other.last_name and\
             self.email == other.email and\
-            self.is_alum == other.is_alum and\
             self.is_employee == other.is_employee and\
-            self.is_faculty == other.is_faculty and\
-            self.is_staff == other.is_staff and\
-            self.is_student == other.is_student and\
             self.emp_appointments_data == other.emp_appointments_data
 
-    def is_stalled(self):
-        # not validated for 15 days
-        return self.last_visited_at + timedelta(days=15) < get_now()
-
-    def save_verified(self):
+    def save_verified(self, action=ACTION_NONE):
         self.last_visited_at = get_now()
-        self.set_no_action()
+        self.action_priority = action
         self.disabled = False
         self.prev_netid = None
         self.terminate_at = None
@@ -147,23 +139,30 @@ class UwBridgeUser(models.Model):
             self.bridge_id = bridge_id
             self.save()
 
-    def no_action(self):
-        return self.action_priority == ACTION_NONE
+    def set_prev_netid(self, prev_netid):
+        if prev_netid is not None:
+            self.prev_netid = prev_netid
+            self.save()
 
     def set_no_action(self):
         self.action_priority = ACTION_NONE
+        self.save()
 
     def set_action_new(self):
         self.action_priority = ACTION_NEW
+        self.save()
 
     def set_action_update(self):
         self.action_priority = ACTION_UPDATE
+        self.save()
 
     def set_action_regid_changed(self):
         self.action_priority = ACTION_CHANGE_REGID
+        self.save()
 
     def set_action_restore(self):
         self.action_priority = ACTION_RESTORE
+        self.save()
 
     def is_new(self):
         return self.action_priority == ACTION_NEW
@@ -171,11 +170,18 @@ class UwBridgeUser(models.Model):
     def is_restore(self):
         return self.action_priority == ACTION_RESTORE
 
+    def is_stalled(self):
+        # not validated for 15 days
+        return self.last_visited_at + timedelta(days=15) < get_now()
+
     def is_update(self):
         return self.action_priority == ACTION_UPDATE
 
     def netid_changed(self):
         return self.prev_netid is not None
+
+    def no_action(self):
+        return self.action_priority == ACTION_NONE
 
     def regid_changed(self):
         return self.action_priority == ACTION_CHANGE_REGID
@@ -251,11 +257,12 @@ class UwBridgeUser(models.Model):
 
     def __str__(self):
         return (
-            "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
+            "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
             " %s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s}") % (
             "netid", self.netid,
             "prev_netid", self.prev_netid,
             "regid", self.regid,
+            "bridge_id", self.bridge_id,
             "last_visited_at", datetime_to_str(self.last_visited_at),
             "action_priority", self.get_action_priority_display(),
             "disabled", self.disabled,

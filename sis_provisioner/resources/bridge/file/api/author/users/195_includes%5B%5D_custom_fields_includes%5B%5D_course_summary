@@ -42,7 +42,7 @@
        "welcomeUrl":"https://uw.bridgeapp.com/user-setup/eyJ0eXA",
        "passwordUrl":"https://uw.bridgeapp.com/reset-password/eyeXIjx",
        "next_due_date":null,
-       "completed_courses_count":0,
+       "completed_courses_count":3,
        "links":{
           "custom_field_values":["1"]
        },

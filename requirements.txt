@@ -1,14 +1,6 @@
-Django==1.9.6
+Django
 ordereddict
-simplejson
-django-compressor
-BeautifulSoup
-urllib3
+urllib3==1.10.2
 unittest2
 nameparser
--e git+https://github.com/uw-it-aca/uw-restclients@d/bugfix/bridge-api#egg=RestClients
--e git+https://github.com/uw-it-aca/django-supporttools#egg=django_supporttools
--e git+https://github.com/uw-it-aca/django-userservice#egg=Django-UserService
--e git+https://github.com/uw-it-aca/authz_group#egg=AuthZ-Group
--e git://github.com/vegitron/permissions_logging#egg=PermissionsLogging
-
+-e git+https://github.com/uw-it-aca/uw-restclients@develop#egg=RestClients

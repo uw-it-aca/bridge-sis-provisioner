@@ -6,6 +6,7 @@ accounts via the given worker.
 
 import logging
 import traceback
+from restclients.exceptions import DataFailureException
 from sis_provisioner.dao.user import save_user
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import fetch_users_from_db,\
@@ -27,15 +28,28 @@ class UserUpdater(GwsBridgeLoader):
 
     def process_users(self):
         for uw_bri_user in self.get_users_to_process():
-            person, validation_status = get_validated_user(
-                self.logger,
-                uw_bri_user.netid,
-                uwregid=uw_bri_user.regid,
-                check_gws=True)
-            if person is None:
-                self.terminate(uw_bri_user, validation_status)
+            try:
+                person, validation_status = get_validated_user(
+                    self.logger,
+                    uw_bri_user.netid,
+                    uwregid=uw_bri_user.regid,
+                    check_gws=True)
+            except DataFailureException:
+                log_exception(
+                    logger,
+                    "validate user (%s, %s) failed, skip!" % (uwnetid,
+                                                              uwregid),
+                    traceback.format_exc())
+                self.worker.append_error(
+                    "validate user %s: %s" % (uwnetid, ex))
                 continue
-            self.take_action(person, validation_status)
+
+            if person is None:
+                if uw_bri_user.disabled:
+                    continue
+                self.terminate(uw_bri_user, validation_status)
+            else:
+                self.take_action(person)
 
     def terminate(self, uw_bri_user, validation_status):
         """
@@ -63,7 +77,7 @@ class UserUpdater(GwsBridgeLoader):
             uw_bri_user.save_terminate_date(graceful=False)
 
         if uw_bri_user.passed_terminate_date() and\
-                not uw_bri_user.disabled and\
-                self.worker.delete_user(uw_bri_user):
-            self.logger.info("Disable user in db %s" % uw_bri_user)
-            uw_bri_user.disable()
+                not uw_bri_user.disabled:
+            if self.worker.delete_user(uw_bri_user):
+                self.logger.info("Disable user in db %s" % uw_bri_user)
+                uw_bri_user.disable()

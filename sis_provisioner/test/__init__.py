@@ -1,4 +1,2 @@
-FGWS = 'restclients.dao_implementation.gws.File'
-FPWS = 'restclients.dao_implementation.pws.File'
-FHRP = 'restclients.dao_implementation.hrpws.File'
-FBRI = 'restclients.dao_implementation.bridge.File'
+from restclients.test import fdao_gws_override, fdao_bridge_override,\
+    fdao_hrp_override, fdao_pws_override

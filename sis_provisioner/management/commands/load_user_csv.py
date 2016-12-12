@@ -8,23 +8,22 @@ from sis_provisioner.account_managers.bridge_checker import BridgeChecker
 from sis_provisioner.account_managers.csv_worker import CsvWorker
 
 
-logger = logging.getLogger(__name__)
-
-
 class Command(BaseCommand):
-
-    help = 'Build the csv files for importing users into Bridge'
-    args = "<data source (gws, db, bridge)> " +\
-        "include-hrp (to include hrp data)"
+    """
+    Build the csv files for importing users into Bridge
+    """
+    def add_arguments(self, parser):
+        parser.add_argument('data-source',
+                            choices=['gws', 'db', 'bridge'])
+        parser.add_argument('--include-hrp', nargs='?', default=None)
 
     def handle(self, *args, **options):
-        include_hrp = False
-        if len(args) < 1:
-            raise CommandError("Invalid parameter %s" % args)
+        source = options['data-source']
+        try:
+            include_hrp = options['--include-hrp'] is not None
+        except KeyError:
+            include_hrp = False
 
-        source = args[0]
-        if len(args) == 2:
-            include_hrp = (args[1] == "include-hrp")
         if source == 'gws':
             loader = GwsBridgeLoader(CsvWorker(),
                                      include_hrp=include_hrp)
@@ -49,7 +48,7 @@ class Command(BaseCommand):
         regid_changed_user_total = csv_maker.make_regid_change_user_file()
         del_user_total = csv_maker.make_delete_user_file()
         restored_user_total = csv_maker.make_restore_user_file()
-
+        print datetime.now()
         print "Checked all %d users in %s," % (loader.get_total_count(),
                                                source)
         print "%d users to load\n" % load_user_total
