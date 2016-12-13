@@ -36,6 +36,10 @@ def delete_bridge_user(bridge_user, conditional=True):
         if bridge_user.bridge_id:
             return delete_user_by_id(bridge_user.bridge_id)
         return delete_user(bridge_user.netid)
+
+    if conditional:
+        logger.error(
+            "Can't delete %s, having learning history" % bridge_user.netid)
     return False
 
 

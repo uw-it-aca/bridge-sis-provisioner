@@ -2,5 +2,6 @@ Django
 ordereddict
 urllib3==1.10.2
 unittest2
+django-compressor
 nameparser
 -e git+https://github.com/uw-it-aca/uw-restclients@develop#egg=RestClients

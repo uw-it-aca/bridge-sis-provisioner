@@ -26,6 +26,7 @@ from sis_provisioner.test.account_managers.db_bridge_csv\
     import TestUserCsvUpdater
 from sis_provisioner.test.account_managers.bridge_checker_csv\
     import TestBridgeUserCsvChecker
+from sis_provisioner.test.account_managers.verify import TestUserVerifier
 from sis_provisioner.test.csv_writer import TestCsvWriter
 from sis_provisioner.test.util.time_helper import TestTimeHelper
 from sis_provisioner.test.util.list_helper import TestListHelper

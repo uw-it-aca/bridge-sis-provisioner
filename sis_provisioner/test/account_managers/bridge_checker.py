@@ -165,7 +165,7 @@ class TestBridgeUserChecker(TransactionTestCase):
                                   'bridge.ucla.edu', 'Brifge User')
         loader = BridgeChecker(BridgeWorker())
         loader.take_action(None, buser1)
-        print loader.get_error_report()
+
         self.assertTrue(loader.has_error())
         self.assertEqual(loader.get_loaded_count(), 0)
 
