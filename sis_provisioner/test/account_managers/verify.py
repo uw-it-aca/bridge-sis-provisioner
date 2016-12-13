@@ -13,19 +13,18 @@ class TestUserVerifier(TransactionTestCase):
         self.assertEqual(set_bridge_ids(), 0)
 
         user = UwBridgeUser(netid='javerage',
-                            regid="9136CCB8F66711D5BE060004AC494FFE",
+                            regid='9136CCB8F66711D5BE060004AC494FFE',
                             last_visited_at=get_now(),
                             email='javerage@uw.edu',
-                            
-                            first_name="James",
-                            last_name="Changed")
+                            first_name='James',
+                            last_name='Changed')
         user.save()
         user1 = UwBridgeUser(netid='leftuw',
-                            regid="...",
-                            last_visited_at=get_now(),
-                            email='leftuw@uw.edu',
-                            first_name="Left",
-                            last_name="UW")
+                             regid='...',
+                             last_visited_at=get_now(),
+                             email='leftuw@uw.edu',
+                             first_name='Left',
+                             last_name='UW')
         user1.save()
 
         self.assertEqual(set_bridge_ids(), 2)
