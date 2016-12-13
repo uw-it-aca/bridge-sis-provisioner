@@ -3,5 +3,6 @@ ordereddict
 urllib3==1.10.2
 unittest2
 django-compressor
+django-templatetag-handlebars
 nameparser
 -e git+https://github.com/uw-it-aca/uw-restclients@develop#egg=RestClients
