@@ -26,11 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'compressor',
-    'templatetag_handlebars',
     'restclients',
-    'userservice',
-    'sis_provisioner',
+    'sis_provisioner.apps.Sis_provisionerConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
