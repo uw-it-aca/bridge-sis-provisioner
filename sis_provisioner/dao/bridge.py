@@ -164,7 +164,7 @@ def _get_bridge_user_to_upd(uw_bridge_user, user_in_bridge):
     user.netid = uw_bridge_user.netid
     user.email = uw_bridge_user.get_email()
     user.full_name = uw_bridge_user.get_display_name()
-    if uw_bridge_user.first_name is not None:
+    if uw_bridge_user.has_first_name():
         user.first_name = uw_bridge_user.first_name
     else:
         user.first_name = user_in_bridge.first_name

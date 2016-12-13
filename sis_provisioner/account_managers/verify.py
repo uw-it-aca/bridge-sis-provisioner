@@ -23,7 +23,8 @@ def set_bridge_ids():
             total = total + 1
 
             if not uw_bri_user.no_action() and\
-                    not uw_bri_user.disabled:
-                uw_bri_user.save_verified()
+                    not uw_bri_user.disabled and\
+                    not uw_bri_user.has_terminate_date():
+                uw_bri_user.save_verified(upd_last_visited=False)
 
     return total

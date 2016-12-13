@@ -50,11 +50,11 @@ class BridgeChecker(UserUpdater):
                 continue
 
             uw_bridge_user = get_user_from_db(uwnetid, uwregid)
-            log_user = bridge_user.to_json_post()
+
             if person is not None:
                 in_db = uw_bridge_user is not None
                 logger.info("%s Bridge user in DB: %s" % (
-                        "Update" if in_db else "Create", log_user))
+                        "Update" if in_db else "Create", bridge_user))
                 self.take_action(person, bridge_user, in_db)
                 continue
 
@@ -67,7 +67,7 @@ class BridgeChecker(UserUpdater):
                 continue
 
             # not in local DB (created manually)
-            err_msg = "Unknown Bridge user: %s" % log_user
+            err_msg = "Unknown Bridge user: %s" % bridge_user
             logger.error(err_msg)
             self.worker.append_error(err_msg)
 
@@ -76,7 +76,6 @@ class BridgeChecker(UserUpdater):
         Add the Bridge user (not in DB yet) into local DB
         @param person must be a valid object
         """
-        log_user = bridge_user.to_json_post()
         try:
             uw_bridge_user, del_user = save_user(
                 person, include_hrp=self.include_hrp())
@@ -92,18 +91,18 @@ class BridgeChecker(UserUpdater):
                         uw_bridge_user.set_no_action()
                     else:
                         err_msg = "Bridge user (%s) NOT in DB, %s" % (
-                            log_user,
+                            bridge_user,
                             "but save_user found it EXIST in DB")
                 else:
                     if uw_bridge_user.is_new():
                         err_msg = "Bridge user (%s) in DB, %s" % (
-                            log_user,
+                            bridge_user,
                             "but save_user NOT found it")
                     else:
                         pass
             else:
                 err_msg = "FAILED to %s Bridge user in DB: %s" % (
-                    ("update" if in_db else "create"), log_user)
+                    ("update" if in_db else "create"), bridge_user)
 
             if err_msg:
                 logger.error(err_msg)
@@ -119,9 +118,9 @@ class BridgeChecker(UserUpdater):
 
         except Exception as ex:
             log_exception(self.logger,
-                          "Failed to load user (%s)" % log_user,
+                          "Failed to load user (%s)" % bridge_user,
                           traceback.format_exc())
-            self.worker.append_error("%s: %s" % (log_user, ex))
+            self.worker.append_error("%s: %s" % (bridge_user, ex))
 
     def changed_attributes(self, bridge_user, uw_bridge_user):
         if uw_bridge_user.netid_changed():
