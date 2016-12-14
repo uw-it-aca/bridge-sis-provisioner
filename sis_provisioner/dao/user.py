@@ -25,6 +25,24 @@ def get_all_users():
     return UwBridgeUser.objects.all()
 
 
+def get_total_users():
+    return len(get_all_users())
+
+
+def get_user_from_db(uwnetid, uwregid):
+    try:
+        uw_bri_user = get_user_by_netid(uwnetid)
+        if uw_bri_user is not None:
+            return uw_bri_user
+    except UwBridgeUser.DoesNotExist:
+        pass
+    try:
+        return get_user_by_regid(uwregid)
+    except UwBridgeUser.DoesNotExist:
+        pass
+    return None
+
+
 def get_user_by_netid(uwnetid):
     """
     @return a UwBridgeUser object
@@ -119,7 +137,10 @@ def save_user(person, include_hrp=True):
 
     if user_in_db is not None and\
             _person_attr_unchanged(user_in_db, person) and emp_apps_unchanged:
-        user_in_db.save_verified()
+        if action == ACTION_RESTORE:
+            user_in_db.save_verified(action=action)
+        else:
+            user_in_db.save_verified()
         return user_in_db, user_deleted
 
     updated_values = _get_user_updated_values(person, prev_netid, action)
@@ -165,11 +186,11 @@ def _person_attr_unchanged(buser, person):
         buser.first_name == normalize_name(person.first_name) and\
         buser.last_name == normalize_name(person.surname) and\
         buser.email == normalize_email(person.email1) and\
-        buser.is_alum == person.is_alum and\
-        buser.is_employee == person.is_employee and\
-        buser.is_faculty == person.is_faculty and\
-        buser.is_staff == person.is_staff and\
-        buser.is_student == person.is_student
+        buser.is_employee == person.is_employee
+    #    buser.is_alum == person.is_alum and\
+    #    buser.is_faculty == person.is_faculty and\
+    #    buser.is_staff == person.is_staff and\
+    #    buser.is_student == person.is_student
 
 
 def _are_all_active(busers):
@@ -237,11 +258,11 @@ def _get_user_updated_values(person, prev_netid, action):
             'first_name': normalize_name(person.first_name),
             'last_name': normalize_name(person.surname),
             'email': normalize_email(person.email1),
-            'is_alum': person.is_alum,
             'is_employee': person.is_employee,
-            'is_faculty': person.is_faculty,
-            'is_staff': person.is_staff,
-            'is_student': person.is_student
+            # 'is_alum': person.is_alum,
+            # 'is_faculty': person.is_faculty,
+            # 'is_staff': person.is_staff,
+            # 'is_student': person.is_student
             }
 
 

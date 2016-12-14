@@ -11,6 +11,7 @@ from sis_provisioner.util.log import log_resp_time
 
 logger = logging.getLogger(__name__)
 UW_GROUP = "uw_member"
+UW_AFFI_GROUP = "uw_affiliation_affiliate-employee"
 gws = GWS()
 
 
@@ -38,6 +39,26 @@ def get_uw_members():
     return ret_list
 
 
+def get_affiliate_employees():
+    """
+    Returns a list of uwnetids in the "uw_member" Group
+    """
+    ret_list = []
+    for gm in get_members_of_group(UW_AFFI_GROUP):
+        if gm.is_uwnetid() and gm.name is not None and len(gm.name) > 0:
+            ret_list.append(gm.name)
+
+    return ret_list
+
+
+def get_potential_users():
+    return get_uw_members() + get_affiliate_employees()
+
+
+def is_qualified_user(uwnetid):
+    return is_uw_member(uwnetid) or is_affiliate_employee(uwnetid)
+
+
 def is_uw_member(uwnetid):
     """
     Return True if the user netid is an effective member of the uw_member group
@@ -48,4 +69,19 @@ def is_uw_member(uwnetid):
     finally:
         log_resp_time(logger,
                       '%s is_effective_member of %s ' % (uwnetid, UW_GROUP),
+                      timer)
+
+
+def is_affiliate_employee(uwnetid):
+    """
+    Return True if the user netid is an effective member of
+    the uw_affiliation_affiliate-employee group
+    """
+    timer = Timer()
+    try:
+        return gws.is_effective_member(UW_AFFI_GROUP, uwnetid)
+    finally:
+        log_resp_time(logger,
+                      '%s is_effective_member of %s ' % (uwnetid,
+                                                         UW_AFFI_GROUP),
                       timer)

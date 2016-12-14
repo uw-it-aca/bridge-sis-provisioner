@@ -54,11 +54,11 @@ def get_attr_list(user,
     # The 2nd item is the uwEduEmailNameID attribute in IdP
     data = []
     if changed_uid:
-        data.append(user.prev_netid + "@uw.edu" if user.prev_netid else "")
+        data.append(user.get_prev_bridge_uid())
     data = data + [
-        user.netid + "@uw.edu",
+        user.get_bridge_uid(),
         user.get_display_name(),
-        user.email if user.email else "%s@uw.edu" % user.netid,
+        user.get_email(),
         user.regid]
 
     if include_hrp:

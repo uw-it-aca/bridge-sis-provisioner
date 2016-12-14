@@ -1,5 +1,5 @@
-from django.db import models
 import json
+from django.db import models
 from datetime import timedelta
 from django.utils import timezone
 from nameparser import HumanName
@@ -88,12 +88,9 @@ class UwBridgeUser(models.Model):
     prev_netid = models.SlugField(max_length=32,
                                   null=True,
                                   default=None)
-    action_priority = models.SmallIntegerField(default=ACTION_NONE,
-                                               choices=ACTION_CHOICES)
-    disabled = models.NullBooleanField(default=False)
-    last_visited_at = models.DateTimeField()
-    terminate_at = models.DateTimeField(null=True,
-                                        default=None)
+    email = models.CharField(max_length=128,
+                             null=True,
+                             default=None)
     display_name = models.CharField(max_length=256,
                                     null=True,
                                     default=None)
@@ -101,69 +98,71 @@ class UwBridgeUser(models.Model):
                                   null=True,
                                   default=None)
     last_name = models.CharField(max_length=128)
-    email = models.CharField(max_length=128,
-                             null=True,
-                             default=None)
-    is_alum = models.NullBooleanField(default=False)
-    is_employee = models.NullBooleanField(default=False)
-    is_faculty = models.NullBooleanField(default=False)
-    is_staff = models.NullBooleanField(default=False)
-    is_student = models.NullBooleanField(default=False)
+    action_priority = models.SmallIntegerField(default=ACTION_NONE,
+                                               choices=ACTION_CHOICES)
+    disabled = models.NullBooleanField(default=False)
+    last_visited_at = models.DateTimeField()
+    terminate_at = models.DateTimeField(null=True,
+                                        default=None)
+    is_employee = models.NullBooleanField(default=None)
     emp_appointments_data = models.TextField(max_length=2048,
                                              null=True, blank=True,
                                              default=None)
 
-    def __init__(self, *args, **kwargs):
-        super(UwBridgeUser, self).__init__(*args, **kwargs)
+    def get_bridge_uid(self):
+        return self.netid + "@uw.edu"
 
-    def __eq__(self, other):
-        return other is not None and\
-            self.regid == other.regid and\
-            self.netid == other.netid and\
-            self.first_name == other.first_name and\
-            self.last_name == other.last_name and\
-            self.email == other.email and\
-            self.is_alum == other.is_alum and\
-            self.is_employee == other.is_employee and\
-            self.is_faculty == other.is_faculty and\
-            self.is_staff == other.is_staff and\
-            self.is_student == other.is_student and\
-            self.emp_appointments_data == other.emp_appointments_data
+    def get_prev_bridge_uid(self):
+        if self.has_prev_netid():
+            return self.prev_netid + "@uw.edu"
+        return ""
 
-    def is_stalled(self):
-        # not validated for 15 days
-        return self.last_visited_at + timedelta(days=15) < get_now()
-
-    def save_verified(self):
-        self.last_visited_at = get_now()
-        self.set_no_action()
-        self.disabled = False
-        self.prev_netid = None
-        self.terminate_at = None
-        self.save()
+    def has_bridge_id(self):
+        try:
+            return self.bridge_id > 0
+        except AttributeError:
+            return False
 
     def set_bridge_id(self, bridge_id):
-        if bridge_id:
+        if bridge_id > 0:
             self.bridge_id = bridge_id
             self.save()
 
-    def no_action(self):
-        return self.action_priority == ACTION_NONE
+    def has_prev_netid(self):
+        try:
+            return self.prev_netid is not None and len(self.prev_netid) > 0
+        except AttributeError:
+            return False
+
+    def get_prev_netid(self):
+        if self.has_prev_netid():
+            return self.prev_netid
+        return ""
+
+    def set_prev_netid(self, prev_netid):
+        if prev_netid is not None and len(prev_netid) > 0:
+            self.prev_netid = prev_netid
+            self.save()
 
     def set_no_action(self):
         self.action_priority = ACTION_NONE
+        self.save()
 
     def set_action_new(self):
         self.action_priority = ACTION_NEW
+        self.save()
 
     def set_action_update(self):
         self.action_priority = ACTION_UPDATE
+        self.save()
 
     def set_action_regid_changed(self):
         self.action_priority = ACTION_CHANGE_REGID
+        self.save()
 
     def set_action_restore(self):
         self.action_priority = ACTION_RESTORE
+        self.save()
 
     def is_new(self):
         return self.action_priority == ACTION_NEW
@@ -171,27 +170,40 @@ class UwBridgeUser(models.Model):
     def is_restore(self):
         return self.action_priority == ACTION_RESTORE
 
+    def is_stalled(self):
+        # not validated for 15 days
+        return self.last_visited_at + timedelta(days=15) < get_now()
+
     def is_update(self):
         return self.action_priority == ACTION_UPDATE
 
     def netid_changed(self):
-        return self.prev_netid is not None
+        return self.has_prev_netid()
+
+    def no_action(self):
+        return self.action_priority == ACTION_NONE
 
     def regid_changed(self):
         return self.action_priority == ACTION_CHANGE_REGID
-
-    def clear_terminate_date(self):
-        if self.terminate_at:
-            self.terminate_at = None
-            self.save()
 
     def disable(self):
         self.disabled = True
         self.save()
 
+    def clear_terminate_date(self):
+        if self.has_terminate_date():
+            self.terminate_at = None
+            self.save()
+
+    def has_terminate_date(self):
+        try:
+            return self.terminate_at is not None
+        except AttributeError:
+            return False
+
     def save_terminate_date(self, graceful=True):
-        if graceful and self.terminate_at is not None:
-            # not to change previously set date unless not graceful
+        # not to change previously set date unless not graceful
+        if graceful and self.has_terminate_date():
             return
         self.terminate_at = get_now()
         if graceful:
@@ -199,18 +211,36 @@ class UwBridgeUser(models.Model):
         self.save()
 
     def passed_terminate_date(self):
-        return self.terminate_at is not None and\
+        return self.has_terminate_date() and\
             get_now() > self.terminate_at
 
+    def save_verified(self, action=ACTION_NONE, upd_last_visited=True):
+        self.action_priority = action
+        self.disabled = False
+        self.prev_netid = None
+        self.terminate_at = None
+        if upd_last_visited:
+            self.last_visited_at = get_now()
+        self.save()
+
     def has_display_name(self):
-        return self.display_name is not None and\
-            len(self.display_name) > 0 and\
-            not self.display_name.isupper()
+        try:
+            return self.display_name is not None and\
+                len(self.display_name) > 0 and\
+                not self.display_name.isupper()
+        except AttributeError:
+            return False
+
+    def has_first_name(self):
+        try:
+            return self.first_name is not None and len(self.first_name) > 0
+        except AttributeError:
+            return False
 
     def get_display_name(self):
         if self.has_display_name():
             return self.display_name
-        if self.first_name is not None:
+        if self.has_first_name():
             name = HumanName("%s %s" % (self.first_name, self.last_name))
         else:
             name = HumanName(self.last_name)
@@ -219,19 +249,23 @@ class UwBridgeUser(models.Model):
         name.string_format = "{first} {last}"
         return str(name)
 
+    def has_email(self):
+        try:
+            return self.email is not None and len(self.email) > 0
+        except AttributeError:
+            return False
+
     def get_email(self):
-        if self.email:
+        if self.has_email():
             return self.email
         return "%s@uw.edu" % self.netid
 
     def has_emp_appointments(self):
-        return self.emp_appointments_data is not None and\
-            len(self.emp_appointments_data) > 2
-
-    def get_emp_appointments_json(self):
-        if self.has_emp_appointments():
-            return json.loads(self.emp_appointments_data)
-        return None
+        try:
+            return self.emp_appointments_data is not None and\
+                len(self.emp_appointments_data) > 2   # "[]"
+        except AttributeError:
+            return False
 
     def get_total_emp_apps(self):
         if self.has_emp_appointments():
@@ -249,36 +283,66 @@ class UwBridgeUser(models.Model):
                 i += 1
         return emp_apps
 
-    def __str__(self):
-        return (
-            "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
-            " %s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s}") % (
-            "netid", self.netid,
-            "prev_netid", self.prev_netid,
-            "regid", self.regid,
-            "last_visited_at", datetime_to_str(self.last_visited_at),
-            "action_priority", self.get_action_priority_display(),
-            "disabled", self.disabled,
-            "terminate_at", datetime_to_str(self.terminate_at),
-            "display_name", self.get_display_name(),
-            "first_name", self.first_name,
-            "last_name", self.last_name,
-            "email", self.get_email(),
-            "emp_appointments", self.emp_appointments_data)
+    def __init__(self, *args, **kwargs):
+        super(UwBridgeUser, self).__init__(*args, **kwargs)
+
+    def emp_app_equal(self, emp_app_data):
+        return (self.has_emp_appointments() and
+                self.emp_appointments_data == emp_app_data or
+                (not self.has_emp_appointments() and
+                 (emp_app_data is None or len(emp_app_data) == 0)))
+
+    def __eq__(self, other):
+        return other is not None and\
+            self.regid == other.regid and\
+            self.netid == other.netid and\
+            self.first_name == other.first_name and\
+            self.last_name == other.last_name and\
+            self.get_display_name() == other.get_display_name() and\
+            self.email == other.email and\
+            self.is_employee == other.is_employee and\
+            self.emp_app_equal(other.emp_appointments_data)
+
+    def get_emp_appointments_json(self):
+        if self.has_emp_appointments():
+            return json.loads(self.emp_appointments_data)
+        return None
 
     def json_data(self):
         return {
             "netid": self.netid,
             "regid": self.regid,
-            "prev_netid": self.prev_netid,
-            "last_visited_at": datetime_to_str(self.last_visited_at),
-            "terminate_at": datetime_to_str(self.terminate_at),
             "display_name": self.get_display_name(),
-            "first_name": self.first_name,
             "last_name": self.last_name,
             "email": self.get_email(),
+            "last_visited_at": datetime_to_str(self.last_visited_at),
             "emp_appointments": self.get_emp_appointments_json()
             }
+
+    def __str__(self):
+        json_v = self.json_data()
+        json_v["prev_netid"] = self.get_prev_netid()
+
+        if self.has_first_name():
+            json_v["first_name"] = self.first_name
+        if self.has_bridge_id():
+            json_v["bridge_id"] = self.bridge_id
+        if self.has_terminate_date():
+            json_v["terminate_at"] = datetime_to_str(self.terminate_at)
+
+        try:
+            if self.action_priority:
+                json_v["action_priority"] =\
+                    self.get_action_priority_display()
+        except AttributeError:
+            pass
+
+        try:
+            json_v["disabled"] = self.disabled
+        except AttributeError:
+            pass
+
+        return json.dumps(json_v, default=str)
 
     class Meta:
         db_table = 'uw_bridge_users'

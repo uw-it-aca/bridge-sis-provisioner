@@ -2,7 +2,7 @@ import logging
 import traceback
 from restclients.exceptions import DataFailureException
 from sis_provisioner.dao.bridge import get_all_bridge_users
-from sis_provisioner.dao.gws import get_uw_members, is_uw_member
+from sis_provisioner.dao.gws import get_potential_users, is_qualified_user
 from sis_provisioner.dao.pws import get_person, get_person_by_regid
 from sis_provisioner.dao.user import get_all_users
 from sis_provisioner.util.log import log_exception
@@ -16,17 +16,21 @@ DISALLOWED = 3  # not personal netid
 
 def get_validated_user(logger, uwnetid, uwregid=None, check_gws=False):
     """
-    Return Person and a status
-    """
-    try:
-        if check_gws and not is_qualified_user(logger, uwnetid):
-            logger.error("%s left uw" % uwnetid)
-            return None, LEFT_UW
+    Validate an existing user in the local DB or Bridge.
+    If he/she is in one of the good groups and in pws.person,
+    return the corresponding Person object and a status
 
+    raise DataFailureException if failed to access GWS or PWS
+    """
+    if check_gws and not is_qualified_user(uwnetid):
+        logger.error("%s left uw" % uwnetid)
+        return None, LEFT_UW
+
+    try:
         person = get_person(uwnetid)
 
         if person.uwregid is None or len(person.uwregid) == 0:
-            logger.error("%s has invalid uwregid, skip!" % uwnetid)
+            logger.error("%s has invalid uwregid in PWS.Person!" % uwnetid)
             return None, None
 
         if uwregid is not None and person.uwregid != uwregid:
@@ -35,6 +39,7 @@ def get_validated_user(logger, uwnetid, uwregid=None, check_gws=False):
         return person, NO_CHANGE
     except DataFailureException as ex:
         if ex.status == 301:
+            # netid changed
             logger.error("%s has been changed" % uwnetid)
             if uwregid is not None:
                 try:
@@ -51,35 +56,24 @@ def get_validated_user(logger, uwnetid, uwregid=None, check_gws=False):
             logger.error("%s is not personal netid, skip!" % uwnetid)
             return None, DISALLOWED
         else:
-            log_exception(logger,
-                          "pws.get_person(%s) failed, skip!" % uwnetid,
-                          traceback.format_exc())
+            raise
     return None, None
-
-
-def is_qualified_user(logger, uwnetid):
-    try:
-        return is_uw_member(uwnetid)
-    except Exception:
-        log_exception(logger,
-                      "%s is_uw_member failed" % uwnetid,
-                      traceback.format_exc())
-    return False
 
 
 def fetch_users_from_gws(logger):
     try:
-        return get_uw_members()
+        return get_potential_users()
     except Exception:
         log_exception(logger,
                       "Abort, failed to get uw_member from GWS",
                       traceback.format_exc())
-    return None
+    return []
 
 
 def fetch_users_from_db(logger):
     """
-    Return all the existing users in the DB
+    Return a list of UwBridgeUser objects of
+    all the existing users in the DB
     """
     try:
         return get_all_users()
@@ -87,12 +81,13 @@ def fetch_users_from_db(logger):
         log_exception(logger,
                       "Abort, failed to get all user from DB",
                       traceback.format_exc())
-    return None
+    return []
 
 
 def fetch_users_from_bridge(logger):
     """
-    Return all the existing users in Bridge
+    Return a list of BridgeUser objects of
+    all the existing active users in Bridge
     """
     try:
         return get_all_bridge_users()
@@ -100,7 +95,7 @@ def fetch_users_from_bridge(logger):
         log_exception(logger,
                       "Abort, failed to get all user from Bridge",
                       traceback.format_exc())
-    return None
+    return []
 
 
 def get_regid_from_bridge_user(bridge_user):

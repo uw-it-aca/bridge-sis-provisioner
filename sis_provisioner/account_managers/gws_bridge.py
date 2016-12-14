@@ -5,6 +5,7 @@ accounts via the given worker.
 """
 
 import logging
+import traceback
 from sis_provisioner.account_managers.loader import Loader
 from sis_provisioner.account_managers import fetch_users_from_gws,\
     get_validated_user
@@ -37,26 +38,30 @@ class GwsBridgeLoader(Loader):
                 self.logger.error(
                     "uw_member %s is not a personal netid, skip!" % uwnetid)
                 continue
-            self.take_action(person, validation_status)
+            self.take_action(person)
 
-    def take_action(self, person, validation_status):
+    def take_action(self, person):
+        """
+        @param: person is a valid Person object
+        """
         try:
             uw_bri_user, del_user = save_user(
-                person, include_hrp=self.include_hrp_data)
-
-            if del_user is not None:
-                self.worker.delete_user(del_user)
-
-            self.apply_change_to_bridge(uw_bri_user)
-
-            if self.include_hrp() and uw_bri_user.is_employee:
-                self.emp_app_totals.append(uw_bri_user.get_total_emp_apps())
-
+                person, include_hrp=self.include_hrp())
         except Exception as ex:
+            uwnetid = person.uwnetid
             log_exception(self.logger,
-                          "Action failed on user (%s)" % uwnetid,
+                          "Failed to save user (%s)" % uwnetid,
                           traceback.format_exc())
-            self.worker.append_error("%s: %s" % (uwnetid, ex))
+            self.worker.append_error("save user %s: %s" % (uwnetid, ex))
+            return
+
+        if del_user is not None:
+            self.worker.delete_user(del_user)
+
+        self.apply_change_to_bridge(uw_bri_user)
+
+        if self.include_hrp() and uw_bri_user.is_employee:
+            self.emp_app_totals.append(uw_bri_user.get_total_emp_apps())
 
     def apply_change_to_bridge(self, uw_bri_user):
         """

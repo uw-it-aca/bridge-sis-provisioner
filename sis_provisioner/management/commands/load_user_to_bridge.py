@@ -9,23 +9,22 @@ from sis_provisioner.account_managers.reload_bridge import Reloader
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 
 
-logger = logging.getLogger(__name__)
-
-
 class Command(BaseCommand):
-
-    help = 'Build the csv files for importing users into Bridge'
-    args = "<data source (gws, db, bridge, rerun)> " +\
-        "include-hrp (to include hrp data)"
+    """
+    Load users into Bridge
+    """
+    def add_arguments(self, parser):
+        parser.add_argument('data-source',
+                            choices=['gws', 'db', 'bridge', 'rerun'])
+        parser.add_argument('--include-hrp', nargs='?', default=None)
 
     def handle(self, *args, **options):
-        include_hrp = False
-        if len(args) < 1:
-            raise CommandError("Invalid parameter %s" % args)
+        source = options['data-source']
+        try:
+            include_hrp = options['--include-hrp'] is not None
+        except KeyError:
+            include_hrp = False
 
-        source = args[0]
-        if len(args) == 2:
-            include_hrp = (args[1] == "include-hrp")
         if source == 'gws':
             loader = GwsBridgeLoader(BridgeWorker(),
                                      include_hrp=include_hrp)
@@ -43,7 +42,7 @@ class Command(BaseCommand):
             return
 
         loader.load()
-
+        print datetime.now()
         print "Checked all %d users in %s," % (loader.get_total_count(),
                                                source)
         print "total %d users loaded," % loader.get_loaded_count()

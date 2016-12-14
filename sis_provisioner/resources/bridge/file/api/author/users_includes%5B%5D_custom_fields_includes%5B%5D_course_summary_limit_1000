@@ -37,6 +37,36 @@
             "type": "custom_fields"
           }
         }
+      },
+      {
+        "id": "4",
+        "value": "10000000000000000000000000000011",
+        "links": {
+          "custom_field": {
+            "id": "5",
+            "type": "custom_fields"
+          }
+        }
+      },
+      {
+        "id": "5",
+        "value": "10000000000000000000000000000000",
+        "links": {
+          "custom_field": {
+            "id": "5",
+            "type": "custom_fields"
+          }
+        }
+      },
+      {
+        "id": "6",
+        "value": "B814EFBC6A7C11D5A4AE0004AC494FFE",
+        "links": {
+          "custom_field": {
+            "id": "5",
+            "type": "custom_fields"
+          }
+        }
       }
     ]
    },
@@ -74,7 +104,7 @@
        "hris_id":null,
        "first_name":"James Average",
        "last_name":"Staff",
-       "full_name":"James Staff",
+       "full_name":"James Average Staff",
        "sortable_name":"Staff, James Average",
        "email":"staff@uw.edu",
        "locale":"en",
@@ -116,6 +146,78 @@
        "completed_courses_count":0,
        "links":{
           "custom_field_values":["3"]
+       },
+       "meta":{"can_masquerade":true}
+       },
+       {"id":"198",
+       "uid":"affiemp@uw.edu",
+       "hris_id":null,
+       "first_name":"James",
+       "last_name":"Affiemp",
+       "full_name":"James Affiemp",
+       "sortable_name":"Affiemp, James",
+       "email":"affiemp@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"James Affiemp",
+       "avatar_url":null,
+       "updated_at":"2016-08-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":null,
+       "next_due_date":null,
+       "completed_courses_count":0,
+       "links":{
+          "custom_field_values":["4"]
+       },
+       "meta":{"can_masquerade":true}
+       },
+       {"id":"199",
+       "uid":"unknown@uw.edu",
+       "hris_id":null,
+       "first_name":"Unknown",
+       "last_name":"User",
+       "full_name":"Unknown User",
+       "sortable_name":"User, Unknown",
+       "email":"unknown@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Unknown User",
+       "avatar_url":null,
+       "updated_at":"2016-09-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":null,
+       "next_due_date":null,
+       "completed_courses_count":0,
+       "links":{
+          "custom_field_values":["5"]
+       },
+       "meta":{"can_masquerade":true}
+       },
+       {"id":"200",
+       "uid":"leftuw@uw.edu",
+       "hris_id":null,
+       "first_name":"Leftuw",
+       "last_name":"User",
+       "full_name":"Leftuw User",
+       "sortable_name":"User, Leftuw",
+       "email":"leftuw@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Leftuw User",
+       "avatar_url":null,
+       "updated_at":"2016-09-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":null,
+       "next_due_date":null,
+       "completed_courses_count":0,
+       "links":{
+          "custom_field_values":["6"]
        },
        "meta":{"can_masquerade":true}
        }
