@@ -83,8 +83,7 @@ class BridgeChecker(UserUpdater):
                 person, include_hrp=self.include_hrp())
 
             if in_db and del_user is not None:
-                self.logger.info("Delete %s" % del_user)
-                self.worker.delete_user(del_user)
+                self.merge_user_accounts(del_user, uw_bridge_user)
 
             if uw_bridge_user is not None:
                 if not in_db:

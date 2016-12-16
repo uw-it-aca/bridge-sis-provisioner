@@ -55,7 +55,7 @@ class GwsBridgeLoader(Loader):
         @param: person is a valid Person object
         """
         try:
-            uw_bri_user, del_user = save_user(
+            uw_bridge_user, del_user = save_user(
                 person, include_hrp=self.include_hrp())
         except Exception as ex:
             uwnetid = person.uwnetid
@@ -66,31 +66,37 @@ class GwsBridgeLoader(Loader):
             return
 
         if del_user is not None:
-            self.logger.info("Delete %s" % del_user)
-            self.worker.delete_user(del_user)
+            self.merge_user_accounts(del_user, uw_bridge_user)
 
-        self.apply_change_to_bridge(uw_bri_user)
+        self.apply_change_to_bridge(uw_bridge_user)
 
-        if self.include_hrp() and uw_bri_user.is_employee:
-            self.emp_app_totals.append(uw_bri_user.get_total_emp_apps())
+        if self.include_hrp() and uw_bridge_user.is_employee:
+            self.emp_app_totals.append(uw_bridge_user.get_total_emp_apps())
 
-    def apply_change_to_bridge(self, uw_bri_user):
+    def merge_user_accounts(self, del_user, uw_bridge_user):
+        # TO-DO:
+        # merge learning history from del_user to uw_bridge_user
+        # delete del_user
+        self.logger.info("Delete %s" % del_user)
+        self.worker.delete_user(del_user)
+
+    def apply_change_to_bridge(self, uw_bridge_user):
         """
-        @param: uw_bri_user is a valid UwBridgeUser object to take action upon
+        @param: uw_bridge_user a valid UwBridgeUser object to take action upon
         """
-        if uw_bri_user is None or uw_bri_user.no_action():
+        if uw_bridge_user is None or uw_bridge_user.no_action():
             return
 
         loaded = False
-        if uw_bri_user.is_new():
-            loaded = self.worker.add_new_user(uw_bri_user)
-        elif uw_bri_user.is_restore():
-            loaded = self.worker.restore_user(uw_bri_user)
+        if uw_bridge_user.is_new():
+            loaded = self.worker.add_new_user(uw_bridge_user)
+        elif uw_bridge_user.is_restore():
+            loaded = self.worker.restore_user(uw_bridge_user)
         else:
-            loaded = self.worker.update_user(uw_bri_user)
+            loaded = self.worker.update_user(uw_bridge_user)
 
         if loaded:
-            uw_bri_user.save_verified()
+            uw_bridge_user.save_verified()
             self.total_loaded_count += 1
 
     def get_loaded_count(self):
