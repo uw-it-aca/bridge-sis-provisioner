@@ -8,6 +8,7 @@ CAMPUS = ["", "",
           "Seattle", "Bothell", "Tacoma"]
 
 BASIC_HEADERS = ['UNIQUE ID', 'NAME', 'EMAIL', 'regid']
+CHANGE_UID_HEADERS = ['prev uid', 'UNIQUE ID', 'NAME', 'EMAIL', 'regid']
 
 EMP_HEADERS = ['emp campus 1', 'emp coll 1', 'emp dept 1',
                'emp campus 2', 'emp coll 2', 'emp dept 2',
@@ -25,9 +26,13 @@ def get_campus(emp_campus_code):
         return ""
 
 
-def get_headers(include_hrp=False,
+def get_headers(changed_uid=False,
+                include_hrp=False,
                 include_student_dept=False):
-    retv = BASIC_HEADERS
+    if changed_uid:
+        retv = CHANGE_UID_HEADERS
+    else:
+        retv = BASIC_HEADERS
     if include_hrp:
         retv = retv + EMP_HEADERS
 
@@ -37,25 +42,28 @@ def get_headers(include_hrp=False,
     return retv
 
 
-def get_header_for_user_del():
-    return ['UNIQUE ID']
-
-
 def get_attr_list(user,
+                  changed_uid=False,
                   include_hrp=False,
                   include_student_dept=False):
     """
     Returns a list of data for creating a line of csv for a user
-    matching the headers in header_for_users for the given BridgeUser object.
+    matching the headers in header_for_users for the given UwBridgeUser object.
     """
-    # The 1st item is the uwEduEmailNameID attribute in IdP
-    data = [user.netid + "@uw.edu",
-            user.get_display_name(use_title=False),
-            user.email if user.email else "%s@uw.edu" % user.netid,
-            user.regid,
-            ]
+    # The 1st item is the previous UID
+    # The 2nd item is the uwEduEmailNameID attribute in IdP
+    data = []
+    if changed_uid:
+        data.append(user.get_prev_bridge_uid())
+    data = data + [
+        user.get_bridge_uid(),
+        user.get_display_name(),
+        user.get_email(),
+        user.regid]
+
     if include_hrp:
-        data = data + get_emp_app_att_list(user.get_emp_appointments())
+        data = data + get_emp_app_att_list(
+            user.get_emp_appointments())
 
     if include_student_dept:
         pass

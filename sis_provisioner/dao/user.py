@@ -1,188 +1,269 @@
 """
-This module interacts with app's database
+This module interacts with the uw bridge user table in the app's database
 """
 
 from datetime import timedelta
 import json
 import logging
 import re
+from string import capwords
 import traceback
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from restclients.exceptions import DataFailureException
 from restclients.hrpws.appointee import get_appointee_by_eid
-from sis_provisioner.models import BridgeUser, get_now,\
-    PRIORITY_NORMAL, PRIORITY_CHANGE_REGID, PRIORITY_CHANGE_NETID
+from sis_provisioner.models import UwBridgeUser, get_now, ACTION_UPDATE,\
+    ACTION_NEW, ACTION_CHANGE_REGID, ACTION_RESTORE
 from sis_provisioner.dao.hrp import get_appointments
-from sis_provisioner.dao.pws import get_person
 from sis_provisioner.util.log import log_exception
 
 
 logger = logging.getLogger(__name__)
 
 
-def create_user(uwnetid, include_hrp=False):
-    """
-    returns a BridgeUser object to add and a list of uwnetids to delete
-    """
-    try:
-        person = get_person(uwnetid)
-    except DataFailureException as ex:
-        if ex.status == 404:
-            logger.error("%s is not valid netid, skip!" % uwnetid)
-        else:
-            log_exception(logger,
-                          "pws.person(%s) failed, skip" % uwnetid,
-                          traceback.format_exc())
-        return None, None
-
-    if person.uwregid is None or len(person.uwregid) == 0:
-        logger.error("%s has invalid uwregid, skip!" % uwnetid)
-        return None, None
-    return save_user(person, include_hrp)
-
-
-def delete_user(uwnetid):
-    """
-    Return a list of uwnetids of the user record to be deleted from Bridge
-    """
-    return get_del_users(BridgeUser.objects.filter(netid=uwnetid))
-
-
-def get_del_users(users):
-    """
-    Delete the users from DB is exists;
-    Return a list of netids to be removed from Bridge, or None
-    """
-    if users is None or len(users) == 0:
-        return None
-
-    # having existing record, remove them
-    users_deleted = []
-    for user in users:
-        uwnetid = user.netid
-        logger.info("Delete user: %s from database." % uwnetid)
-        users_deleted.append(uwnetid)
-    users.delete()
-    return users_deleted
-
-
 def get_all_users():
-    return BridgeUser.objects.all()
+    return UwBridgeUser.objects.all()
 
 
-def save_user(person, include_hrp):
-    users_to_del = None
+def get_total_users():
+    return len(get_all_users())
+
+
+def get_user_from_db(uwnetid, uwregid):
+    try:
+        uw_bri_user = get_user_by_netid(uwnetid)
+        if uw_bri_user is not None:
+            return uw_bri_user
+    except UwBridgeUser.DoesNotExist:
+        pass
+    try:
+        return get_user_by_regid(uwregid)
+    except UwBridgeUser.DoesNotExist:
+        pass
+    return None
+
+
+def get_user_by_netid(uwnetid):
+    """
+    @return a UwBridgeUser object
+    @exception: UwBridgeUser.DoesNotExist
+    """
+    if uwnetid is not None:
+        return UwBridgeUser.objects.get(netid=uwnetid)
+    return None
+
+
+def get_user_by_regid(uwregid):
+    """
+    returns a UwBridgeUser object
+    @exception: UwBridgeUser.DoesNotExist
+    """
+    if uwregid is not None:
+        return UwBridgeUser.objects.get(regid=uwregid)
+    return None
+
+
+def filter_by_ids(uwnetid, uwregid):
+    """
+    returns a list of UwBridgeUser objects
+    """
+    return UwBridgeUser.objects.filter(Q(regid=uwregid) |
+                                       Q(netid=uwnetid))
+
+
+def save_user(person, include_hrp=True):
+    """
+    @return 1. the UwBridgeUser object of the account
+               that needs to add/update/restore
+            2. the UwBridgeUser object of the account
+               that needs to be deleted
+            None if n/a
+            Documentation: https://wiki.cac.washington.edu/x/_zCIB
+    """
+    if person is None:
+        return None, None
+
+    action = ACTION_UPDATE
+    changed_netids = None
     user_in_db = None
-    priority = PRIORITY_NORMAL
+    user_deleted = None
+    emp_apps_json_dump = None
+    emp_apps_unchanged = True
     prev_netid = None
 
-    bri_users = BridgeUser.objects.filter(Q(regid=person.uwregid) |
-                                          Q(netid=person.uwnetid))
-    if bri_users and len(bri_users) > 0:
-        if len(bri_users) == 1 and\
-                bri_users[0].netid == person.uwnetid and\
-                bri_users[0].regid == person.uwregid:
-            user_in_db = bri_users[0]
+    uw_bri_users = filter_by_ids(person.uwnetid, person.uwregid)
+    if len(uw_bri_users) == 0:
+        action = ACTION_NEW
+
+    elif len(uw_bri_users) == 1:
+        # one existing account
+        old_user = _get_netid_changed_user(uw_bri_users, person)
+        if old_user is not None:
+            prev_netid = old_user.netid
+
+        if uw_bri_users[0].disabled:
+            action = ACTION_RESTORE
+
+        if _changed_regid(uw_bri_users, person):
+            uw_bri_users.delete()
+            if action != ACTION_RESTORE:
+                action = ACTION_CHANGE_REGID
         else:
-            if changed_regid(bri_users, person):
-                priority = PRIORITY_CHANGE_REGID
+            user_in_db = uw_bri_users[0]
+    else:
+        # two existing accounts
+        logger.info("%s has two accounts: %s, %s" %
+                    (person.uwnetid, uw_bri_users[0], uw_bri_users[1]))
+        old_user = _get_netid_changed_user(uw_bri_users, person)
 
-            netid_changed, prev_netid = changed_netid(bri_users, person)
-            if netid_changed:
-                priority = PRIORITY_CHANGE_NETID
-                # netid change has higher priority
+        if _are_all_disabled(uw_bri_users):
+            action = ACTION_RESTORE
+        elif _are_all_active(uw_bri_users):
+            # delete the one with the old netid
+            if old_user is not None:
+                user_deleted = old_user
+                prev_netid = old_user.netid
+        else:
+            # one is active and one is disabled
+            if not old_user.disabled:
+                prev_netid = old_user.netid
+        uw_bri_users.delete()
 
-            # having multi records or netid/regid changed
-            users_to_del = get_del_users(bri_users)
-
-    emp_apps_json_dump = None
-    emp_apps_not_changed = True
-    if include_hrp and person.is_employee:
-        emp_apps_json_dump = appointments_json_dump(get_appointments(person))
+    if include_hrp:
+        emp_apps_json_dump = _appointments_json_dump(person)
         if user_in_db is not None:
-            emp_apps_not_changed = emp_attr_not_changed(
+            emp_apps_unchanged = _emp_attr_unchanged(
                 user_in_db.emp_appointments_data, emp_apps_json_dump)
 
     if user_in_db is not None and\
-            person_attr_not_changed(user_in_db, person) and\
-            emp_apps_not_changed:
-        user_in_db.save_verified()
-        return None, users_to_del
+            _person_attr_unchanged(user_in_db, person) and emp_apps_unchanged:
+        if action == ACTION_RESTORE:
+            user_in_db.save_verified(action=action)
+        else:
+            user_in_db.save_verified()
+        return user_in_db, user_deleted
 
-    updated_values = {'netid': person.uwnetid,
-                      'prev_netid': prev_netid,
-                      'last_visited_date': get_now(),
-                      'import_priority': priority,
-                      'display_name': person.display_name,
-                      'first_name': normalize_first_name(person.first_name),
-                      'last_name': person.surname,
-                      'email': normalize_email(person.email1),
-                      'is_alum': person.is_alum,
-                      'is_employee': person.is_employee,
-                      'is_faculty': person.is_faculty,
-                      'is_staff': person.is_staff,
-                      'is_student': person.is_student,
-                      'student_department1': person.student_department1,
-                      'student_department2': person.student_department2,
-                      'student_department3': person.student_department3,
-                      }
+    updated_values = _get_user_updated_values(person, prev_netid, action)
 
-    if user_in_db is None or not emp_apps_not_changed:
+    if user_in_db is None or not emp_apps_unchanged:
         updated_values['emp_appointments_data'] = emp_apps_json_dump
 
-    b_user, created = BridgeUser.objects.update_or_create(
-        regid=person.uwregid,
-        defaults=updated_values)
-    return b_user, users_to_del
+    b_user, created = UwBridgeUser.objects.update_or_create(
+        regid=person.uwregid, defaults=updated_values)
+    return b_user, user_deleted
 
 
-def appointments_json_dump(appointments):
+def _appointments_json_dump(person):
+    """
+    @param person valid PWS Person object
+    """
     apps_json = []
-    if len(appointments) > 0:
-        for app in appointments:
-            apps_json.append(app.to_json())
+    if person.is_employee:
+        appointments = get_appointments(person)
+        if len(appointments) > 0:
+            for app in appointments:
+                apps_json.append(app.to_json())
     return json.dumps(apps_json, separators=(',', ':'), sort_keys=True)
 
 
-def emp_attr_not_changed(old_appointments_json_dump,
-                         upt_appointments_json_dump):
+def _emp_attr_unchanged(old_appointments_json_dump,
+                        upt_appointments_json_dump):
+    """
+    return True if employee appointment data not changed
+    """
     return ((old_appointments_json_dump is None and
              upt_appointments_json_dump is None) or
             old_appointments_json_dump == upt_appointments_json_dump)
 
 
-def person_attr_not_changed(buser, person):
+def _person_attr_unchanged(buser, person):
+    """
+    @param person valid PWS Person object
+    @param: busers a list of UwBrifgeUser
+    return True if attibutes have not changed
+    """
     return buser.display_name == person.display_name and\
-        buser.first_name == normalize_first_name(person.first_name) and\
-        buser.last_name == person.surname and\
+        buser.first_name == normalize_name(person.first_name) and\
+        buser.last_name == normalize_name(person.surname) and\
         buser.email == normalize_email(person.email1) and\
-        buser.is_alum == person.is_alum and\
-        buser.is_employee == person.is_employee and\
-        buser.is_faculty == person.is_faculty and\
-        buser.is_staff == person.is_staff and\
-        buser.is_student == person.is_student and\
-        buser.student_department1 == person.student_department1 and\
-        buser.student_department2 == person.student_department2 and\
-        buser.student_department3 == person.student_department3
+        buser.is_employee == person.is_employee
+    #    buser.is_alum == person.is_alum and\
+    #    buser.is_faculty == person.is_faculty and\
+    #    buser.is_staff == person.is_staff and\
+    #    buser.is_student == person.is_student
 
 
-def changed_netid(busers, person):
+def _are_all_active(busers):
+    """
+    @param: busers a list of UwBrifgeUser
+    return True if all user records are not disabled
+    """
+    for u in busers:
+        if u.disabled:
+            return False
+    return True
+
+
+def _are_all_disabled(busers):
+    """
+    @param: busers a list of UwBrifgeUser
+    return True if all user records are not disabled
+    """
+    for u in busers:
+        if not u.disabled:
+            return False
+    return True
+
+
+def _get_netid_changed_user(busers, person):
+    """
+    @param: busers a list of UwBrifgeUser
+    @param: person a pws Person
+    return the user with the old netid
+    """
     for u in busers:
         if u.netid != person.uwnetid:
-            logger.info("%s has changed netid to %s" %
+            logger.info("Existing user %s has changed netid to %s" %
                         (u.netid, person.uwnetid))
-            return True, u.netid
-    return False, person.uwnetid
+            return u
+    return None
 
 
-def changed_regid(busers, person):
+def _changed_regid(busers, person):
+    """
+    @param: busers a list of UwBrifgeUser
+    @param: person a valid pws Person object
+    """
     for u in busers:
         if u.regid != person.uwregid:
-            logger.info("%s has changed regid to %s" %
-                        (u.regid, person.uwregid))
+            logger.info("Existing user %s has changed regid from %s to %s" %
+                        (u.netid, u.regid, person.uwregid))
             return True
     return False
+
+
+def _get_user_updated_values(person, prev_netid, action):
+    """
+    @param person valid PWS Person object
+    @param prev_netid can be None
+    @param action one of the ACTION_CHOICES in models.py
+    """
+    return {'netid': person.uwnetid,
+            'prev_netid': prev_netid,
+            'last_visited_at': get_now(),
+            'disabled': False,
+            'terminate_at': None,
+            'action_priority': action,
+            'display_name': person.display_name,
+            'first_name': normalize_name(person.first_name),
+            'last_name': normalize_name(person.surname),
+            'email': normalize_email(person.email1),
+            'is_employee': person.is_employee,
+            # 'is_alum': person.is_alum,
+            # 'is_faculty': person.is_faculty,
+            # 'is_staff': person.is_staff,
+            # 'is_student': person.is_student
+            }
 
 
 def normalize_email(email_str):
@@ -191,10 +272,10 @@ def normalize_email(email_str):
     return email_str
 
 
-def normalize_first_name(first_name):
+def normalize_name(name):
     """
-    Return a non NULL first name
+    Return a title faced name if the name is not empty
     """
-    if first_name is not None and len(first_name) > 0:
-        return first_name
+    if name is not None and len(name) > 0:
+        return capwords(name)
     return ""

@@ -1,5 +1,5 @@
-from django.db import models
 import json
+from django.db import models
 from datetime import timedelta
 from django.utils import timezone
 from nameparser import HumanName
@@ -18,25 +18,13 @@ def get_now():
     return timezone.now()
 
 
-PRIORITY_NONE = 0
-PRIORITY_NORMAL = 1
-PRIORITY_HIGH = 2
-PRIORITY_CHANGE_REGID = 3
-PRIORITY_CHANGE_NETID = 4
-
-PRIORITY_CHOICES = (
-    (PRIORITY_NONE, 'none'),
-    (PRIORITY_NORMAL, 'normal'),
-    (PRIORITY_HIGH, 'high'),
-    (PRIORITY_CHANGE_REGID, 'regid changed'),
-    (PRIORITY_CHANGE_NETID, 'netid changed'),
-)
-
-
 class EmployeeAppointment(models.Model):
     app_number = models.PositiveSmallIntegerField()
     job_class_code = models.CharField(max_length=96)
     org_code = models.CharField(max_length=16)
+
+    def __init__(self, *args, **kwargs):
+        super(EmployeeAppointment, self).__init__(*args, **kwargs)
 
     def __cmp__(self, other):
         if other is not None:
@@ -76,119 +64,208 @@ class EmployeeAppointment(models.Model):
                 'org_code', self.org_code))
 
 
-class BridgeUser(models.Model):
+ACTION_NONE = 0
+ACTION_NEW = 1
+ACTION_UPDATE = 2
+ACTION_CHANGE_REGID = 3
+ACTION_RESTORE = 4
+ACTION_CHOICES = (
+    (ACTION_NONE, 'none'),
+    (ACTION_NEW, 'add new'),
+    (ACTION_UPDATE, 'update'),
+    (ACTION_CHANGE_REGID, 'change regid'),
+    (ACTION_RESTORE, 'restore'),
+    )
+
+
+class UwBridgeUser(models.Model):
     regid = models.CharField(max_length=32,
-                             db_index=True,
-                             unique=True)
+                             primary_key=True)
+    bridge_id = models.IntegerField(default=0)
     netid = models.SlugField(max_length=32,
                              db_index=True,
                              unique=True)
     prev_netid = models.SlugField(max_length=32,
-                                  null=True)
-    last_visited_date = models.DateTimeField()
-    import_priority = models.SmallIntegerField(default=1,
-                                               choices=PRIORITY_CHOICES)
-    terminate_date = models.DateTimeField(null=True)
-
-    display_name = models.CharField(max_length=256, null=True)
-    first_name = models.CharField(max_length=128, blank=True)
+                                  null=True,
+                                  default=None)
+    email = models.CharField(max_length=128,
+                             null=True,
+                             default=None)
+    display_name = models.CharField(max_length=256,
+                                    null=True,
+                                    default=None)
+    first_name = models.CharField(max_length=128,
+                                  null=True,
+                                  default=None)
     last_name = models.CharField(max_length=128)
-    email = models.CharField(max_length=64, null=True)
-    is_alum = models.NullBooleanField()
-    is_employee = models.NullBooleanField()
-    is_faculty = models.NullBooleanField()
-    is_staff = models.NullBooleanField()
-    is_student = models.NullBooleanField()
-    emp_appointments_data = models.TextField(max_length=2048, null=True)
-    student_department1 = models.CharField(max_length=255, null=True)
-    student_department2 = models.CharField(max_length=255, null=True)
-    student_department3 = models.CharField(max_length=255, null=True)
+    action_priority = models.SmallIntegerField(default=ACTION_NONE,
+                                               choices=ACTION_CHOICES)
+    disabled = models.NullBooleanField(default=False)
+    last_visited_at = models.DateTimeField()
+    terminate_at = models.DateTimeField(null=True,
+                                        default=None)
+    is_employee = models.NullBooleanField(default=None)
+    emp_appointments_data = models.TextField(max_length=2048,
+                                             null=True, blank=True,
+                                             default=None)
 
-    def __eq__(self, other):
-        return other is not None and\
-            self.regid == other.regid
+    def get_bridge_uid(self):
+        return self.netid + "@uw.edu"
+
+    def get_prev_bridge_uid(self):
+        if self.has_prev_netid():
+            return self.prev_netid + "@uw.edu"
+        return ""
+
+    def has_bridge_id(self):
+        try:
+            return self.bridge_id > 0
+        except AttributeError:
+            return False
+
+    def set_bridge_id(self, bridge_id):
+        if bridge_id > 0:
+            self.bridge_id = bridge_id
+            self.save()
+
+    def has_prev_netid(self):
+        try:
+            return self.prev_netid is not None and len(self.prev_netid) > 0
+        except AttributeError:
+            return False
+
+    def get_prev_netid(self):
+        if self.has_prev_netid():
+            return self.prev_netid
+        return ""
+
+    def set_prev_netid(self, prev_netid):
+        if prev_netid is not None and len(prev_netid) > 0:
+            self.prev_netid = prev_netid
+            self.save()
+
+    def set_no_action(self):
+        self.action_priority = ACTION_NONE
+        self.save()
+
+    def set_action_new(self):
+        self.action_priority = ACTION_NEW
+        self.save()
+
+    def set_action_update(self):
+        self.action_priority = ACTION_UPDATE
+        self.save()
+
+    def set_action_regid_changed(self):
+        self.action_priority = ACTION_CHANGE_REGID
+        self.save()
+
+    def set_action_restore(self):
+        self.action_priority = ACTION_RESTORE
+        self.save()
+
+    def is_new(self):
+        return self.action_priority == ACTION_NEW
+
+    def is_restore(self):
+        return self.action_priority == ACTION_RESTORE
 
     def is_stalled(self):
         # not validated for 15 days
-        return self.last_visited_date + timedelta(days=15) < get_now()
+        return self.last_visited_at + timedelta(days=15) < get_now()
 
-    def save_verified(self):
-        self.last_visited_date = get_now()
-        self.set_no_action()
-        self.terminate_date = None
-        self.save()
-
-    def no_action(self):
-        return self.import_priority == PRIORITY_NONE
-
-    def set_no_action(self):
-        self.import_priority = PRIORITY_NONE
-
-    def set_priority_normal(self):
-        self.import_priority = PRIORITY_NORMAL
-
-    def set_priority_netid_changed(self):
-        self.import_priority = PRIORITY_CHANGE_NETID
-
-    def set_priority_regid_changed(self):
-        self.import_priority = PRIORITY_CHANGE_REGID
-
-    def is_priority_normal(self):
-        return self.import_priority == PRIORITY_NORMAL
-
-    def is_priority_high(self):
-        return self.import_priority == PRIORITY_HIGH
+    def is_update(self):
+        return self.action_priority == ACTION_UPDATE
 
     def netid_changed(self):
-        return self.import_priority == PRIORITY_CHANGE_NETID
+        return self.has_prev_netid()
+
+    def no_action(self):
+        return self.action_priority == ACTION_NONE
 
     def regid_changed(self):
-        return self.import_priority == PRIORITY_CHANGE_REGID
+        return self.action_priority == ACTION_CHANGE_REGID
+
+    def disable(self):
+        self.disabled = True
+        self.save()
 
     def clear_terminate_date(self):
-        if self.terminate_date:
-            self.terminate_date = None
+        if self.has_terminate_date():
+            self.terminate_at = None
             self.save()
 
+    def has_terminate_date(self):
+        try:
+            return self.terminate_at is not None
+        except AttributeError:
+            return False
+
     def save_terminate_date(self, graceful=True):
-        if graceful and self.terminate_date is not None:
-            # not to change previously set date unless not graceful
+        # not to change previously set date unless not graceful
+        if graceful and self.has_terminate_date():
             return
-        self.terminate_date = get_now()
+        self.terminate_at = get_now()
         if graceful:
-            self.terminate_date += timedelta(days=15)
+            self.terminate_at += timedelta(days=15)
         self.save()
 
     def passed_terminate_date(self):
-        return self.terminate_date is not None and\
-            get_now() > self.terminate_date
+        return self.has_terminate_date() and\
+            get_now() > self.terminate_at
+
+    def save_verified(self, action=ACTION_NONE, upd_last_visited=True):
+        self.action_priority = action
+        self.disabled = False
+        self.prev_netid = None
+        self.terminate_at = None
+        if upd_last_visited:
+            self.last_visited_at = get_now()
+        self.save()
 
     def has_display_name(self):
-        return self.display_name is not None and\
-            len(self.display_name) > 0 and\
-            not self.display_name.isupper()
+        try:
+            return self.display_name is not None and\
+                len(self.display_name) > 0 and\
+                not self.display_name.isupper()
+        except AttributeError:
+            return False
 
-    def get_display_name(self, use_title=False):
+    def has_first_name(self):
+        try:
+            return self.first_name is not None and len(self.first_name) > 0
+        except AttributeError:
+            return False
+
+    def get_display_name(self):
         if self.has_display_name():
             return self.display_name
+        if self.has_first_name():
+            name = HumanName("%s %s" % (self.first_name, self.last_name))
+        else:
+            name = HumanName(self.last_name)
 
-        if use_title:
-            return "%s %s" % (self.first_name.title(),
-                              self.last_name.title())
-
-        name = HumanName("%s %s" % (self.first_name, self.last_name))
         name.capitalize()
         name.string_format = "{first} {last}"
         return str(name)
 
-    def has_emp_appointments(self):
-        return self.emp_appointments_data is not None and\
-            len(self.emp_appointments_data) > 2
+    def has_email(self):
+        try:
+            return self.email is not None and len(self.email) > 0
+        except AttributeError:
+            return False
 
-    def get_emp_appointments_json(self):
-        if self.has_emp_appointments():
-            return json.loads(self.emp_appointments_data)
-        return None
+    def get_email(self):
+        if self.has_email():
+            return self.email
+        return "%s@uw.edu" % self.netid
+
+    def has_emp_appointments(self):
+        try:
+            return self.emp_appointments_data is not None and\
+                len(self.emp_appointments_data) > 2   # "[]"
+        except AttributeError:
+            return False
 
     def get_total_emp_apps(self):
         if self.has_emp_appointments():
@@ -206,35 +283,66 @@ class BridgeUser(models.Model):
                 i += 1
         return emp_apps
 
-    def __str__(self):
-        return (
-            "{%s: %s, %s: %s, %s: %s, %s: %s, %s: %s, %s: %s," +
-            " %s: %s, %s: %s, %s: %s, %s: %s, %s: %s}") % (
-            "netid", self.netid,
-            "prev_netid", self.prev_netid,
-            "regid", self.regid,
-            "last_visited_date", datetime_to_str(self.last_visited_date),
-            "import_priority", self.import_priority,
-            "terminate_date", datetime_to_str(self.terminate_date),
-            "display_name", self.display_name,
-            "first_name", self.first_name,
-            "last_name", self.last_name,
-            "email", self.email,
-            "emp_appointments", self.emp_appointments_data)
+    def __init__(self, *args, **kwargs):
+        super(UwBridgeUser, self).__init__(*args, **kwargs)
+
+    def emp_app_equal(self, emp_app_data):
+        return (self.has_emp_appointments() and
+                self.emp_appointments_data == emp_app_data or
+                (not self.has_emp_appointments() and
+                 (emp_app_data is None or len(emp_app_data) == 0)))
+
+    def __eq__(self, other):
+        return other is not None and\
+            self.regid == other.regid and\
+            self.netid == other.netid and\
+            self.first_name == other.first_name and\
+            self.last_name == other.last_name and\
+            self.get_display_name() == other.get_display_name() and\
+            self.email == other.email and\
+            self.is_employee == other.is_employee and\
+            self.emp_app_equal(other.emp_appointments_data)
+
+    def get_emp_appointments_json(self):
+        if self.has_emp_appointments():
+            return json.loads(self.emp_appointments_data)
+        return None
 
     def json_data(self):
         return {
             "netid": self.netid,
             "regid": self.regid,
-            "last_visited_date": datetime_to_str(self.last_visited_date),
-            "import_priority": self.import_priority,
-            "terminate_date": datetime_to_str(self.terminate_date),
-            "display_name": self.display_name,
-            "first_name": self.first_name,
+            "display_name": self.get_display_name(),
             "last_name": self.last_name,
-            "email": self.email,
+            "email": self.get_email(),
+            "last_visited_at": datetime_to_str(self.last_visited_at),
             "emp_appointments": self.get_emp_appointments_json()
             }
+
+    def __str__(self):
+        json_v = self.json_data()
+        json_v["prev_netid"] = self.get_prev_netid()
+
+        if self.has_first_name():
+            json_v["first_name"] = self.first_name
+        if self.has_bridge_id():
+            json_v["bridge_id"] = self.bridge_id
+        if self.has_terminate_date():
+            json_v["terminate_at"] = datetime_to_str(self.terminate_at)
+
+        try:
+            if self.action_priority:
+                json_v["action_priority"] =\
+                    self.get_action_priority_display()
+        except AttributeError:
+            pass
+
+        try:
+            json_v["disabled"] = self.disabled
+        except AttributeError:
+            pass
+
+        return json.dumps(json_v, default=str)
 
     class Meta:
         db_table = 'uw_bridge_users'

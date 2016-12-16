@@ -29,8 +29,7 @@ INSTALLED_APPS = [
     'compressor',
     'templatetag_handlebars',
     'restclients',
-    'userservice',
-    'sis_provisioner',
+    'sis_provisioner.apps.Sis_provisionerConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -82,3 +81,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+RESTCLIENTS_DAO_CACHE_CLASS='restclients.cache_implementation.NoCache'
+
+BRIDGE_IMPORT_CSV_ROOT='/tmp/fl_test'
+BRIDGE_IMPORT_USER_FILENAME='busers'
+BRIDGE_IMPORT_USER_FILE_SIZE=3
