@@ -42,11 +42,10 @@ class BridgeChecker(UserUpdater):
             except DataFailureException as ex:
                 log_exception(
                     logger,
-                    "validate user (%s, %s) failed, skip!" % (uwnetid,
-                                                              uwregid),
+                    "validate user (%s) failed, skip!" % bridge_user,
                     traceback.format_exc())
                 self.worker.append_error(
-                    "validate user %s: %s" % (uwnetid, ex))
+                    "Failed to validate user %s: %s" % (bridge_user, ex))
                 continue
 
             uw_bridge_user = get_user_from_db(uwnetid, uwregid)
@@ -58,18 +57,21 @@ class BridgeChecker(UserUpdater):
                 self.take_action(person, bridge_user, in_db)
                 continue
 
-            # not or no longer a valid uw learner
+            self.logger.info(
+                "%s no longer a valid learner, terminate!" % bridge_user)
             if uw_bridge_user is not None:
                 # The Bridge account is in our DB
                 if uw_bridge_user.disabled:
+                    # marked disabled, but exists as a valid user in Bridge
+                    # report an inconsistent state!
+                    self.add_error(
+                        "Inconsistent State: %s DISABLED!" % bridge_user)
                     continue
                 self.terminate(uw_bridge_user, validation_status)
                 continue
 
             # not in local DB (created manually)
-            err_msg = "Unknown Bridge user: %s" % bridge_user
-            logger.error(err_msg)
-            self.worker.append_error(err_msg)
+            self.add_error("Unknown Bridge user: %s" % bridge_user)
 
     def take_action(self, person, bridge_user, in_db=False):
         """
@@ -79,9 +81,9 @@ class BridgeChecker(UserUpdater):
         try:
             uw_bridge_user, del_user = save_user(
                 person, include_hrp=self.include_hrp())
-            err_msg = None
 
             if in_db and del_user is not None:
+                self.logger.info("Delete %s" % del_user)
                 self.worker.delete_user(del_user)
 
             if uw_bridge_user is not None:
@@ -90,28 +92,28 @@ class BridgeChecker(UserUpdater):
                         # created manually in Bridge, now added in DB
                         uw_bridge_user.set_no_action()
                     else:
-                        err_msg = "Bridge user (%s) NOT in DB, %s" % (
-                            bridge_user,
-                            "but save_user found it EXIST in DB")
+                        self.add_error(
+                            "Bridge user (%s) NOT in DB, %s" % (
+                                bridge_user,
+                                "but save_user found it EXIST in DB"))
+                        return
                 else:
                     if uw_bridge_user.is_new():
-                        err_msg = "Bridge user (%s) in DB, %s" % (
-                            bridge_user,
-                            "but save_user NOT found it")
-                    else:
-                        pass
+                        self.add_error(
+                            "Bridge user (%s) in DB, %s" % (
+                                bridge_user,
+                                "but save_user NOT found it"))
+                        return
             else:
-                err_msg = "FAILED to %s Bridge user in DB: %s" % (
-                    ("update" if in_db else "create"), bridge_user)
-
-            if err_msg:
-                logger.error(err_msg)
-                self.worker.append_error(err_msg)
+                self.add_error(
+                    "FAILED to %s Bridge user in DB: %s" % (
+                        ("update" if in_db else "create"), bridge_user))
                 return
 
             uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
 
             if self.changed_attributes(bridge_user, uw_bridge_user):
+                self.logger.info("Update %s" % uw_bridge_user)
                 if self.worker.update_user(uw_bridge_user):
                     uw_bridge_user.save_verified()
                     self.total_loaded_count += 1

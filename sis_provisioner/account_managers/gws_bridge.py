@@ -6,9 +6,9 @@ accounts via the given worker.
 
 import logging
 import traceback
-from sis_provisioner.account_managers.loader import Loader
 from sis_provisioner.account_managers import fetch_users_from_gws,\
     get_validated_user
+from sis_provisioner.account_managers.loader import Loader
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.dao.bridge import delete_bridge_user
 from sis_provisioner.dao.user import save_user
@@ -36,7 +36,7 @@ class GwsBridgeLoader(Loader):
                 self.logger, uwnetid)
             if person is None:
                 self.logger.error(
-                    "uw_member %s is not a personal netid, skip!" % uwnetid)
+                    "%s is not a valid learner, skip!" % uwnetid)
                 continue
             self.take_action(person)
 
@@ -56,6 +56,7 @@ class GwsBridgeLoader(Loader):
             return
 
         if del_user is not None:
+            self.logger.info("Delete %s" % del_user)
             self.worker.delete_user(del_user)
 
         self.apply_change_to_bridge(uw_bri_user)
