@@ -125,7 +125,9 @@ class TestUserDao(TransactionTestCase):
         person = get_person('faculty')
         self.assertIsNotNone(person)
         user, del_u = save_user(person, include_hrp=False)
+        self.assertIsNone(del_u)
         user, del_u = save_user(person, include_hrp=True)
+        self.assertIsNone(del_u)
         self.assertIsNotNone(user)
         self.assertEqual(user.netid, 'faculty')
         self.assertFalse(user.is_new())
@@ -144,6 +146,7 @@ class TestUserDao(TransactionTestCase):
 
         person = get_person('staff')
         user, del_u = save_user(person, include_hrp=True)
+        self.assertIsNone(del_u)
         self.assertIsNotNone(user)
         self.assertEqual(user.display_name, "James Staff")
         self.assertEqual(user.first_name, "James Average")
@@ -160,6 +163,7 @@ class TestUserDao(TransactionTestCase):
 
         person = get_person('botgrad')
         user, del_u = save_user(person, include_hrp=True)
+        self.assertIsNone(del_u)
         self.assertIsNotNone(user)
         self.assertEqual(user.netid, 'botgrad')
         self.assertEqual(user.regid,
@@ -261,6 +265,7 @@ class TestUserDao(TransactionTestCase):
         self.assertIsNotNone(user_upd)
         self.assertFalse(user_upd.regid_changed())
         self.assertTrue(user_upd.is_update())
+
         self.assertIsNotNone(user_del)
         self.assertEqual(user_del.netid, 'old')
         self.assertRaises(Exception,
