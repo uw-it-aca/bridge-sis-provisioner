@@ -32,10 +32,20 @@ class GwsBridgeLoader(Loader):
         Validate the users and Update the corresponding records
         """
         for uwnetid in self.get_users_to_process():
-            person, validation_status = get_validated_user(
-                self.logger, uwnetid)
+            try:
+                person, validation_status = get_validated_user(
+                    self.logger, uwnetid)
+            except DataFailureException:
+                log_exception(
+                    logger,
+                    "validate user (%s) failed, skip!" % uwnetid,
+                    traceback.format_exc())
+                self.worker.append_error(
+                    "validate user %s: %s" % (uwnetid, ex))
+                continue
+
             if person is None:
-                self.logger.error(
+                self.logger.info(
                     "%s is not a valid learner, skip!" % uwnetid)
                 continue
             self.take_action(person)
