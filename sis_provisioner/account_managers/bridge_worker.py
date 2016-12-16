@@ -38,6 +38,8 @@ class BridgeWorker(Worker):
                 logger.info("Created user %s in Bridge" % uw_bri_user)
                 self.total_new_users_count += 1
                 return True
+            self.append_error("Add New failed on %s" % uw_bri_user)
+
         except Exception as ex:
             log_exception(logger,
                           "Failed to create user (%s)" % uw_bri_user,
@@ -52,6 +54,8 @@ class BridgeWorker(Worker):
                 logger.info("Deleted user %s from Bridge" % user_to_del)
                 self.total_deleted_count += 1
                 return True
+            self.append_error("Delete failed on %s" % user_to_del)
+
         except Exception as ex:
             log_exception(logger,
                           "Failed to delete user (%s)" % user_to_del,
@@ -72,6 +76,8 @@ class BridgeWorker(Worker):
                 logger.info("Restored user %s in Bridge" % uw_bri_user)
                 self.total_restored_count += 1
                 return True
+            self.append_error("Restore failed on %s" % uw_bri_user)
+
         except Exception as ex:
             log_exception(logger,
                           "Failed to restore user (%s)" % uw_bri_user,
@@ -93,6 +99,8 @@ class BridgeWorker(Worker):
                 logger.info("Changed UID of user %s in Bridge" % uw_bri_user)
                 self.total_netid_changes_count += 1
                 return True
+            self.append_error("Change-UID failed on %s" % uw_bri_user)
+
         except Exception as ex:
             log_exception(logger,
                           "Failed to change-uid for user (%s)" % uw_bri_user,
@@ -109,6 +117,8 @@ class BridgeWorker(Worker):
                 if uw_bri_user.regid_changed():
                     self.total_regid_changes_count += 1
                 return True
+            self.append_error("Update failed on %s" % uw_bri_user)
+
         except Exception as ex:
             log_exception(logger,
                           "Failed to update user (%s)" % uw_bri_user,
