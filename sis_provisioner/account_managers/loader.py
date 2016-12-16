@@ -124,3 +124,7 @@ class Loader:
 
     def has_error(self):
         return self.worker.has_err()
+
+    def add_error(self, err_msg):
+        self.logger.error(err_msg)
+        self.worker.append_error(err_msg)
