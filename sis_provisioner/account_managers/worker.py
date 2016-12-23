@@ -27,7 +27,6 @@ class Worker:
         """
         Add a new user into Bridge
         @param uw_bri_user a valid UwBridgeUser object.
-        @return True if successful.
         """
         pass
 
@@ -36,7 +35,6 @@ class Worker:
         """
         Delete an active existing user in Bridge
         @param user_to_del a valid UwBridgeUser object.
-        @return True if successful.
         """
         pass
 
@@ -63,7 +61,6 @@ class Worker:
         """
         Update the existing user in Bridge (including change uid and regid)
         @param uw_bri_user a valid UwBridgeUser object.
-        @return True if successful.
         """
         pass
 
@@ -101,4 +98,15 @@ class Worker:
         """
         @return total number of users being restored successfully
         """
+        pass
+
+    @abstractmethod
+    def get_loaded_count(self):
+        """
+        @return total number of users being updated successfully
+        """
+        pass
+
+    @abstractmethod
+    def save_verified(self, uw_bri_user):
         pass

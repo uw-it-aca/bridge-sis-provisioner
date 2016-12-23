@@ -5,4 +5,4 @@ unittest2
 django-compressor
 django-templatetag-handlebars
 nameparser
--e git+https://github.com/uw-it-aca/uw-restclients@fang/bridge-upd#egg=RestClients
+-e git+https://github.com/uw-it-aca/uw-restclients@qa#egg=RestClients

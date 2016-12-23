@@ -113,9 +113,7 @@ class BridgeChecker(UserUpdater):
 
             if self.changed_attributes(bridge_user, uw_bridge_user):
                 self.logger.info("Update %s" % uw_bridge_user)
-                if self.worker.update_user(uw_bridge_user):
-                    uw_bridge_user.save_verified()
-                    self.total_loaded_count += 1
+                self.worker.update_user(uw_bridge_user)
 
         except Exception as ex:
             log_exception(self.logger,

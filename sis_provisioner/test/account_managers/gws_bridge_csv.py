@@ -55,7 +55,10 @@ class TestGwsBridgeCsvLoader(TransactionTestCase):
         loader = GwsBridgeLoader(CsvWorker())
         loader.apply_change_to_bridge(user)
         self.assertEqual(loader.get_netid_changed_count(), 1)
-        self.assertEqual(loader.get_loaded_count(), 1)
+        users = loader.worker.get_users_netid_changed()
+        self.assertEqual(users[0].netid, "changed")
+        self.assertEqual(users[0].prev_netid, "javerage")
+        self.assertEqual(users[0].action_priority, ACTION_UPDATE)
 
     def test_regid_change_user(self):
         user = UwBridgeUser(netid='javerage',
@@ -67,7 +70,8 @@ class TestGwsBridgeCsvLoader(TransactionTestCase):
         loader = GwsBridgeLoader(CsvWorker())
         loader.apply_change_to_bridge(user)
         self.assertEqual(loader.get_regid_changed_count(), 1)
-        self.assertEqual(loader.get_loaded_count(), 1)
+        users = loader.worker.get_users_regid_changed()
+        self.assertEqual(users[0].action_priority, ACTION_CHANGE_REGID)
 
     def test_restore_user(self):
         user = UwBridgeUser(netid='javerage',
@@ -80,4 +84,5 @@ class TestGwsBridgeCsvLoader(TransactionTestCase):
         loader = GwsBridgeLoader(CsvWorker())
         loader.apply_change_to_bridge(user)
         self.assertEqual(loader.get_restored_count(), 1)
-        self.assertEqual(loader.get_loaded_count(), 1)
+        users = loader.worker.get_users_to_restore()
+        self.assertEqual(users[0].action_priority, ACTION_RESTORE)
