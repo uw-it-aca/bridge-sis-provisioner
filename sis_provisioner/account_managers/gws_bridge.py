@@ -21,7 +21,6 @@ class GwsBridgeLoader(Loader):
 
     def __init__(self, worker, clogger=logger, include_hrp=False):
         super(GwsBridgeLoader, self).__init__(worker, clogger, include_hrp)
-        self.total_loaded_count = 0  # updated
 
     def fetch_users(self):
         self.data_source = "GWS uw_members group"
@@ -87,17 +86,9 @@ class GwsBridgeLoader(Loader):
         if uw_bridge_user is None or uw_bridge_user.no_action():
             return
 
-        loaded = False
         if uw_bridge_user.is_new():
-            loaded = self.worker.add_new_user(uw_bridge_user)
+            self.worker.add_new_user(uw_bridge_user)
         elif uw_bridge_user.is_restore():
-            loaded = self.worker.restore_user(uw_bridge_user)
+            self.worker.restore_user(uw_bridge_user)
         else:
-            loaded = self.worker.update_user(uw_bridge_user)
-
-        if loaded:
-            uw_bridge_user.save_verified()
-            self.total_loaded_count += 1
-
-    def get_loaded_count(self):
-        return self.total_loaded_count
+            self.worker.update_user(uw_bridge_user)

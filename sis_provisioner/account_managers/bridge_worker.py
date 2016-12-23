@@ -24,6 +24,7 @@ class BridgeWorker(Worker):
         self.total_regid_changes_count = 0
         self.total_new_users_count = 0
         self.total_restored_count = 0
+        self.total_loaded_count = 0
 
     def _verify_resp(self, return_users, uw_bri_user):
         return return_users is not None and len(return_users) == 1 and\
@@ -37,7 +38,7 @@ class BridgeWorker(Worker):
                 uw_bri_user.set_bridge_id(ret_users[0].bridge_id)
                 logger.info("Created user %s in Bridge" % uw_bri_user)
                 self.total_new_users_count += 1
-                return True
+                return
             self.append_error("Add New failed on %s" % uw_bri_user)
 
         except Exception as ex:
@@ -46,14 +47,13 @@ class BridgeWorker(Worker):
                           traceback.format_exc())
             self.append_error("Create failed on %s: %s" % (
                     uw_bri_user, ex))
-        return False
 
     def delete_user(self, user_to_del):
         try:
             if delete_bridge_user(user_to_del):
                 logger.info("Deleted user %s from Bridge" % user_to_del)
                 self.total_deleted_count += 1
-                return True
+                return
             self.append_error("Delete failed on %s" % user_to_del)
 
         except Exception as ex:
@@ -62,12 +62,11 @@ class BridgeWorker(Worker):
                           traceback.format_exc())
             self.append_error("Delete failed on %s: %s" % (
                     user_to_del, ex))
-        return False
 
     def restore_user(self, uw_bri_user):
-        if not self._restore_user(uw_bri_user):
-            return False
-        return self._update_user(uw_bri_user)
+        if self._restore_user(uw_bri_user):
+            if self._update_user(uw_bri_user):
+                self.save_verified(uw_bri_user)
 
     def _restore_user(self, uw_bri_user):
         try:
@@ -87,10 +86,9 @@ class BridgeWorker(Worker):
         return False
 
     def update_user(self, uw_bri_user):
-        if uw_bri_user.netid_changed():
-            if not self.update_uid(uw_bri_user):
-                return False
-        return self._update_user(uw_bri_user)
+        if not uw_bri_user.netid_changed() or self.update_uid(uw_bri_user):
+            if self._update_user(uw_bri_user):
+                self.save_verified(uw_bri_user)
 
     def update_uid(self, uw_bri_user):
         try:
@@ -141,3 +139,10 @@ class BridgeWorker(Worker):
 
     def get_deleted_count(self):
         return self.total_deleted_count
+
+    def get_loaded_count(self):
+        return self.total_loaded_count
+
+    def save_verified(self, uw_bridge_user):
+        uw_bridge_user.save_verified()
+        self.total_loaded_count += 1
