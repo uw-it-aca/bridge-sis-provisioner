@@ -26,7 +26,7 @@ class TestReloader(TransactionTestCase):
         self.assertEqual(len(bri_users), 1)
         self.assertEqual(loader.get_total_count(), 1)
         self.assertEqual(loader.get_new_user_count(), 1)
-        self.assertEqual(loader.get_loaded_count(), 0)
+        self.assertEqual(loader.get_loaded_count(), 1)
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_regid_changed_count(), 0)
 

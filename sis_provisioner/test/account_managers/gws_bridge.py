@@ -47,7 +47,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         loader.load()
         self.assertEqual(loader.get_total_count(), 11)
         self.assertEqual(loader.get_new_user_count(), 8)
-        self.assertEqual(loader.get_loaded_count(), 0)
+        self.assertEqual(loader.get_loaded_count(), 8)
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_regid_changed_count(), 0)
 
@@ -57,7 +57,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         loader.load()
         self.assertEqual(loader.get_total_count(), 11)
         self.assertEqual(loader.get_new_user_count(), 8)
-        self.assertEqual(loader.get_loaded_count(), 0)
+        self.assertEqual(loader.get_loaded_count(), 8)
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_regid_changed_count(), 0)
 
