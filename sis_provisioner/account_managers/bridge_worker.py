@@ -37,6 +37,7 @@ class BridgeWorker(Worker):
             if self._verify_resp(ret_users, uw_bri_user):
                 uw_bri_user.set_bridge_id(ret_users[0].bridge_id)
                 logger.info("Created user %s in Bridge" % uw_bri_user)
+                self.save_verified(uw_bri_user)
                 self.total_new_users_count += 1
                 return
             self.append_error("Add New failed on %s" % uw_bri_user)

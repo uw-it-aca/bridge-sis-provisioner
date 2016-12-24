@@ -15,6 +15,7 @@ class TestBridgeWorker(TransactionTestCase):
         worker = BridgeWorker()
         worker.add_new_user(uw_user)
         self.assertEqual(worker.get_new_user_count(), 1)
+        self.assertEqual(worker.get_loaded_count(), 1)
 
     def test_netid_change_user(self):
         uw_user, person = mock_uw_bridge_user('javerage')
