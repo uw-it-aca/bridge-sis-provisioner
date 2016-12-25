@@ -34,13 +34,13 @@ class GwsBridgeLoader(Loader):
             try:
                 person, validation_status = get_validated_user(
                     self.logger, uwnetid)
-            except DataFailureException:
+            except DataFailureException as ex:
                 log_exception(
                     logger,
-                    "validate user (%s) failed, skip!" % uwnetid,
+                    "Validate user (%s) failed, skip!" % uwnetid,
                     traceback.format_exc())
                 self.worker.append_error(
-                    "validate user %s: %s" % (uwnetid, ex))
+                    "Validate user %s: %s" % (uwnetid, ex))
                 continue
 
             if person is None:
