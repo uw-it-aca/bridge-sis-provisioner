@@ -34,13 +34,13 @@ class UserUpdater(GwsBridgeLoader):
                     uw_bri_user.netid,
                     uwregid=uw_bri_user.regid,
                     check_gws=True)
-            except DataFailureException:
+            except DataFailureException as ex:
                 log_exception(
                     logger,
-                    "validate user (%s) failed, skip!" % uw_bri_user,
+                    "Validate user (%s) failed, skip!" % uw_bri_user,
                     traceback.format_exc())
                 self.worker.append_error(
-                    "validate user %s: %s" % (uw_bri_user, ex))
+                    "Validate user %s: %s" % (uw_bri_user, ex))
                 continue
 
             if person is None:

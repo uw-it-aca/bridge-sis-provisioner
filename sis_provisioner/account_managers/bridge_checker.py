@@ -42,10 +42,10 @@ class BridgeChecker(UserUpdater):
             except DataFailureException as ex:
                 log_exception(
                     logger,
-                    "validate user (%s) failed, skip!" % bridge_user,
+                    "Validate user (%s) failed, skip!" % bridge_user,
                     traceback.format_exc())
                 self.worker.append_error(
-                    "Failed to validate user %s: %s" % (bridge_user, ex))
+                    "Validate user %s: %s" % (bridge_user, ex))
                 continue
 
             uw_bridge_user = get_user_from_db(uwnetid, uwregid)
@@ -117,9 +117,10 @@ class BridgeChecker(UserUpdater):
 
         except Exception as ex:
             log_exception(self.logger,
-                          "Failed to load user (%s)" % bridge_user,
+                          "Take_action failed (%s)" % bridge_user,
                           traceback.format_exc())
-            self.worker.append_error("%s: %s" % (bridge_user, ex))
+            self.worker.append_error(
+                "Take_action failed %s: %s" % (bridge_user, ex))
 
     def changed_attributes(self, bridge_user, uw_bridge_user):
         if uw_bridge_user.netid_changed():
