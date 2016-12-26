@@ -268,7 +268,8 @@ def _get_user_updated_values(person, prev_netid, action):
 
 def normalize_email(email_str):
     if email_str is not None and len(email_str) > 0:
-        return re.sub("\.$", "", email_str, flags=re.IGNORECASE)
+        email_s1 = re.sub(" ", "", email_str)
+        return re.sub("\.$", "", email_s1, flags=re.IGNORECASE)
     return email_str
 
 
