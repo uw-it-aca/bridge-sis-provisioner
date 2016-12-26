@@ -100,6 +100,10 @@ class TestModels(TransactionTestCase):
         self.assertTrue(user.has_first_name())
         self.assertTrue(user.has_display_name())
         self.assertEqual(user.get_display_name(), "James Staff")
+        user.display_name = "2001"
+        self.assertFalse(user.has_display_name())
+        user.display_name = "JAMES STAFF"
+        self.assertFalse(user.has_display_name())
 
     def test_email(self):
         user, person = mock_uw_bridge_user('staff')
