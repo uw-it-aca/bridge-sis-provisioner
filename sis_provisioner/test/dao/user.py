@@ -33,6 +33,7 @@ class TestUserDao(TransactionTestCase):
     def test_normalize_email(self):
         self.assertEqual(normalize_email("x@uw.edu"), "x@uw.edu")
         self.assertEqual(normalize_email("x@uw.edu."), "x@uw.edu")
+        self.assertEqual(normalize_email("x@ uw.edu"), "x@uw.edu")
         self.assertIsNone(normalize_email(None))
 
     def test_normalize_name(self):

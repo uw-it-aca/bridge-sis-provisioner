@@ -227,6 +227,7 @@ class UwBridgeUser(models.Model):
         try:
             return self.display_name is not None and\
                 len(self.display_name) > 0 and\
+                not self.display_name.isdigit() and\
                 not self.display_name.isupper()
         except AttributeError:
             return False
