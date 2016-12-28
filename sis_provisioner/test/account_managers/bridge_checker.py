@@ -3,9 +3,9 @@ from django.test import TransactionTestCase
 from sis_provisioner.models import UwBridgeUser, ACTION_NEW, ACTION_UPDATE
 from sis_provisioner.dao.user import get_total_users, get_user_from_db
 from sis_provisioner.account_managers import get_validated_user,\
-    get_regid_from_bridge_user, fetch_users_from_bridge,\
-    NO_CHANGE, CHANGED, LEFT_UW, DISALLOWED
-from sis_provisioner.account_managers.bridge_checker import BridgeChecker
+    fetch_users_from_bridge, NO_CHANGE, CHANGED, LEFT_UW, DISALLOWED
+from sis_provisioner.account_managers.bridge_checker import BridgeChecker,\
+    get_regid_from_bridge_user
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
     fdao_bridge_override

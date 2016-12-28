@@ -8,12 +8,12 @@ accounts via the given worker.
 import logging
 import traceback
 from restclients.exceptions import DataFailureException
-from sis_provisioner.dao.user import get_user_from_db
+from sis_provisioner.dao.user import get_user_from_db, save_user
+from sis_provisioner.dao.bridge import get_regid_from_bridge_user
 from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.util.log import log_exception
-from sis_provisioner.dao.user import save_user
 from sis_provisioner.account_managers import get_validated_user,\
-    fetch_users_from_bridge, get_regid_from_bridge_user
+    fetch_users_from_bridge
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 
 
