@@ -7,7 +7,7 @@ from restclients.models.bridge import BridgeCustomField, BridgeUser
 from restclients.bridge.custom_field import new_regid_custom_field
 from restclients.bridge.user import add_user, change_uid, replace_uid,\
     delete_user, delete_user_by_id, get_user, get_user_by_id, get_all_users,\
-    update_user, restore_user_by_id, restore_user
+    update_user, restore_user_by_id, restore_user, get_regid_from_custom_fields
 from restclients.exceptions import DataFailureException
 from sis_provisioner.util.log import log_exception
 
@@ -97,8 +97,11 @@ def get_all_bridge_users():
     """
     Return a list of (active) BridgeUser objects with custom fields
     """
-    return _log_result(get_all_users(),
-                       "get all bridge users")
+    return _log_result(get_all_users(), "get all bridge users")
+
+
+def get_regid_from_bridge_user(bridge_user):
+    return get_regid_from_custom_fields(bridge_user.custom_fields)
 
 
 def restore_bridge_user(uw_bridge_user):

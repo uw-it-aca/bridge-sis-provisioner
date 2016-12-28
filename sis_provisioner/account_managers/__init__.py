@@ -99,12 +99,3 @@ def fetch_users_from_bridge(logger):
                       "Failed to fetch_users_from_bridge:",
                       traceback.format_exc())
     return []
-
-
-def get_regid_from_bridge_user(bridge_user):
-    if bridge_user.custom_fields is not None and\
-            len(bridge_user.custom_fields) > 0:
-        for custom_field in bridge_user.custom_fields:
-            if custom_field.is_regid():
-                return custom_field.value
-    return None
