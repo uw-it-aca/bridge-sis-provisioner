@@ -48,7 +48,9 @@ class BridgeChecker(UserUpdater):
                     "Validate user %s: %s" % (bridge_user, ex))
                 continue
 
-            uw_bridge_user = get_user_from_db(uwnetid, uwregid)
+            uw_bridge_user = get_user_from_db(bridge_user.bridge_id,
+                                              uwnetid,
+                                              uwregid)
 
             if person is not None:
                 in_db = uw_bridge_user is not None

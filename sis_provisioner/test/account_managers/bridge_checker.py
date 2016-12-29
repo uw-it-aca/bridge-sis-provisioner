@@ -181,16 +181,17 @@ class TestBridgeUserChecker(TransactionTestCase):
         loader = BridgeChecker(BridgeWorker())
         loader.load()
 
-        self.assertIsNotNone(get_user_from_db('seagrad', None))
+        self.assertIsNotNone(get_user_from_db(195, None, None))
+        self.assertIsNotNone(get_user_from_db(0, 'seagrad', None))
 
-        user = get_user_from_db('affiemp', None)
+        user = get_user_from_db(0, 'affiemp', None)
         self.assertEqual(user.bridge_id, 198)
 
-        user = get_user_from_db('staff', None)
+        user = get_user_from_db(196, 'staff', None)
         self.assertEqual(user.bridge_id, 196)
 
-        self.assertIsNone(get_user_from_db('unknown', None))
-        self.assertIsNone(get_user_from_db('leftuw', None))
+        self.assertIsNone(get_user_from_db(0, 'unknown', None))
+        self.assertIsNone(get_user_from_db(0, 'leftuw', None))
 
         self.assertEqual(loader.get_total_count(), 6)
         self.assertEqual(loader.get_new_user_count(), 0)
