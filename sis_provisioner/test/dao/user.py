@@ -10,7 +10,7 @@ from sis_provisioner.dao.user import normalize_email, normalize_name,\
     _emp_attr_unchanged, filter_by_ids, get_user_by_netid, get_user_by_regid,\
     get_all_users, save_user, _get_netid_changed_user, _changed_regid,\
     _are_all_disabled, _are_all_active, _appointments_json_dump,\
-    get_user_from_db, get_total_users
+    get_user_from_db, get_total_users, get_user_by_bridgeid
 from sis_provisioner.test import fdao_pws_override, fdao_hrp_override
 from sis_provisioner.test.dao import mock_uw_bridge_user
 
@@ -44,6 +44,7 @@ class TestUserDao(TransactionTestCase):
 
     def test_get(self):
         user, person = mock_uw_bridge_user('staff')
+        user.bridge_id = 100
         user.save()
 
         users = filter_by_ids(person.uwnetid, person.uwregid)
@@ -58,27 +59,39 @@ class TestUserDao(TransactionTestCase):
         self.assertEqual(len(users), 1)
         self.assertEqual(users[0].netid, person.uwnetid)
 
-        user = get_user_by_netid(person.uwnetid)
+        user = get_user_by_bridgeid(100)
+        self.assertEqual(user.bridge_id, 100)
         self.assertEqual(user.netid, person.uwnetid)
 
-        user = get_user_by_netid(None)
-        self.assertIsNone(user)
+        user = get_user_by_netid(person.uwnetid)
+        self.assertEqual(user.netid, person.uwnetid)
 
         user = get_user_by_regid(person.uwregid)
         self.assertEqual(user.regid, person.uwregid)
 
+        user = get_user_from_db(100, None, None)
+        self.assertEqual(user.bridge_id, 100)
+        self.assertEqual(user.netid, person.uwnetid)
+        self.assertEqual(user.regid, person.uwregid)
+
+        user = get_user_from_db(0, person.uwnetid, None)
+        self.assertEqual(user.netid, person.uwnetid)
+        self.assertEqual(user.regid, person.uwregid)
+
+        user = get_user_from_db(0, None, person.uwregid)
+        self.assertEqual(user.netid, person.uwnetid)
+        self.assertEqual(user.regid, person.uwregid)
+
+        user = get_user_by_bridgeid(0)
+        self.assertIsNone(user)
+
+        user = get_user_by_netid(None)
+        self.assertIsNone(user)
+
         user = get_user_by_regid(None)
         self.assertIsNone(user)
 
-        user = get_user_from_db(person.uwnetid, None)
-        self.assertEqual(user.netid, person.uwnetid)
-        self.assertEqual(user.regid, person.uwregid)
-
-        user = get_user_from_db(None, person.uwregid)
-        self.assertEqual(user.netid, person.uwnetid)
-        self.assertEqual(user.regid, person.uwregid)
-
-        user = get_user_from_db(None, None)
+        user = get_user_from_db(0, None, None)
         self.assertIsNone(user)
 
     def test_err_case(self):

@@ -81,7 +81,8 @@ ACTION_CHOICES = (
 class UwBridgeUser(models.Model):
     regid = models.CharField(max_length=32,
                              primary_key=True)
-    bridge_id = models.IntegerField(default=0)
+    bridge_id = models.IntegerField(default=0,
+                                    db_index=True)
     netid = models.SlugField(max_length=32,
                              db_index=True,
                              unique=True)
