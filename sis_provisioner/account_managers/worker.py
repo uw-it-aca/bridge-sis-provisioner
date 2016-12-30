@@ -106,7 +106,3 @@ class Worker:
         @return total number of users being updated successfully
         """
         pass
-
-    @abstractmethod
-    def save_verified(self, uw_bri_user):
-        pass

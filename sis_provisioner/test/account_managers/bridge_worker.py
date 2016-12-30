@@ -44,7 +44,7 @@ class TestBridgeWorker(TransactionTestCase):
 
         uw_user.netid = 'changed'
         worker.update_user(uw_user)
-        self.assertEqual(worker.get_loaded_count(), 0)
+        self.assertEqual(worker.get_loaded_count(), 1)
 
     def test_delete_user(self):
         uw_user, person = mock_uw_bridge_user('javerage')
