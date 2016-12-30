@@ -100,6 +100,3 @@ class CsvWorker(Worker):
         return a list of UwBridgeUser objects
         """
         return self.users_to_restore
-
-    def save_verified(self):
-        pass
