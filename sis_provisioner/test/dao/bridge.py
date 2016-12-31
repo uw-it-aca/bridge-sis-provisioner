@@ -4,7 +4,7 @@ from sis_provisioner.models import UwBridgeUser, get_now
 from sis_provisioner.dao.bridge import _get_bridge_user_to_add,\
     add_bridge_user, _get_bridge_user_to_upd, change_uwnetid,\
     delete_bridge_user, get_bridge_user, update_bridge_user,\
-    get_user_bridge_id, get_all_bridge_users, restore_bridge_user,\
+    get_bridge_user_object, get_all_bridge_users, restore_bridge_user,\
     get_regid_from_bridge_user
 from sis_provisioner.test import fdao_pws_override, fdao_bridge_override
 from sis_provisioner.test.dao.user import mock_uw_bridge_user
@@ -105,9 +105,19 @@ class TestBridgeDao(TransactionTestCase):
         self.assertEqual(get_regid_from_bridge_user(buser),
                          "9136CCB8F66711D5BE060004AC494FFE")
 
-    def test_get_user_bridge_id(self):
+    def test_get_bridge_user_object(self):
         uw_user, person = mock_uw_bridge_user('javerage')
-        self.assertEqual(get_user_bridge_id(uw_user), 195)
+        bridge_user = get_bridge_user_object(uw_user)
+        self.assertEqual(bridge_user.bridge_id, 195)
+        self.assertEqual(bridge_user.netid, 'javerage')
+
+        user = UwBridgeUser(netid='unknown',
+                            regid="...",
+                            last_visited_at=get_now(),
+                            first_name="James",
+                            last_name="Student"
+                            )
+        self.assertRaises(DataFailureException, get_bridge_user_object, user)
 
     def test_get_bridge_user_to_upd(self):
         uw_user, person = mock_uw_bridge_user('javerage')
@@ -157,6 +167,14 @@ class TestBridgeDao(TransactionTestCase):
         self.assertEqual(buser.last_name, uw_user.last_name)
         self.assertEqual(len(buser.custom_fields), 1)
         self.assertEqual(buser.custom_fields[0].value, uw_user.regid)
+
+        user = UwBridgeUser(netid='unknown',
+                            regid="...",
+                            last_visited_at=get_now(),
+                            first_name="James",
+                            last_name="Student"
+                            )
+        self.assertRaises(DataFailureException, update_bridge_user, user)
 
     def test_change_uwnetid(self):
         uw_user, person = mock_uw_bridge_user('javerage')

@@ -31,8 +31,14 @@ class BridgeWorker(Worker):
             (resp_bri_users[0].netid == uw_bri_user.netid or
              is_using_file_dao())
 
+    def _log_error(self, action_message, resp_bri_users, uw_bri_user):
+        logger.error("%s (%s) expects 1 user but returns %d users: %s" %
+                     (action_message, uw_bri_user, len(resp_bri_users),
+                      ",".join(resp_bri_users)))
+
     def _save_bridge_id(self, uw_bri_user, bri_user):
-        if not uw_bri_user.has_bridge_id():
+        if not uw_bri_user.has_bridge_id() and\
+                uw_bri_user.netid == bri_user.netid:
             uw_bri_user.set_bridge_id(bri_user.bridge_id)
 
     def _save_verified(self, uw_bridge_user):
@@ -49,7 +55,7 @@ class BridgeWorker(Worker):
                 self.total_new_users_count += 1
                 return
             self.append_error("Add New failed on %s" % uw_bri_user)
-
+            self._log_error("Add new user", resp_bri_users, uw_bri_user)
         except Exception as ex:
             log_exception(logger,
                           "Failed to create user (%s)" % uw_bri_user,
@@ -86,7 +92,7 @@ class BridgeWorker(Worker):
                 self.total_restored_count += 1
                 return True
             self.append_error("Restore failed on %s" % uw_bri_user)
-
+            self._log_error("Restore user", resp_bri_users, uw_bri_user)
         except Exception as ex:
             log_exception(logger,
                           "Failed to restore user (%s)" % uw_bri_user,
@@ -108,8 +114,8 @@ class BridgeWorker(Worker):
                 self._save_bridge_id(uw_bri_user, resp_bri_users[0])
                 self.total_netid_changes_count += 1
                 return True
-            self.append_error("Change-UID failed on %s" % uw_bri_user)
-
+            self.append_error("Change-uid failed on %s" % uw_bri_user)
+            self._log_error("Change-uid", resp_bri_users, uw_bri_user)
         except Exception as ex:
             log_exception(logger,
                           "Failed to change-uid for user (%s)" % uw_bri_user,
@@ -128,7 +134,7 @@ class BridgeWorker(Worker):
                     self.total_regid_changes_count += 1
                 return True
             self.append_error("Update failed on %s" % uw_bri_user)
-
+            self._log_error("Update user", resp_bri_users, uw_bri_user)
         except Exception as ex:
             log_exception(logger,
                           "Failed to update user (%s)" % uw_bri_user,
