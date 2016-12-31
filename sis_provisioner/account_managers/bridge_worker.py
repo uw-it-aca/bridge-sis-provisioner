@@ -32,13 +32,16 @@ class BridgeWorker(Worker):
              is_using_file_dao())
 
     def _log_error(self, action_message, resp_bri_users, uw_bri_user):
-        logger.error("%s (%s) expects 1 user but returns %d users: %s" %
-                     (action_message, uw_bri_user, len(resp_bri_users),
-                      ",".join(resp_bri_users)))
+        if resp_bri_users is not None and len(resp_bri_users) > 1:
+            logger.error("%s (%s) unexpected results: %s" %
+                         (action_message, uw_bri_user,
+                          ",".join(resp_bri_users)))
+        else:
+            logger.error("%s (%s) returns None" %
+                         action_message, uw_bri_user)
 
     def _save_bridge_id(self, uw_bri_user, bri_user):
-        if not uw_bri_user.has_bridge_id() and\
-                uw_bri_user.netid == bri_user.netid:
+        if not uw_bri_user.has_bridge_id():
             uw_bri_user.set_bridge_id(bri_user.bridge_id)
 
     def _save_verified(self, uw_bridge_user):

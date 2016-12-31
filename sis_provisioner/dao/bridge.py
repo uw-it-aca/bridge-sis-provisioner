@@ -83,7 +83,7 @@ def get_bridge_user_object(uw_bridge_user):
         logger.error(
             "get_bridge_user (%s) expect 1 user returns %d users: %s" %
             (uw_bridge_user.netid, count, ",".join(ret_users)))
-    return ret_users[0] if count >0 else None
+    return ret_users[0] if count > 0 else None
 
 
 def get_bridge_user(uw_bridge_user):
