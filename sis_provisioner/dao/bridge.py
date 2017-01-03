@@ -33,7 +33,7 @@ def delete_bridge_user(bridge_user, conditional=True):
     Return True if the user is deleted successfully
     """
     if not conditional or _no_learning_history(bridge_user):
-        if bridge_user.bridge_id:
+        if bridge_user.bridge_id > 0:
             return delete_user_by_id(bridge_user.bridge_id)
         return delete_user(bridge_user.netid)
 
@@ -61,7 +61,7 @@ def change_uwnetid(uw_bridge_user):
     Return a list of BridgeUser objects without custom fields
     """
     # update the uid first so the correct UID is set
-    if uw_bridge_user.bridge_id:
+    if uw_bridge_user.bridge_id > 0:
         busers = change_uid(uw_bridge_user.bridge_id,
                             uw_bridge_user.netid)
     else:
@@ -72,11 +72,18 @@ def change_uwnetid(uw_bridge_user):
                                                   uw_bridge_user.netid))
 
 
-def get_user_bridge_id(uw_bridge_user):
+def get_bridge_user_object(uw_bridge_user):
+    """
+    @param: uw_bridge_user a valid UwBridgeUser object
+    Return a list of BridgeUser objects with custom fields
+    """
     ret_users = get_bridge_user(uw_bridge_user)
-    if len(ret_users) == 1:
-        return ret_users[0].bridge_id
-    return 0
+    count = len(ret_users)
+    if count > 1:
+        logger.error(
+            "get_bridge_user (%s) expect 1 user returns %d users: %s" %
+            (uw_bridge_user.netid, count, ",".join(ret_users)))
+    return ret_users[0] if count > 0 else None
 
 
 def get_bridge_user(uw_bridge_user):
@@ -84,7 +91,7 @@ def get_bridge_user(uw_bridge_user):
     @param: uw_bridge_user a valid UwBridgeUser object
     Return a list of BridgeUser objects with custom fields
     """
-    if uw_bridge_user.bridge_id:
+    if uw_bridge_user.bridge_id > 0:
         bridge_id = uw_bridge_user.bridge_id
         return _log_result(get_user_by_id(bridge_id),
                            "get bridge user: %s" % bridge_id)
@@ -108,7 +115,7 @@ def restore_bridge_user(uw_bridge_user):
     """
     Return a list of BridgeUser objects without custom fields
     """
-    if uw_bridge_user.bridge_id:
+    if uw_bridge_user.bridge_id > 0:
         bridge_id = uw_bridge_user.bridge_id
         return _log_result(restore_user_by_id(bridge_id),
                            "restore bridge user: %s" % bridge_id)
@@ -122,10 +129,11 @@ def update_bridge_user(uw_bridge_user):
     @param: uw_bridge_user a valid UwBridgeUser object
     Return a list of BridgeUser objects with custom fields
     """
-    user_in_bridge = None
-    existing_bridge_users = get_bridge_user(uw_bridge_user)
-    if len(existing_bridge_users) > 0:
-        user_in_bridge = existing_bridge_users[0]
+    user_in_bridge = get_bridge_user_object(uw_bridge_user)
+    if user_in_bridge is None:
+        logger.error("update_bridge_user (%s) find no user in Bridge" %
+                     uw_bridge_user)
+        return None
     new_bri_user = _get_bridge_user_to_upd(uw_bridge_user,
                                            user_in_bridge)
     return _log_result(update_user(new_bri_user),
@@ -158,7 +166,7 @@ def _get_bridge_user_to_upd(uw_bridge_user, user_in_bridge):
     @return: a BridgeUser object to be udpate in Bridge
     """
     user = BridgeUser()
-    if uw_bridge_user.bridge_id:
+    if uw_bridge_user.bridge_id > 0:
         user.bridge_id = uw_bridge_user.bridge_id
     else:
         if user_in_bridge.bridge_id:
