@@ -1,7 +1,6 @@
 import os
 from django.conf import settings
 from django.test import TestCase
-from django.test.utils import override_settings
 from sis_provisioner.models import UwBridgeUser, get_now
 from sis_provisioner.csv.user_writer import _get_file_name_prefix,\
     _get_file_size, get_user_file_name, make_import_user_csv_files,\
@@ -10,6 +9,7 @@ from sis_provisioner.csv.user_writer import _get_file_name_prefix,\
     make_netid_changed_user_csv_file, make_regid_changed_user_csv_file,\
     make_key_changed_user_csv_files, get_restore_user_file_name,\
     make_restore_user_csv_file
+from sis_provisioner.test import user_file_name_override
 
 
 def get_users(size=1):
@@ -26,6 +26,7 @@ def get_users(size=1):
     return users
 
 
+@user_file_name_override
 class TestUserWriter(TestCase):
 
     def test_get_file_name_prefix(self):
@@ -60,28 +61,24 @@ class TestUserWriter(TestCase):
             self.verify_file_content("/tmp/blah3.csv", False, False)
 
     def test_get_delete_user_file_name(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="users"):
-            file_path = "/tmp"
-            self.assertEqual(get_delete_user_file_name(file_path),
-                             "/tmp/users_delete.csv")
+        file_path = "/tmp"
+        self.assertEqual(get_delete_user_file_name(file_path),
+                         "/tmp/users_delete.csv")
 
     def test_get_netid_changed_file_name(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="users"):
-            file_path = "/tmp"
-            self.assertEqual(get_netid_changed_file_name(file_path),
-                             "/tmp/users_netid_changed.csv")
+        file_path = "/tmp"
+        self.assertEqual(get_netid_changed_file_name(file_path),
+                         "/tmp/users_netid_changed.csv")
 
     def test_get_regid_changed_file_name(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="users"):
-            file_path = "/tmp"
-            self.assertEqual(get_regid_changed_file_name(file_path),
-                             "/tmp/users_regid_changed.csv")
+        file_path = "/tmp"
+        self.assertEqual(get_regid_changed_file_name(file_path),
+                         "/tmp/users_regid_changed.csv")
 
     def test_get_restore_user_file_name(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="users"):
-            file_path = "/tmp"
-            self.assertEqual(get_restore_user_file_name(file_path),
-                             "/tmp/users_restore.csv")
+        file_path = "/tmp"
+        self.assertEqual(get_restore_user_file_name(file_path),
+                         "/tmp/users_restore.csv")
 
     def test_make_key_changed_user_csv_files_hrp(self):
         fp = "/tmp/users_xx_changed.csv"
@@ -103,35 +100,31 @@ class TestUserWriter(TestCase):
         self.verify_file_content(fp, False, False)
 
     def test_make_delete_user_csv_file(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="users"):
-            user_number = make_delete_user_csv_file(get_users(), "/tmp")
-            self.assertEqual(user_number, 1)
-            fp = "/tmp/users_delete.csv"
-            self.verify_file_content(fp, False, False)
+        user_number = make_delete_user_csv_file(get_users(), "/tmp")
+        self.assertEqual(user_number, 1)
+        fp = "/tmp/users_delete.csv"
+        self.verify_file_content(fp, False, False)
 
     def test_make_netid_changed_user_csv_file(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="users"):
-            user_number = make_netid_changed_user_csv_file(
-                get_users(), "/tmp", False)
-            self.assertEqual(user_number, 1)
-            fp = "/tmp/users_netid_changed.csv"
-            self.verify_file_content(fp, True, False)
+        user_number = make_netid_changed_user_csv_file(
+            get_users(), "/tmp", False)
+        self.assertEqual(user_number, 1)
+        fp = "/tmp/users_netid_changed.csv"
+        self.verify_file_content(fp, True, False)
 
     def test_make_regid_changed_user_csv_file(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="users"):
-            user_number = make_regid_changed_user_csv_file(
-                get_users(), "/tmp", False)
-            self.assertEqual(user_number, 1)
-            fp = "/tmp/users_regid_changed.csv"
-            self.verify_file_content(fp, False, False)
+        user_number = make_regid_changed_user_csv_file(
+            get_users(), "/tmp", False)
+        self.assertEqual(user_number, 1)
+        fp = "/tmp/users_regid_changed.csv"
+        self.verify_file_content(fp, False, False)
 
     def test_make_restore_user_csv_file(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="users"):
-            user_number = make_restore_user_csv_file(
-                get_users(), "/tmp", False)
-            self.assertEqual(user_number, 1)
-            fp = "/tmp/users_restore.csv"
-            self.verify_file_content(fp, False, False)
+        user_number = make_restore_user_csv_file(
+            get_users(), "/tmp", False)
+        self.assertEqual(user_number, 1)
+        fp = "/tmp/users_restore.csv"
+        self.verify_file_content(fp, False, False)
 
     def verify_file_content(self, fp, is_uid_change, has_hrp_attrs):
         if has_hrp_attrs:

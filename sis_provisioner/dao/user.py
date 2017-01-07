@@ -29,17 +29,36 @@ def get_total_users():
     return len(get_all_users())
 
 
-def get_user_from_db(uwnetid, uwregid):
+def get_user_from_db(bridgeid, uwnetid, uwregid):
+    try:
+        uw_bri_user = get_user_by_regid(uwregid)
+        if uw_bri_user is not None:
+            return uw_bri_user
+    except UwBridgeUser.DoesNotExist:
+        pass
+
     try:
         uw_bri_user = get_user_by_netid(uwnetid)
         if uw_bri_user is not None:
             return uw_bri_user
     except UwBridgeUser.DoesNotExist:
         pass
+
     try:
-        return get_user_by_regid(uwregid)
+        return get_user_by_bridgeid(bridgeid)
     except UwBridgeUser.DoesNotExist:
         pass
+
+    return None
+
+
+def get_user_by_bridgeid(bridge_id):
+    """
+    @return a UwBridgeUser object
+    @exception: UwBridgeUser.DoesNotExist
+    """
+    if bridge_id > 0:
+        return UwBridgeUser.objects.get(bridge_id=bridge_id)
     return None
 
 
@@ -268,7 +287,8 @@ def _get_user_updated_values(person, prev_netid, action):
 
 def normalize_email(email_str):
     if email_str is not None and len(email_str) > 0:
-        return re.sub("\.$", "", email_str, flags=re.IGNORECASE)
+        email_s1 = re.sub(" ", "", email_str)
+        return re.sub("\.$", "", email_s1, flags=re.IGNORECASE)
     return email_str
 
 

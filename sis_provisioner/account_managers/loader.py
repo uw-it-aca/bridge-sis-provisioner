@@ -80,12 +80,11 @@ class Loader:
     def get_users_to_process(self):
         return self.users_to_process
 
-    @abstractmethod
     def get_loaded_count(self):
         """
-        @return total number of users loaded successfully
+        @return total number of users updated successfully
         """
-        pass
+        return self.worker.get_loaded_count()
 
     def get_new_user_count(self):
         """
@@ -124,3 +123,7 @@ class Loader:
 
     def has_error(self):
         return self.worker.has_err()
+
+    def add_error(self, err_msg):
+        self.logger.error(err_msg)
+        self.worker.append_error(err_msg)

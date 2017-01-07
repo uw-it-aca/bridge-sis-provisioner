@@ -3,9 +3,9 @@ from django.test import TransactionTestCase
 from sis_provisioner.models import UwBridgeUser, ACTION_NEW, ACTION_UPDATE
 from sis_provisioner.dao.user import get_total_users, get_user_from_db
 from sis_provisioner.account_managers import get_validated_user,\
-    get_regid_from_bridge_user, fetch_users_from_bridge,\
-    NO_CHANGE, CHANGED, LEFT_UW, DISALLOWED
-from sis_provisioner.account_managers.bridge_checker import BridgeChecker
+    fetch_users_from_bridge, NO_CHANGE, CHANGED, LEFT_UW, DISALLOWED
+from sis_provisioner.account_managers.bridge_checker import BridgeChecker,\
+    get_regid_from_bridge_user
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
     fdao_bridge_override
@@ -181,16 +181,17 @@ class TestBridgeUserChecker(TransactionTestCase):
         loader = BridgeChecker(BridgeWorker())
         loader.load()
 
-        self.assertIsNotNone(get_user_from_db('seagrad', None))
+        self.assertIsNotNone(get_user_from_db(195, None, None))
+        self.assertIsNotNone(get_user_from_db(0, 'seagrad', None))
 
-        user = get_user_from_db('affiemp', None)
+        user = get_user_from_db(0, 'affiemp', None)
         self.assertEqual(user.bridge_id, 198)
 
-        user = get_user_from_db('staff', None)
+        user = get_user_from_db(196, 'staff', None)
         self.assertEqual(user.bridge_id, 196)
 
-        self.assertIsNone(get_user_from_db('unknown', None))
-        self.assertIsNone(get_user_from_db('leftuw', None))
+        self.assertIsNone(get_user_from_db(0, 'unknown', None))
+        self.assertIsNone(get_user_from_db(0, 'leftuw', None))
 
         self.assertEqual(loader.get_total_count(), 6)
         self.assertEqual(loader.get_new_user_count(), 0)

@@ -34,19 +34,22 @@ class UserUpdater(GwsBridgeLoader):
                     uw_bri_user.netid,
                     uwregid=uw_bri_user.regid,
                     check_gws=True)
-            except DataFailureException:
+            except DataFailureException as ex:
                 log_exception(
                     logger,
-                    "validate user (%s, %s) failed, skip!" % (uwnetid,
-                                                              uwregid),
+                    "Validate user (%s) failed, skip!" % uw_bri_user,
                     traceback.format_exc())
                 self.worker.append_error(
-                    "validate user %s: %s" % (uwnetid, ex))
+                    "Validate user %s: %s" % (uw_bri_user, ex))
                 continue
 
             if person is None:
                 if uw_bri_user.disabled:
+                    self.logger.info("%s has been disabled!" % uw_bri_user)
                     continue
+                self.logger.info(
+                    "%s is no longer a valid learner, terminate!" %
+                    uw_bri_user)
                 self.terminate(uw_bri_user, validation_status)
             else:
                 self.take_action(person)
@@ -58,26 +61,28 @@ class UserUpdater(GwsBridgeLoader):
         If the user's termination date has been reached, return True
         """
         if validation_status == LEFT_UW:
-            self.logger.error(
-                "%s: has left UW, set disable date" % uw_bri_user.netid)
+            self.logger.info(
+                "%s: has left UW, set terminate date" % uw_bri_user)
             uw_bri_user.save_terminate_date(graceful=True)
 
         elif validation_status == DISALLOWED:
             # rare case
-            self.logger.error(
-                "%s: no longer a personal netid!" % uw_bri_user.netid)
+            self.logger.info(
+                "%s: is not a personal netid, delete in Bridge!" % uw_bri_user)
             if self.worker.delete_user(uw_bri_user):
                 self.logger.info("Delete user from DB %s" % uw_bri_user)
                 uw_bri_user.delete()
 
         if uw_bri_user.is_stalled():
             # stalled user can be removed now
-            self.logger.info(
-                "%s is a stalled account, disable it!" % uw_bri_user.netid)
+            self.logger.info("%s is a stalled account!" % uw_bri_user)
             uw_bri_user.save_terminate_date(graceful=False)
 
         if uw_bri_user.passed_terminate_date() and\
                 not uw_bri_user.disabled:
+            self.logger.info(
+                "Passed the terminate date, delete now %s" % uw_bri_user)
             if self.worker.delete_user(uw_bri_user):
-                self.logger.info("Disable user in db %s" % uw_bri_user)
+                self.logger.info(
+                    "Disable the user in db %s" % uw_bri_user)
                 uw_bri_user.disable()
