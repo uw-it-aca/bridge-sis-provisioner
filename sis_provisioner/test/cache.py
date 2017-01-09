@@ -12,7 +12,6 @@ from sis_provisioner.test import user_file_name_override, fdao_gws_override,\
 
 
 CACHE = 'sis_provisioner.cache.BridgeAccountCache'
-MEMCACHE = 'myuw.util.cache_implementation.MyUWMemcachedCache'
 ONE_HOUR = 60 * 60
 FOUR_HOURS = 60 * 60 * 4
 ONE_DAY = 60 * 60 * 24
