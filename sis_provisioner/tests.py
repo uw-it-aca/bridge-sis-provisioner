@@ -1,5 +1,5 @@
 from django.test import TestCase
-from sis_provisioner.test.dao.cache import TestCachePolicy
+from sis_provisioner.test.cache import TestCachePolicy
 from sis_provisioner.test.dao.gws import TestGwsDao
 from sis_provisioner.test.dao.pws import TestPwsDao
 from sis_provisioner.test.dao.hrp import TestHrpDao
