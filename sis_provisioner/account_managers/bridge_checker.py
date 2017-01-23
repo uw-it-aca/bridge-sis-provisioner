@@ -114,7 +114,7 @@ class BridgeChecker(UserUpdater):
             uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
 
             if self.changed_attributes(bridge_user, uw_bridge_user):
-                self.logger.info("Update %s" % uw_bridge_user)
+                self.logger.info("worker.update %s" % uw_bridge_user)
                 self.worker.update_user(uw_bridge_user)
 
         except Exception as ex:

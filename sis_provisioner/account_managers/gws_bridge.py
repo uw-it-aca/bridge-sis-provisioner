@@ -87,8 +87,11 @@ class GwsBridgeLoader(Loader):
             return
 
         if uw_bridge_user.is_new():
+            self.logger.info("worker.add_new %s", uw_bridge_user)
             self.worker.add_new_user(uw_bridge_user)
         elif uw_bridge_user.is_restore():
+            self.logger.info("worker.restore %s", uw_bridge_user)
             self.worker.restore_user(uw_bridge_user)
         else:
+            self.logger.info("worker.update %s", uw_bridge_user)
             self.worker.update_user(uw_bridge_user)

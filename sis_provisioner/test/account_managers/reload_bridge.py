@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.test import TransactionTestCase
-from sis_provisioner.test import fdao_bridge_override
+from sis_provisioner.test import fdao_bridge_override, fdao_pws_override
 from sis_provisioner.dao.user import get_user_by_netid
 from sis_provisioner.models import UwBridgeUser, get_now, ACTION_UPDATE,\
     ACTION_NEW, ACTION_CHANGE_REGID, ACTION_RESTORE
@@ -9,6 +9,7 @@ from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 
 
 @fdao_bridge_override
+@fdao_pws_override
 class TestReloader(TransactionTestCase):
 
     def test_add_new(self):

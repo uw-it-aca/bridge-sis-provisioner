@@ -33,6 +33,7 @@ def delete_bridge_user(bridge_user, conditional=True):
     Return True if the user is deleted successfully
     """
     if not conditional or _no_learning_history(bridge_user):
+        logger.info("Delete %s" % bridge_user)
         if bridge_user.bridge_id > 0:
             return delete_user_by_id(bridge_user.bridge_id)
         return delete_user(bridge_user.netid)
