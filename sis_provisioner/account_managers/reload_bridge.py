@@ -21,8 +21,7 @@ class Reloader(UserUpdater):
 
             if uw_bri_user.passed_terminate_date() and\
                     not uw_bri_user.disabled:
-                if self.worker.delete_user(uw_bri_user):
-                    logger.info("Disable user in db %s" % uw_bri_user)
-                    uw_bri_user.disable()
+                logger.info("worker.delete %s" % uw_bri_user)
+                self.worker.delete_user(uw_bri_user)
             else:
                 self.apply_change_to_bridge(uw_bri_user)

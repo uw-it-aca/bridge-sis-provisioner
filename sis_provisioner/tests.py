@@ -35,3 +35,5 @@ from sis_provisioner.test.management.commands.load_user_csv\
     import TestLoadUserViaCsv
 from sis_provisioner.test.management.commands.load_user_to_bridge\
     import TestLoadUserViaBridgeApi
+from sis_provisioner.test.management.commands.set_bridge_ids\
+    import TestSetBridgeIds
