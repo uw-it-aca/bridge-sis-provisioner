@@ -68,10 +68,8 @@ class UserUpdater(GwsBridgeLoader):
         elif validation_status == DISALLOWED:
             # rare case
             self.logger.info(
-                "%s: is not a personal netid, delete in Bridge!" % uw_bri_user)
-            if self.worker.delete_user(uw_bri_user):
-                self.logger.info("Delete user from DB %s" % uw_bri_user)
-                uw_bri_user.delete()
+                "Not a personal netid, worker.delete %s" % uw_bri_user)
+            self.worker.delete_user(uw_bri_user)
 
         if uw_bri_user.is_stalled():
             # stalled user can be removed now
@@ -81,8 +79,5 @@ class UserUpdater(GwsBridgeLoader):
         if uw_bri_user.passed_terminate_date() and\
                 not uw_bri_user.disabled:
             self.logger.info(
-                "Passed the terminate date, delete now %s" % uw_bri_user)
-            if self.worker.delete_user(uw_bri_user):
-                self.logger.info(
-                    "Disable the user in db %s" % uw_bri_user)
-                uw_bri_user.disable()
+                "Passed the terminate date, worker.delete %s" % uw_bri_user)
+            self.worker.delete_user(uw_bri_user)

@@ -26,6 +26,8 @@ class CsvWorker(Worker):
 
     def _load_user(self, uw_bri_user):
         self.users_to_load.append(uw_bri_user)
+        logger.info(
+            "Add user %s to users csv file" % uw_bri_user)
 
     def add_new_user(self, uw_bri_user):
         self.total_new_users_count += 1
@@ -33,9 +35,16 @@ class CsvWorker(Worker):
 
     def delete_user(self, user_to_del):
         self.users_to_del.append(user_to_del)
+        logger.info(
+            "Add user %s to delete csv file" % user_to_del)
+        user_to_del.disable()
+        logger.info(
+            "Disable the user in db %s" % user_to_del)
 
     def restore_user(self, uw_bri_user):
         self.users_to_restore.append(uw_bri_user)
+        logger.info(
+            "Add user %s to restore csv file" % uw_bri_user)
 
     def update_user(self, uw_bri_user):
         if uw_bri_user.netid_changed():
@@ -48,9 +57,13 @@ class CsvWorker(Worker):
 
     def update_uid(self, uw_bri_user):
         self.users_changed_netid.append(uw_bri_user)
+        logger.info(
+            "Add user %s to changed_netid csv file" % uw_bri_user)
 
     def update_regid(self, uw_bri_user):
         self.users_changed_regid.append(uw_bri_user)
+        logger.info(
+            "Add user %s to changed_regid csv file" % uw_bri_user)
 
     def get_new_user_count(self):
         return self.total_new_users_count
