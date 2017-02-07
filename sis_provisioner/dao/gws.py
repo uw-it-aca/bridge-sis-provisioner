@@ -5,8 +5,7 @@ with the UW Group API resource
 
 import logging
 from restclients.gws import GWS
-from sis_provisioner.util.time_helper import Timer
-from sis_provisioner.util.log import log_resp_time
+from sis_provisioner.util.log import log_resp_time, Timer
 
 
 logger = logging.getLogger(__name__)

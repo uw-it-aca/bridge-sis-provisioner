@@ -1,7 +1,6 @@
 from datetime import date, datetime, timedelta
 import pytz
 from django.utils import timezone
-from restclients.util.timer import Timer
 
 
 def convert_to_tzaware_datetime(a_datetime):
