@@ -6,8 +6,7 @@ provides Person information of the current user
 import logging
 from restclients.pws import PWS
 from restclients.exceptions import DataFailureException
-from sis_provisioner.util.time_helper import Timer
-from sis_provisioner.util.log import log_resp_time
+from sis_provisioner.util.log import log_resp_time, Timer
 
 
 logger = logging.getLogger(__name__)

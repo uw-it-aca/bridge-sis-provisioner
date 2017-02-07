@@ -1,7 +1,5 @@
-import json
 import logging
-from restclients.util.log import log_err, log_info
-from userservice.user import UserService
+import time
 
 
 def log_exception(logger, message, exc_info):
@@ -13,13 +11,19 @@ def log_exception(logger, message, exc_info):
                  message, exc_info.splitlines())
 
 
-def log_invalid_netid_response(logger, timer):
-    log_err(logger, 'Invalid netid, abort', timer)
-
-
-def log_exception_with_timer(logger, timer, exc_info):
-    log_err(logger, exc_info.splitlines(), timer)
-
-
 def log_resp_time(logger, message, timer):
-    log_info(logger, message, timer)
+    logger.info("%s Time=%f sec", message, timer.get_elapsed())
+
+
+class Timer:
+    def __init__(self):
+        """
+        Start the timer
+        """
+        self.start = time.time()
+
+    def get_elapsed(self):
+        """
+        Return the time spent in seconds
+        """
+        return time.time() - self.start
