@@ -6,6 +6,7 @@ accounts via the given worker.
 
 import logging
 import traceback
+from restclients.exceptions import DataFailureException
 from sis_provisioner.account_managers import fetch_users_from_gws,\
     get_validated_user
 from sis_provisioner.account_managers.loader import Loader
@@ -24,7 +25,7 @@ class GwsBridgeLoader(Loader):
 
     def fetch_users(self):
         self.data_source = "GWS uw_members group"
-        return fetch_users_from_gws(self.logger)
+        return self.get_users_in_gws()
 
     def process_users(self):
         """
