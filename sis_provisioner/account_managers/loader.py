@@ -7,6 +7,7 @@ import traceback
 import json
 from abc import ABCMeta, abstractmethod
 from sis_provisioner.util.list_helper import get_item_counts_dict
+from sis_provisioner.account_managers import fetch_users_from_gws
 
 
 class Loader:
@@ -22,6 +23,7 @@ class Loader:
         self.data_source = None  # where the user is fetched from
         self.worker = worker
         self.emp_app_totals = []
+        self.users_in_gws = fetch_users_from_gws(self.logger)
 
     def load(self):
         self.users_to_process = self.fetch_users()
@@ -73,6 +75,9 @@ class Loader:
 
     def include_hrp(self):
         return self.include_hrp_data
+
+    def get_users_in_gws(self):
+        return self.users_in_gws
 
     def get_total_count(self):
         return len(self.users_to_process)

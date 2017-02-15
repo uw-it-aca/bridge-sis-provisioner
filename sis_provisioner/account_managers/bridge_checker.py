@@ -35,10 +35,11 @@ class BridgeChecker(UserUpdater):
             uwregid = get_regid_from_bridge_user(bridge_user)
             person = None
             try:
-                person, validation_status = get_validated_user(logger,
-                                                               uwnetid,
-                                                               uwregid=uwregid,
-                                                               check_gws=True)
+                person, validation_status = get_validated_user(
+                    logger,
+                    uwnetid,
+                    uwregid=uwregid,
+                    users_in_gws=self.get_users_in_gws())
             except DataFailureException as ex:
                 log_exception(
                     logger,

@@ -33,7 +33,7 @@ class UserUpdater(GwsBridgeLoader):
                     self.logger,
                     uw_bri_user.netid,
                     uwregid=uw_bri_user.regid,
-                    check_gws=True)
+                    users_in_gws=self.get_users_in_gws())
             except DataFailureException as ex:
                 log_exception(
                     logger,

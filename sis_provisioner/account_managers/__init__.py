@@ -2,7 +2,7 @@ import logging
 import traceback
 from restclients.exceptions import DataFailureException
 from sis_provisioner.dao.bridge import get_all_bridge_users
-from sis_provisioner.dao.gws import get_potential_users, is_qualified_user
+from sis_provisioner.dao.gws import get_potential_users
 from sis_provisioner.dao.pws import get_person, get_person_by_regid
 from sis_provisioner.dao.user import get_all_users
 from sis_provisioner.util.log import log_exception
@@ -14,7 +14,7 @@ LEFT_UW = 2
 DISALLOWED = 3  # not personal netid
 
 
-def get_validated_user(logger, uwnetid, uwregid=None, check_gws=False):
+def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
     """
     Validate an existing user in the local DB or Bridge.
     If he/she is in one of the good groups and in pws.person,
@@ -22,7 +22,7 @@ def get_validated_user(logger, uwnetid, uwregid=None, check_gws=False):
 
     raise DataFailureException if failed to access GWS or PWS
     """
-    if check_gws and not is_qualified_user(uwnetid):
+    if _user_left_uw(users_in_gws, uwnetid):
         logger.error("user validation: %s has left uw!" % uwnetid)
         return None, LEFT_UW
 
@@ -99,3 +99,7 @@ def fetch_users_from_bridge(logger):
                       "Failed to fetch_users_from_bridge:",
                       traceback.format_exc())
     return []
+
+
+def _user_left_uw(users_in_gws, uwnetid):
+    return len(users_in_gws) > 0 and uwnetid not in users_in_gws
