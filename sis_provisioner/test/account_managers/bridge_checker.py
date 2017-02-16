@@ -3,7 +3,8 @@ from django.test import TransactionTestCase
 from sis_provisioner.models import UwBridgeUser, ACTION_NEW, ACTION_UPDATE
 from sis_provisioner.dao.user import get_total_users, get_user_from_db
 from sis_provisioner.account_managers import get_validated_user,\
-    fetch_users_from_bridge, NO_CHANGE, CHANGED, LEFT_UW, DISALLOWED
+    fetch_users_from_gws, fetch_users_from_bridge,\
+    NO_CHANGE, CHANGED, LEFT_UW, DISALLOWED
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker,\
     get_regid_from_bridge_user
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
@@ -31,9 +32,11 @@ class TestBridgeUserChecker(TransactionTestCase):
                          '10000000000000000000000000000001')
 
     def test_get_validated_user(self):
-        person, validation_status = get_validated_user(logger,
-                                                       'staff',
-                                                       check_gws=True)
+        potential_users = fetch_users_from_gws(logger)
+        person, validation_status = get_validated_user(
+            logger,
+            'staff',
+            users_in_gws=potential_users)
         self.assertEqual(person.uwnetid, 'staff')
         self.assertEqual(person.uwregid,
                          '10000000000000000000000000000001')
@@ -43,7 +46,7 @@ class TestBridgeUserChecker(TransactionTestCase):
             logger,
             'javerage',
             uwregid='10000000000000000000000000000001',
-            check_gws=True)
+            users_in_gws=potential_users)
         self.assertEqual(person.uwnetid, 'javerage')
         self.assertEqual(person.uwregid,
                          '9136CCB8F66711D5BE060004AC494FFE')
@@ -53,14 +56,14 @@ class TestBridgeUserChecker(TransactionTestCase):
             logger,
             'unknown',
             uwregid='10000000000000000000000000000000',
-            check_gws=True)
+            users_in_gws=potential_users)
         self.assertIsNone(person)
         self.assertEqual(validation_status, LEFT_UW)
 
         person, validation_status = get_validated_user(
             logger,
             'none',
-            check_gws=True)
+            users_in_gws=potential_users)
         self.assertIsNone(person)
         self.assertEqual(validation_status, DISALLOWED)
 
