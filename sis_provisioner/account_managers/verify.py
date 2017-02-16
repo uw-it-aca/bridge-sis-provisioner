@@ -18,10 +18,9 @@ def set_bridge_ids():
 
     for uw_bri_user in fetch_users_from_db(logger):
 
-        if uw_bri_user.has_bridge_id() and\
-           (uw_bri_user.no_action() or\
-            uw_bri_user.disabled or\
-            uw_bri_user.has_terminate_date()):
+        if uw_bri_user.has_bridge_id() and (uw_bri_user.no_action() or
+                                            uw_bri_user.disabled or
+                                            uw_bri_user.has_terminate_date()):
             continue
 
         try:
