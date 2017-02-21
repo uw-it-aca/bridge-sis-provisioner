@@ -76,6 +76,7 @@ ACTION_CHOICES = (
     (ACTION_CHANGE_REGID, 'change regid'),
     (ACTION_RESTORE, 'restore'),
     )
+GRACE_PERIOD = 21
 
 
 class UwBridgeUser(models.Model):
@@ -172,8 +173,7 @@ class UwBridgeUser(models.Model):
         return self.action_priority == ACTION_RESTORE
 
     def is_stalled(self):
-        # not validated for 15 days
-        return self.last_visited_at + timedelta(days=15) < get_now()
+        return self.last_visited_at + timedelta(days=GRACE_PERIOD) < get_now()
 
     def is_update(self):
         return self.action_priority == ACTION_UPDATE
@@ -208,7 +208,7 @@ class UwBridgeUser(models.Model):
             return
         self.terminate_at = get_now()
         if graceful:
-            self.terminate_at += timedelta(days=15)
+            self.terminate_at += timedelta(days=GRACE_PERIOD)
         self.save()
 
     def passed_terminate_date(self):
