@@ -47,7 +47,7 @@ class Command(BaseCommand):
                     print "Update %s ==>%s" % (uw_bridge_user, ex)
 
         print "Total %d users to add" % total_new
-        print "Added %d users" %  worker.get_new_user_count()
+        print "Added %d users" % worker.get_new_user_count()
 
         print "Total %d users to delete" % total_del
         print "Added %d users" % worker.get_deleted_count()
