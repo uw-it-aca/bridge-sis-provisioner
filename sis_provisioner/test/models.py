@@ -2,7 +2,7 @@ import json
 from django.test import TransactionTestCase
 from datetime import timedelta, datetime
 from sis_provisioner.models import UwBridgeUser, EmployeeAppointment,\
-    get_now, datetime_to_str
+    get_now, datetime_to_str, GRACE_PERIOD
 from sis_provisioner.dao.user import _appointments_json_dump
 from sis_provisioner.test import fdao_pws_override, fdao_hrp_override
 from sis_provisioner.test.dao import mock_uw_bridge_user
@@ -20,7 +20,7 @@ class TestModels(TransactionTestCase):
         self.assertTrue(user.has_terminate_date())
         self.assertFalse(user.passed_terminate_date())
 
-        user.terminate_at -= timedelta(days=16)
+        user.terminate_at -= timedelta(days=GRACE_PERIOD + 1)
         self.assertTrue(user.passed_terminate_date())
 
         user.save_terminate_date(graceful=False)
@@ -35,7 +35,7 @@ class TestModels(TransactionTestCase):
         self.assertFalse(user.is_stalled())
 
         user.last_visited_at =\
-            user.last_visited_at - timedelta(days=16)
+            user.last_visited_at - timedelta(days=GRACE_PERIOD + 1)
         self.assertTrue(user.is_stalled())
 
         user.save_verified(upd_last_visited=False)
