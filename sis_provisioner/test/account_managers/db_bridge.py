@@ -3,7 +3,7 @@ from django.test import TransactionTestCase
 from datetime import timedelta
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
     fdao_bridge_override
-from sis_provisioner.models import UwBridgeUser, get_now
+from sis_provisioner.models import UwBridgeUser, get_now, GRACE_PERIOD
 from sis_provisioner.dao.user import get_user_by_netid
 from sis_provisioner.account_managers import DISALLOWED, LEFT_UW
 from sis_provisioner.account_managers.db_bridge import UserUpdater
@@ -74,23 +74,25 @@ class TestUserUpdater(TransactionTestCase):
         user = get_user_by_netid('invalidu')
         self.assertIsNotNone(user.terminate_at)
 
-        user = UwBridgeUser(netid='javerage',
-                            regid="0",
-                            last_visited_at=get_now() - timedelta(days=15),
-                            email='javerage@uw.edu',
-                            first_name="James",
-                            last_name="Student")
+        user = UwBridgeUser(
+            netid='javerage',
+            regid="0",
+            last_visited_at=get_now() - timedelta(days=GRACE_PERIOD),
+            email='javerage@uw.edu',
+            first_name="James",
+            last_name="Student")
         user.save()
         loader.terminate(user, None)
         self.assertEqual(loader.get_deleted_count(), 0)
 
-        user = UwBridgeUser(netid='leftuw',
-                            regid="0",
-                            bridge_id=200,
-                            last_visited_at=get_now() - timedelta(days=15),
-                            email='leftuw@uw.edu',
-                            first_name="Left",
-                            last_name="UW")
+        user = UwBridgeUser(
+            netid='leftuw',
+            regid="0",
+            bridge_id=200,
+            last_visited_at=get_now() - timedelta(days=GRACE_PERIOD),
+            email='leftuw@uw.edu',
+            first_name="Left",
+            last_name="UW")
         user.save()
         loader.terminate(user, None)
         self.assertEqual(loader.get_deleted_count(), 1)
