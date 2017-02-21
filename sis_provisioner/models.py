@@ -172,8 +172,8 @@ class UwBridgeUser(models.Model):
         return self.action_priority == ACTION_RESTORE
 
     def is_stalled(self):
-        # not validated for 15 days
-        return self.last_visited_at + timedelta(days=15) < get_now()
+        # not validated for 21 days
+        return self.last_visited_at + timedelta(days=21) < get_now()
 
     def is_update(self):
         return self.action_priority == ACTION_UPDATE
