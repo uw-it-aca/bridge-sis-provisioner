@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os
 from setuptools import setup
 
@@ -24,7 +22,6 @@ setup(
     install_requires = [
         'Django',
         'ordereddict',
-        'setuptools',
         'urllib3==1.10.2',
         'unittest2',
         'django-compressor',
