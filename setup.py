@@ -20,13 +20,6 @@ setup(
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires = [
-        'Django',
-        'ordereddict',
-        'urllib3==1.10.2',
-        'unittest2',
-        'django-compressor',
-        'django-templatetag-handlebars',
-        'nameparser>=0.2.8'
     ],
     license='Apache License, Version 2.0',
     description='An Django application that provisions UW users to Bridge',
