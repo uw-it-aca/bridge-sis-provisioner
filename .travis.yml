@@ -8,7 +8,7 @@ before_script:
   - pip install python-coveralls
   - pip install pep8
   - cp travis-ci/manage.py manage.py
-  - python manage.py migrate --run-syncdb
+  - python manage.py migrate
 script:
   - pep8 sis_provisioner/ --exclude=migrations,resources
   - rm -rf /tmp/fl_test/*
