@@ -26,8 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'compressor',
-    'templatetag_handlebars',
     'restclients',
     'sis_provisioner.apps.Sis_provisionerConfig',
 ]
@@ -41,7 +39,6 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'userservice.user.UserServiceMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
