@@ -41,17 +41,15 @@ class TestBridgeDao(TransactionTestCase):
         bridge_user = _get_bridge_user_to_add(user)
         self.assertEqual(
             bridge_user.to_json_post(),
-            {'user':
-              {'first_name': user.first_name.title(),
-               'last_name': user.last_name.title(),
-               'full_name': user.get_display_name(),
-               'email': user.email,
-               'uid': user.netid + '@uw.edu',
-               'custom_fields': [
-                  {'value': user.regid,
-                   'name': 'REGID',
-                   'custom_field_id': '5'}]
-               }})
+            {'user': {'first_name': user.first_name.title(),
+                      'last_name': user.last_name.title(),
+                      'full_name': user.get_display_name(),
+                      'email': user.email,
+                      'uid': user.netid + '@uw.edu',
+                      'custom_fields': [
+                          {'value': user.regid,
+                           'name': 'REGID',
+                           'custom_field_id': '5'}]}})
 
     def test_add_bridge_user(self):
         uw_user, person = mock_uw_bridge_user('staff')
