@@ -37,9 +37,6 @@ class CsvWorker(Worker):
         self.users_to_del.append(user_to_del)
         logger.info(
             "Add user %s to delete csv file" % user_to_del)
-        user_to_del.disable()
-        logger.info(
-            "Disable the user in db %s" % user_to_del)
 
     def restore_user(self, uw_bri_user):
         self.users_to_restore.append(uw_bri_user)
