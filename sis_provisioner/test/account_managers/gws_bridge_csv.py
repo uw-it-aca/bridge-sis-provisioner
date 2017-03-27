@@ -24,7 +24,7 @@ class TestGwsBridgeCsvLoader(TransactionTestCase):
         user.save()
         loader = GwsBridgeLoader(CsvWorker())
         loader.load()
-        self.assertEqual(loader.get_total_count(), 11)
+        self.assertEqual(loader.get_total_count(), 12)
         self.assertEqual(loader.get_new_user_count(), 7)
         self.assertEqual(loader.get_loaded_count(), 8)
         self.assertEqual(loader.get_netid_changed_count(), 0)
@@ -34,7 +34,7 @@ class TestGwsBridgeCsvLoader(TransactionTestCase):
         loader = GwsBridgeLoader(CsvWorker(),
                                  include_hrp=True)
         loader.load()
-        self.assertEqual(loader.get_total_count(), 11)
+        self.assertEqual(loader.get_total_count(), 12)
         self.assertEqual(loader.get_new_user_count(), 8)
         self.assertEqual(loader.get_loaded_count(), 8)
         self.assertEqual(loader.get_netid_changed_count(), 0)

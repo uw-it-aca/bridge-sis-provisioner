@@ -12,7 +12,7 @@ class TestGwsDao(TestCase):
     def test_get_uw_members(self):
         users = get_uw_members()
         self.assertIsNotNone(users)
-        self.assertEqual(len(users), 10)
+        self.assertEqual(len(users), 11)
 
         self.assertEqual(users[0], "botgrad")
         self.assertEqual(users[1], "faculty")
@@ -34,7 +34,7 @@ class TestGwsDao(TestCase):
     def test_get_potential_users(self):
         users = get_potential_users()
         self.assertIsNotNone(users)
-        self.assertEqual(len(users), 11)
+        self.assertEqual(len(users), 12)
 
     def test_is_uw_member(self):
         self.assertTrue(is_uw_member("javerage"))

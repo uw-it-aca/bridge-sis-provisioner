@@ -110,6 +110,7 @@ class BridgeWorker(Worker):
                       uw_bridge_user.first_name == ret_buser.first_name and
                       len(uw_bridge_user.last_name) > 0 and
                       uw_bridge_user.last_name == ret_buser.last_name):
+                    uw_bridge_user.set_prev_netid(ret_buser.netid)
                     uw_bridge_user.set_action_regid_changed()
 
                 else:
