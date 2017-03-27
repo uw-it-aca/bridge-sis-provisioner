@@ -6,8 +6,9 @@ via the Bridge APIs.
 import logging
 import traceback
 from sis_provisioner.dao import is_using_file_dao
-from sis_provisioner.dao.bridge import add_bridge_user,\
-    change_uwnetid, delete_bridge_user, update_bridge_user, restore_bridge_user
+from sis_provisioner.dao.bridge import add_bridge_user, change_uwnetid,\
+    get_regid_from_bridge_user, delete_bridge_user, update_bridge_user,\
+    restore_bridge_user
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers.worker import Worker
 
@@ -26,58 +27,57 @@ class BridgeWorker(Worker):
         self.total_restored_count = 0
         self.total_loaded_count = 0
 
-    def _verify_resp(self, resp_bri_users, uw_bri_user):
-        return resp_bri_users is not None and len(resp_bri_users) == 1 and\
-            (resp_bri_users[0].netid == uw_bri_user.netid or
-             is_using_file_dao())
+    def _uid_matched(self, uw_bridge_user, ret_bridge_user):
+        return (ret_bridge_user is not None and
+                ret_bridge_user.netid == uw_bridge_user.netid)
 
-    def _log_error(self, action_message, resp_bri_users, uw_bri_user):
-        if resp_bri_users is not None and len(resp_bri_users) > 1:
-            logger.error("%s (%s) unexpected results: %s" %
-                         (action_message, uw_bri_user,
-                          ",".join(resp_bri_users)))
-        else:
-            logger.error("%s (%s) returns None" %
-                         action_message, uw_bri_user)
+    def _save_bridge_id(self, uw_bridge_user, ret_bridge_user):
+        if not uw_bridge_user.has_bridge_id():
+            uw_bridge_user.set_bridge_id(ret_bridge_user.bridge_id)
 
-    def _save_bridge_id(self, uw_bri_user, bri_user):
-        if not uw_bri_user.has_bridge_id():
-            uw_bri_user.set_bridge_id(bri_user.bridge_id)
-
-    def _save_verified(self, uw_bridge_user):
+    def _save_verified(self, uw_bridge_user, upd_counter=True):
         uw_bridge_user.save_verified()
-        self.total_loaded_count += 1
+        if upd_counter:
+            self.total_loaded_count += 1
 
-    def add_new_user(self, uw_bri_user):
+    def add_new_user(self, uw_bridge_user):
         try:
-            resp_bri_users = add_bridge_user(uw_bri_user)
-            if self._verify_resp(resp_bri_users, uw_bri_user):
-                logger.info("Created user %s in Bridge" % uw_bri_user)
-                self._save_bridge_id(uw_bri_user, resp_bri_users[0])
-                self._save_verified(uw_bri_user)
-                self.total_new_users_count += 1
-                return
-            self.append_error("Add New failed on %s" % uw_bri_user)
-            self._log_error("Add new user", resp_bri_users, uw_bri_user)
+            ret_bridge_user, exist = add_bridge_user(uw_bridge_user)
+            if not exist:
+                if self._uid_matched(uw_bridge_user, ret_bridge_user):
+                    logger.info("Created user %s in Bridge" % uw_bridge_user)
+                    self.total_new_users_count += 1
+                    self._save_bridge_id(uw_bridge_user, ret_bridge_user)
+                    self._save_verified(uw_bridge_user)
+                    return
+                self.append_error("Failed to Add New User %s" %
+                                  uw_bridge_user)
+            else:
+                if self._uid_matched(uw_bridge_user, ret_bridge_user):
+                    logger.info("New in DB %s ==> But exists in Bridge %s",
+                                uw_bridge_user, ret_bridge_user)
+                    self._save_bridge_id(uw_bridge_user, ret_bridge_user)
+                    uw_bridge_user.set_action_update()
+                    self._update_user(uw_bridge_user)
+                    return
+                logger.error("Can't add %s <== CHECK existing user %s",
+                             uw_bridge_user, ret_bridge_user)
         except Exception as ex:
             log_exception(logger,
-                          "Failed to create user (%s)" % uw_bri_user,
+                          "Failed to create user %s" % uw_bridge_user,
                           traceback.format_exc())
-            self.append_error("Create failed on %s: %s" % (
-                    uw_bri_user, ex))
+            self.append_error("Create failed on %s ==> %s" %
+                              (uw_bridge_user, ex))
 
-    def delete_user(self, user_to_del):
+    def delete_user(self, user_to_del, is_merge=False):
         try:
-            if delete_bridge_user(user_to_del):
-                logger.info(
-                    "Deleted user %s from Bridge" % user_to_del)
+            if delete_bridge_user(user_to_del, is_merge):
+                logger.info("Deleted user %s from Bridge" % user_to_del)
                 user_to_del.disable()
-                logger.info(
-                    "Disable the user in db %s" % user_to_del)
+                logger.info("Disable the user in db %s" % user_to_del)
                 self.total_deleted_count += 1
-                return
-            self.append_error("Delete failed on %s" % user_to_del)
-
+            else:
+                self.append_error("Delete failed on %s" % user_to_del)
         except Exception as ex:
             log_exception(logger,
                           "Failed to delete user (%s)" % user_to_del,
@@ -85,70 +85,98 @@ class BridgeWorker(Worker):
             self.append_error("Delete failed on %s: %s" % (
                     user_to_del, ex))
 
-    def restore_user(self, uw_bri_user):
-        if self._restore_user(uw_bri_user):
-            if self._update_user(uw_bri_user):
-                self._save_verified(uw_bri_user)
+    def mark_restored(self, uw_bridge_user, ret_bridge_user):
+        logger.info("Restored user %s in Bridge" % uw_bridge_user)
+        uw_bridge_user.set_restored()
+        self._save_bridge_id(uw_bridge_user, ret_bridge_user)
+        self.total_restored_count += 1
 
-    def _restore_user(self, uw_bri_user):
+    def restore_user(self, uw_bridge_user):
         try:
-            resp_bri_users = restore_bridge_user(uw_bri_user)
-            if self._verify_resp(resp_bri_users, uw_bri_user):
-                logger.info("Restored user %s in Bridge" % uw_bri_user)
-                self._save_bridge_id(uw_bri_user, resp_bri_users[0])
-                self.total_restored_count += 1
-                return True
-            self.append_error("Restore failed on %s" % uw_bri_user)
-            self._log_error("Restore user", resp_bri_users, uw_bri_user)
+            ret_buser = restore_bridge_user(uw_bridge_user)
+            if ret_buser is not None:
+
+                regid = get_regid_from_bridge_user(ret_buser)
+
+                if uw_bridge_user.netid == ret_buser.netid or\
+                   uw_bridge_user.netid_changed() and\
+                   uw_bridge_user.prev_netid == ret_buser.netid:
+                    pass
+
+                elif regid is None or uw_bridge_user.regid == regid:
+                    uw_bridge_user.set_prev_netid(ret_buser.netid)
+
+                elif (uw_bridge_user.has_first_name() and
+                      uw_bridge_user.first_name == ret_buser.first_name and
+                      len(uw_bridge_user.last_name) > 0 and
+                      uw_bridge_user.last_name == ret_buser.last_name):
+                    uw_bridge_user.set_action_regid_changed()
+
+                else:
+                    self.append_error("Restore failed on %s" % uw_bridge_user)
+                    logger.error("Failed restore %s ==> CHECK in Bridge %s",
+                                 uw_bridge_user, ret_buser)
+                    return
+
+                self.mark_restored(uw_bridge_user, ret_buser)
+                self.update_user(uw_bridge_user)
+            else:
+                self.append_error("Restore failed on %s" % uw_bridge_user)
+                logger.error("Failed restore %s", uw_bridge_user)
+
         except Exception as ex:
             log_exception(logger,
-                          "Failed to restore user (%s)" % uw_bri_user,
+                          "Failed to restore user (%s)" % uw_bridge_user,
                           traceback.format_exc())
             self.append_error("Restore failed on %s: %s" % (
-                    uw_bri_user, ex))
-        return False
+                    uw_bridge_user, ex))
 
-    def update_user(self, uw_bri_user):
-        if not uw_bri_user.netid_changed() or self.update_uid(uw_bri_user):
-            if self._update_user(uw_bri_user):
-                self._save_verified(uw_bri_user)
+    def update_user(self, uw_bridge_user):
+        if not uw_bridge_user.netid_changed() or\
+           self.update_uid(uw_bridge_user):
+            self._update_user(uw_bridge_user)
 
-    def update_uid(self, uw_bri_user):
+    def update_uid(self, uw_bridge_user):
         try:
-            resp_bri_users = change_uwnetid(uw_bri_user)
-            if self._verify_resp(resp_bri_users, uw_bri_user):
-                logger.info("Changed UID of user %s in Bridge" % uw_bri_user)
-                self._save_bridge_id(uw_bri_user, resp_bri_users[0])
+            ret_bridge_user = change_uwnetid(uw_bridge_user)
+            if self._uid_matched(uw_bridge_user, ret_bridge_user):
+                logger.info("Changed UID of user %s in Bridge",
+                            uw_bridge_user)
+                uw_bridge_user.clear_prev_netid()
+                self._save_bridge_id(uw_bridge_user, ret_bridge_user)
                 self.total_netid_changes_count += 1
                 return True
-            self.append_error("Change-uid failed on %s" % uw_bri_user)
-            self._log_error("Change-uid", resp_bri_users, uw_bri_user)
+
+            self.append_error("Change-uid failed on %s" % uw_bridge_user)
         except Exception as ex:
-            log_exception(logger,
-                          "Failed to change-uid for user (%s)" % uw_bri_user,
-                          traceback.format_exc())
+            log_exception(
+                logger,
+                "Failed to change-uid for user (%s)" % uw_bridge_user,
+                traceback.format_exc())
             self.append_error("Change uid failed on %s: %s" % (
-                    uw_bri_user, ex))
+                    uw_bridge_user, ex))
         return False
 
-    def _update_user(self, uw_bri_user):
+    def _update_user(self, uw_bridge_user):
         try:
-            resp_bri_users = update_bridge_user(uw_bri_user)
-            if self._verify_resp(resp_bri_users, uw_bri_user):
-                logger.info("Updated user %s in Bridge" % uw_bri_user)
-                self._save_bridge_id(uw_bri_user, resp_bri_users[0])
-                if uw_bri_user.regid_changed():
-                    self.total_regid_changes_count += 1
-                return True
-            self.append_error("Update failed on %s" % uw_bri_user)
-            self._log_error("Update user", resp_bri_users, uw_bri_user)
+            ret = update_bridge_user(uw_bridge_user)
+            if ret is None:
+                # verified no change
+                self._save_verified(uw_bridge_user, upd_counter=False)
+            else:
+                if ret:
+                    logger.info("Updated user %s in Bridge" % uw_bridge_user)
+                    if uw_bridge_user.regid_changed():
+                        self.total_regid_changes_count += 1
+                    self._save_verified(uw_bridge_user)
+                else:
+                    self.append_error("Update failed on %s" % uw_bridge_user)
         except Exception as ex:
             log_exception(logger,
-                          "Failed to update user (%s)" % uw_bri_user,
+                          "Failed to update user (%s)" % uw_bridge_user,
                           traceback.format_exc())
             self.append_error("Update failed on %s: %s" % (
-                    uw_bri_user, ex))
-        return False
+                    uw_bridge_user, ex))
 
     def get_new_user_count(self):
         return self.total_new_users_count

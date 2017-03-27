@@ -11,8 +11,8 @@ from sis_provisioner.dao.user import normalize_email, normalize_name,\
     get_all_users, save_user, _get_netid_changed_user, _changed_regid,\
     _are_all_disabled, _are_all_active, _appointments_json_dump,\
     get_user_from_db, get_total_users, get_user_by_bridgeid
-from sis_provisioner.test import fdao_pws_override, fdao_hrp_override
-from sis_provisioner.test.dao import mock_uw_bridge_user
+from sis_provisioner.test import fdao_pws_override, fdao_hrp_override,\
+    mock_uw_bridge_user
 
 
 @fdao_hrp_override
@@ -183,7 +183,7 @@ class TestUserDao(TransactionTestCase):
         self.assertEqual(user.regid,
                          "10000000000000000000000000000003")
         self.assertEqual(user.get_display_name(),
-                         "Bothell Student")
+                         "Bothell Graduate Student")
         self.assertEqual(user.email, "botgrad@uw.edu")
         self.assertTrue(user.has_emp_appointments())
         self.assertEqual(user.get_total_emp_apps(), 3)

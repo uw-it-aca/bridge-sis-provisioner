@@ -33,7 +33,7 @@ class CsvWorker(Worker):
         self.total_new_users_count += 1
         self._load_user(uw_bri_user)
 
-    def delete_user(self, user_to_del):
+    def delete_user(self, user_to_del, is_merge=False):
         self.users_to_del.append(user_to_del)
         logger.info(
             "Add user %s to delete csv file" % user_to_del)

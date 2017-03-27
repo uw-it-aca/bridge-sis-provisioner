@@ -6,7 +6,6 @@ from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
     fdao_bridge_override
 from sis_provisioner.models import UwBridgeUser, get_now, GRACE_PERIOD
 from sis_provisioner.dao.user import get_user_by_netid
-from sis_provisioner.account_managers import DISALLOWED, LEFT_UW
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 from sis_provisioner.account_managers.csv_worker import CsvWorker
 
@@ -20,7 +19,7 @@ class TestUserCsvUpdater(TransactionTestCase):
         user = UwBridgeUser(netid='javerage',
                             regid="9136CCB8F66711D5BE060004AC494FFE",
                             last_visited_at=get_now(),
-                            email='javerage@uw.edu',
+                            email='old@uw.edu',
                             first_name="James",
                             last_name="Changed")
         user.save()
@@ -53,29 +52,22 @@ class TestUserCsvUpdater(TransactionTestCase):
         self.assertEqual(loader.get_regid_changed_count(), 1)
 
     def test_terminate(self):
-        user = UwBridgeUser(netid='invalidu',
-                            regid="0136CCB8F66711D5BE060004AC494FFE",
-                            last_visited_at=get_now(),
-                            email='invalidu@uw.edu',
-                            first_name="Invalid",
-                            last_name="User")
+        user = UwBridgeUser(
+            netid='leftuw',
+            regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
+            last_visited_at=get_now(),
+            email='leftuw@uw.edu',
+            first_name="Who",
+            last_name="Left")
         user.save()
         loader = UserUpdater(CsvWorker())
 
-        loader.terminate(user, LEFT_UW)
-        self.assertIsNotNone(user.terminate_at)
+        loader.load()
+        db_user = get_user_by_netid('leftuw')
+        self.assertIsNotNone(db_user.terminate_at)
         self.assertEqual(loader.get_deleted_count(), 0)
 
-        loader.terminate(user, DISALLOWED)
-        self.assertEqual(loader.get_deleted_count(), 1)
-
-        user = UwBridgeUser(
-            netid='javerage',
-            regid="0",
-            last_visited_at=get_now() - timedelta(days=GRACE_PERIOD),
-            email='javerage@uw.edu',
-            first_name="James",
-            last_name="Student")
+        user.terminate_at = get_now() - timedelta(days=(GRACE_PERIOD + 1))
         user.save()
-        loader.terminate(user, None)
-        self.assertEqual(loader.get_deleted_count(), 2)
+        loader.load()
+        self.assertEqual(loader.get_deleted_count(), 1)
