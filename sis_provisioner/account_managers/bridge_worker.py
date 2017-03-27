@@ -98,8 +98,13 @@ class BridgeWorker(Worker):
 
                 regid = get_regid_from_bridge_user(ret_buser)
 
-                if uw_bridge_user.netid == ret_buser.netid or\
-                   uw_bridge_user.netid_changed() and\
+                if uw_bridge_user.netid == ret_buser.netid:
+                    if regid is None or uw_bridge_user.regid == regid:
+                        uw_bridge_user.set_action_update()
+                    else:
+                        uw_bridge_user.set_action_regid_changed()
+
+                elif uw_bridge_user.netid_changed() and\
                    uw_bridge_user.prev_netid == ret_buser.netid:
                     pass
 
