@@ -15,6 +15,7 @@ from restclients.hrpws.appointee import get_appointee_by_eid
 from sis_provisioner.models import UwBridgeUser, get_now, ACTION_UPDATE,\
     ACTION_NEW, ACTION_CHANGE_REGID, ACTION_RESTORE
 from sis_provisioner.dao.hrp import get_appointments
+from sis_provisioner.dao.pws import is_moved_netid, is_moved_regid
 from sis_provisioner.util.log import log_exception
 
 
@@ -241,9 +242,10 @@ def _get_netid_changed_user(busers, person):
     return the user with the old netid
     """
     for u in busers:
-        if u.netid != person.uwnetid:
-            logger.info("Existing user %s has changed netid to %s" %
-                        (u.netid, person.uwnetid))
+        if u.netid != person.uwnetid and\
+           is_moved_netid(u.netid):
+            logger.info("Existing user %s has changed netid from %s to %s" %
+                        (u, u.netid, person.uwnetid))
             return u
     return None
 
@@ -254,9 +256,10 @@ def _changed_regid(busers, person):
     @param: person a valid pws Person object
     """
     for u in busers:
-        if u.regid != person.uwregid:
+        if u.regid != person.uwregid and\
+           is_moved_regid(u.regid):
             logger.info("Existing user %s has changed regid from %s to %s" %
-                        (u.netid, u.regid, person.uwregid))
+                        (u, u.regid, person.uwregid))
             return True
     return False
 

@@ -1,7 +1,8 @@
 from django.test import TestCase
 from restclients.exceptions import DataFailureException
 from sis_provisioner.test import fdao_pws_override
-from sis_provisioner.dao.pws import get_person, get_person_by_regid
+from sis_provisioner.dao.pws import get_person, get_person_by_regid,\
+    is_moved_netid, is_moved_regid
 
 
 @fdao_pws_override
@@ -41,11 +42,11 @@ class TestPwsDao(TestCase):
         except DataFailureException as ex:
             self.assertEqual(ex.status, 404)
 
-    def test_get_person_err301(self):
-        self.assertRaises(DataFailureException,
-                          get_person,
-                          'renamed')
-        try:
-            person = get_person('renamed')
-        except DataFailureException as ex:
-            self.assertEqual(ex.status, 301)
+    def test_is_moved_netid(self):
+        self.assertTrue(is_moved_netid('renamed'))
+        self.assertTrue(is_moved_netid('changed'))
+        self.assertFalse(is_moved_netid('javerage'))
+
+    def test_is_moved_regid(self):
+        self.assertTrue(is_moved_regid('0136CCB8F66711D5BE060004AC494FFE'))
+        self.assertFalse(is_moved_regid('9136CCB8F66711D5BE060004AC494FFE'))
