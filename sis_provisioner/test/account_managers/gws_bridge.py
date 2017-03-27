@@ -116,12 +116,12 @@ class TestGwsBridgeLoader(TransactionTestCase):
 
     def test_merge_user_accounts(self):
         del_user = UwBridgeUser(netid='changed',
-                             bridge_id=195,
-                             regid="9136CCB8F66711D5BE060004AC494FFE",
-                             action_priority=ACTION_UPDATE,
-                             last_visited_at=get_now(),
-                             first_name="Changed",
-                             last_name="Netid")
+                                bridge_id=195,
+                                regid="9136CCB8F66711D5BE060004AC494FFE",
+                                action_priority=ACTION_UPDATE,
+                                last_visited_at=get_now(),
+                                first_name="Changed",
+                                last_name="Netid")
         user = UwBridgeUser(netid='javerage',
                             bridge_id=195,
                             prev_netid='changed',
