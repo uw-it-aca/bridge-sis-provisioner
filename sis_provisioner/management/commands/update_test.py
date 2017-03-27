@@ -15,6 +15,7 @@ class Command(BaseCommand):
         total_new = 0
         total_del = 0
         total_restore = 0
+        total_change_netid = 0
         total_update = 0
         worker = BridgeWorker()
 
@@ -32,31 +33,22 @@ class Command(BaseCommand):
                     total_del += 1
                     worker.delete_user(uw_bridge_user)
 
-            elif uw_bridge_user.is_new():
-                total_new += 1
+            elif uw_bridge_user.netid_changed():
+                total_change_netid += 1
                 try:
-                    worker.add_new_user(uw_bridge_user)
+                    if worker.update_uid(uw_bridge_user):
+                        if worker._update_user(uw_bridge_user):
+                            worker._save_verified(uw_bri_user)
                 except Exception as ex:
-                    print "Add new %s ==>%s" % (uw_bridge_user, ex)
-
-            else:
-                total_update += 1
-                try:
-                    worker.update_user(uw_bridge_user)
-                except Exception as ex:
-                    print "Update %s ==>%s" % (uw_bridge_user, ex)
-
-        print "Total %d users to add" % total_new
-        print "Added %d users" % worker.get_new_user_count()
+                    print "Update UID %s ==>%s" % (uw_bridge_user, ex)
 
         print "Total %d users to delete" % total_del
-        print "Added %d users" % worker.get_deleted_count()
+        print "Deleted %d users" % worker.get_deleted_count()
 
         print "Total %d users to restore" % total_restore
-        print "Added %d users" % worker.get_restored_count()
+        print "Restored %d users" % worker.get_restored_count()
 
+        print "Total %d changed netid" % total_change_netid
         print "NetId changed: %d" % worker.get_netid_changed_count()
-        print "Regid changed: %s" % worker.get_regid_changed_count()
 
-        print "Total %d users to update" % total_update
         print "Loaded: %d" % worker.get_loaded_count()

@@ -9,8 +9,8 @@
       }],
     "custom_field_values": [
       {
-        "id": "1",
-        "value": "9136CCB8F66711D5BE060004AC494FFE",
+        "id": "103",
+        "value": "10000000000000000000000000000003",
         "links": {
           "custom_field": {
             "id": "5",
@@ -22,17 +22,17 @@
    },
    "users":[
      {
-       "id":"195",
-       "uid":"javerage@uw.edu",
+       "id":"203",
+       "uid":"botgrad@uw.edu",
        "hris_id":null,
-       "first_name":"James",
-       "last_name":"Changed",
-       "full_name":"James Changed",
-       "sortable_name":"Changed, James",
-       "email":"javerage@uw.edu",
+       "first_name":"Bothell Graduate",
+       "last_name":"Student",
+       "full_name":"Bothell Graduate Student",
+       "sortable_name":"Student, Bothell Graduate",
+       "email":"botgrad@uw.edu",
        "locale":"en",
-       "roles":["account_admin"],
-       "name":"James Changed",
+       "roles":[],
+       "name":"Bothell Graduate Student",
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",
        "deleted_at":null,
@@ -44,7 +44,7 @@
        "next_due_date":null,
        "completed_courses_count":0,
        "links":{
-          "custom_field_values":["1"]
+          "custom_field_values":["103"]
        },
        "meta":{"can_masquerade":true}
      }

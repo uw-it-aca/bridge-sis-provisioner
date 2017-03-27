@@ -31,7 +31,7 @@ class Worker:
         pass
 
     @abstractmethod
-    def delete_user(self, user_to_del):
+    def delete_user(self, user_to_del, is_merge=False):
         """
         Delete an active existing user in Bridge
         @param user_to_del a valid UwBridgeUser object.

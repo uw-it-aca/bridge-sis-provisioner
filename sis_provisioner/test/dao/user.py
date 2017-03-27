@@ -4,15 +4,15 @@ from datetime import timedelta
 from restclients.exceptions import DataFailureException
 from sis_provisioner.models import UwBridgeUser, get_now,\
     EmployeeAppointment
-from sis_provisioner.dao.pws import get_person
+from sis_provisioner.dao.pws import get_person, is_moved_netid, is_moved_regid
 from sis_provisioner.dao.hrp import get_appointments
 from sis_provisioner.dao.user import normalize_email, normalize_name,\
     _emp_attr_unchanged, filter_by_ids, get_user_by_netid, get_user_by_regid,\
     get_all_users, save_user, _get_netid_changed_user, _changed_regid,\
     _are_all_disabled, _are_all_active, _appointments_json_dump,\
     get_user_from_db, get_total_users, get_user_by_bridgeid
-from sis_provisioner.test import fdao_pws_override, fdao_hrp_override
-from sis_provisioner.test.dao import mock_uw_bridge_user
+from sis_provisioner.test import fdao_pws_override, fdao_hrp_override,\
+    mock_uw_bridge_user
 
 
 @fdao_hrp_override
@@ -183,7 +183,7 @@ class TestUserDao(TransactionTestCase):
         self.assertEqual(user.regid,
                          "10000000000000000000000000000003")
         self.assertEqual(user.get_display_name(),
-                         "Bothell Student")
+                         "Bothell Graduate Student")
         self.assertEqual(user.email, "botgrad@uw.edu")
         self.assertTrue(user.has_emp_appointments())
         self.assertEqual(user.get_total_emp_apps(), 3)
@@ -193,7 +193,7 @@ class TestUserDao(TransactionTestCase):
                          _appointments_json_dump(person))
 
     def test_netid_change(self):
-        user = UwBridgeUser(netid='old',
+        user = UwBridgeUser(netid='changed',
                             regid="10000000000000000000000000000006",
                             last_visited_at=get_now(),
                             first_name="Changed",
@@ -202,14 +202,14 @@ class TestUserDao(TransactionTestCase):
         person = get_person('retiree')
         self.assertIsNotNone(person)
         old_user = _get_netid_changed_user([user], person)
-        self.assertEqual(old_user.netid, 'old')
+        self.assertEqual(old_user.netid, 'changed')
         self.assertFalse(_changed_regid([user], person))
 
         user_upd, user_del = save_user(person, include_hrp=False)
         self.assertIsNotNone(user_upd)
         self.assertTrue(user_upd.netid_changed())
         self.assertFalse(user_upd.regid_changed())
-        self.assertEqual(user_upd.prev_netid, 'old')
+        self.assertEqual(user_upd.prev_netid, 'changed')
         self.assertIsNone(user_del)
         user_upd.delete()
 
@@ -219,13 +219,13 @@ class TestUserDao(TransactionTestCase):
         user_upd, user_del = save_user(person, include_hrp=False)
         self.assertIsNotNone(user_upd)
         self.assertTrue(user_upd.netid_changed())
-        self.assertEqual(user_upd.prev_netid, 'old')
+        self.assertEqual(user_upd.prev_netid, 'changed')
         self.assertTrue(user_upd.is_restore())
         self.assertIsNone(user_del)
 
     def test_regid_change(self):
         user = UwBridgeUser(netid='retiree',
-                            regid="10000000000000000000000000000009",
+                            regid='0136CCB8F66711D5BE060004AC494FFE',
                             last_visited_at=get_now(),
                             first_name="Ellen",
                             last_name="Louise")
@@ -241,7 +241,7 @@ class TestUserDao(TransactionTestCase):
         self.assertIsNone(user_del)
         self.assertRaises(Exception,
                           get_user_by_regid,
-                          "10000000000000000000000000000009")
+                          '0136CCB8F66711D5BE060004AC494FFE')
         user_upd.delete()
 
         # user is disabled
@@ -255,36 +255,41 @@ class TestUserDao(TransactionTestCase):
 
     def test_2existing_accounts_with_id_changes(self):
         user1 = UwBridgeUser(netid='staff',
-                             regid="10000000000000000000000000000009",
+                             regid='0136CCB8F66711D5BE060004AC494FFE',
                              last_visited_at=get_now(),
                              first_name="Changed",
                              last_name="Regid")
         user1.save()
-        user2 = UwBridgeUser(netid='old',
+        user2 = UwBridgeUser(netid='changed',
                              regid="10000000000000000000000000000001",
                              last_visited_at=get_now(),
                              first_name="Changed",
                              last_name="Netid")
         user2.save()
+        self.assertTrue(is_moved_netid('changed'))
+        self.assertTrue(is_moved_regid('0136CCB8F66711D5BE060004AC494FFE'))
+        # both records are active
         self.assertTrue(_are_all_active([user1, user2]))
         self.assertFalse(_are_all_disabled([user1, user2]))
+
         person = get_person('staff')
         self.assertIsNotNone(person)
         old_user = _get_netid_changed_user([user1, user2], person)
         self.assertIsNotNone(old_user)
-        self.assertEqual(old_user.netid, 'old')
+        self.assertEqual(old_user.netid, 'changed')
         self.assertTrue(_changed_regid([user1, user2], person))
 
         user_upd, user_del = save_user(person, include_hrp=False)
         self.assertIsNotNone(user_upd)
         self.assertFalse(user_upd.regid_changed())
         self.assertTrue(user_upd.is_update())
-
+        self.assertEqual(user_upd.netid, 'staff')
+        self.assertEqual(user_upd.regid,
+                         "10000000000000000000000000000001")
         self.assertIsNotNone(user_del)
-        self.assertEqual(user_del.netid, 'old')
-        self.assertRaises(Exception,
-                          get_user_by_netid,
-                          'old')
+        self.assertEqual(user_del.netid, 'changed')
+        self.assertEqual(user_del.regid,
+                         "10000000000000000000000000000001")
         user_upd.delete()
 
         # both records are disabled
@@ -298,13 +303,10 @@ class TestUserDao(TransactionTestCase):
         self.assertFalse(user_upd.netid_changed())
         self.assertFalse(user_upd.regid_changed())
         self.assertTrue(user_upd.is_restore())
+        self.assertEqual(user_upd.netid, 'staff')
+        self.assertEqual(user_upd.regid,
+                         "10000000000000000000000000000001")
         self.assertIsNone(user_del)
-        self.assertRaises(Exception,
-                          get_user_by_netid,
-                          'old')
-        self.assertRaises(Exception,
-                          get_user_by_regid,
-                          "10000000000000000000000000000009")
         user_upd.delete()
 
         # the disabled record is with the new netid
@@ -319,13 +321,11 @@ class TestUserDao(TransactionTestCase):
         self.assertTrue(user_upd.netid_changed())
         self.assertFalse(user_upd.regid_changed())
         self.assertFalse(user_upd.is_restore())
+        self.assertEqual(user_upd.netid, 'staff')
+        self.assertEqual(user_upd.prev_netid, 'changed')
+        self.assertEqual(user_upd.regid,
+                         "10000000000000000000000000000001")
         self.assertIsNone(user_del)
-        self.assertRaises(Exception,
-                          get_user_by_netid,
-                          'old')
-        self.assertRaises(Exception,
-                          get_user_by_regid,
-                          "10000000000000000000000000000009")
         user_upd.delete()
 
         # the disabled record is with the old netid
@@ -339,11 +339,8 @@ class TestUserDao(TransactionTestCase):
         self.assertFalse(user_upd.netid_changed())
         self.assertFalse(user_upd.regid_changed())
         self.assertFalse(user_upd.is_restore())
+        self.assertEqual(user_upd.netid, 'staff')
+        self.assertEqual(user_upd.regid,
+                         "10000000000000000000000000000001")
         self.assertIsNone(user_del)
-        self.assertRaises(Exception,
-                          get_user_by_netid,
-                          'old')
-        self.assertRaises(Exception,
-                          get_user_by_regid,
-                          "10000000000000000000000000000009")
         user_upd.delete()
