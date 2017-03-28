@@ -73,6 +73,10 @@ def delete_bridge_user(user, conditional):
     :return: True if the user is deleted successfully
     """
     user_in_bridge = get_bridge_user_object(user)
+    if user_in_bridge is None:
+        logger.info("Skip delete %s <== Already deleted in Bridge", user)
+        return True
+
     if not _uid_matched(user, user_in_bridge):
         regid = get_regid_from_bridge_user(user_in_bridge)
         if regid is not None and user.regid != regid:
@@ -123,13 +127,11 @@ def restore_bridge_user(uw_bridge_user):
     :param uw_bridge_user: a valid UwBridgeUser object
     :return: a BridgeUser objects with custom fields
     """
-    try:
-        user_in_bridge = get_bridge_user_object(uw_bridge_user)
-        if user_in_bridge is not None:
-            return user_in_bridge
-    except DataFailureException as ex:
-        if ex.status != 404:
-            raise
+    user_in_bridge = get_bridge_user_object(uw_bridge_user)
+    if user_in_bridge is not None:
+        logger.info("Skip restore %s <== exists in Bridge %s",
+                    uw_bridge_user, user_in_bridge)
+        return user_in_bridge
 
     if uw_bridge_user.has_bridge_id():
         busers = restore_user_by_id(uw_bridge_user.bridge_id,
@@ -155,8 +157,8 @@ def update_bridge_user(uw_bridge_user):
         return False
 
     if _no_change(uw_bridge_user, user_in_bridge):
-        logger.error("Skip updating %s with %s <== NO change",
-                     user_in_bridge, uw_bridge_user)
+        logger.info("Skip updating %s with %s <== NO change",
+                    user_in_bridge, uw_bridge_user)
         return None
 
     new_bri_user = _get_bridge_user_to_upd(uw_bridge_user, user_in_bridge)
@@ -253,13 +255,17 @@ def _no_change(uw_bridge_user, user_in_bridge):
 
 
 def _process_response(action, ret_users, uw_bridge_user):
-    if ret_users is None or len(ret_users) == 0:
+    if ret_users is None:
         logger.error("%s %s ==> returned None", action, uw_bridge_user)
         return None
 
+    if len(ret_users) == 0:
+        logger.info("%s %s ==> is deleted account", action, uw_bridge_user)
+        return None
+
     if len(ret_users) > 1:
-        logger.error("%s %s ==> returned multiple users: %s",
-                     action, uw_bridge_user, ",".join(ret_users))
+        logger.warning("%s %s ==> returned multiple users: %s",
+                       action, uw_bridge_user, ",".join(ret_users))
     return ret_users[0]
 
 

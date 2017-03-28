@@ -85,6 +85,12 @@ class TestBridgeDao(TransactionTestCase):
                           delete_bridge_user,
                           user, False)
 
+        # already deleted
+        user, person = mock_uw_bridge_user('botgrad')
+        user.bridge_id = 203
+        self.assertTrue(delete_bridge_user(user, True))
+
+        # normal case
         uw_user = UwBridgeUser(netid='leftuw',
                                regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
                                bridge_id=200,
