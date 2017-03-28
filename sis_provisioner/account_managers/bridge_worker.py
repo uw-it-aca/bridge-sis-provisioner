@@ -59,10 +59,8 @@ class BridgeWorker(Worker):
                     uw_bridge_user.set_action_update()
                     self._update_user(uw_bridge_user)
                     return
-                logger.error("Failed create %s <== CHECK existing user %s",
-                             uw_bridge_user, ret_bridge_user)
-                self.append_error("Failed to create %s ==> CHECK existing %s" %
-                                  uw_bridge_user.netid, ret_bridge_user)
+                self.append_error("Can't create %s ==> CHECK in Bridge" %
+                                  uw_bridge_user.netid)
         except Exception as ex:
             log_exception(logger,
                           "Failed create %s" % uw_bridge_user,
@@ -116,8 +114,6 @@ class BridgeWorker(Worker):
                 else:
                     self.append_error("Failed to restore user: %s" %
                                       uw_bridge_user.netid)
-                    logger.error("Failed restore %s ==> CHECK in Bridge %s",
-                                 uw_bridge_user, ret_buser)
                     return
 
                 self.mark_restored(uw_bridge_user, ret_buser)
@@ -168,7 +164,8 @@ class BridgeWorker(Worker):
                 self._save_verified(uw_bridge_user, upd_counter=False)
             else:
                 if ret:
-                    logger.info("Updated user %s in Bridge" % uw_bridge_user)
+                    logger.info("Updated user %s in Bridge",
+                                uw_bridge_user)
                     if uw_bridge_user.regid_changed():
                         self.total_regid_changes_count += 1
                     self._save_verified(uw_bridge_user)
