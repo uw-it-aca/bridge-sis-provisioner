@@ -74,7 +74,7 @@ class BridgeWorker(Worker):
             if delete_bridge_user(user_to_del, is_merge):
                 logger.info("Deleted user %s from Bridge" % user_to_del)
                 user_to_del.disable()
-                logger.info("Disable the user in db %s" % user_to_del)
+                logger.info("Disable the user in db %s", user_to_del)
                 self.total_deleted_count += 1
             else:
                 self.append_error("Delete failed on %s" % user_to_del)

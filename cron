@@ -1,6 +1,8 @@
 MAILTO=fanglin@uw.edu
 PYTHONPATH=/usr/lib/python2.7/site-packages
 DJANGO_SETTINGS_MODULE=project.settings
-3 9 * * 1-5 cd /data/bridge/live && source ./bin/activate && python manage.py load_user_csv db
-1 9 * * 1,2,4 cd /data/bridge/live && source ./bin/activate && python manage.py load_user_csv gws
-
+3 9 * * 6 cd /data/bridge/live && source ./bin/activate && python manage.py load_user_to_bridge db
+1 9 * * 1,4 cd /data/bridge/live && source ./bin/activate && python manage.py load_user_to_bridge gws
+#1 9 * * 2 cd /data/bridge/live && source ./bin/activate && python manage.py load_user_to_bridge bridge
+#3 9 * * 5 cd /data/bridge/live && source ./bin/activate && python manage.py load_user_csv db
+#1 9 * * 1,4 cd /data/bridge/live && source ./bin/activate && python manage.py load_user_csv gws
