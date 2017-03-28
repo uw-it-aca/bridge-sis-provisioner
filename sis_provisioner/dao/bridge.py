@@ -129,6 +129,8 @@ def restore_bridge_user(uw_bridge_user):
     """
     user_in_bridge = get_bridge_user_object(uw_bridge_user)
     if user_in_bridge is not None:
+        logger.info("Skip restore %s <== exists in Bridge %s",
+                    uw_bridge_user, user_in_bridge)
         return user_in_bridge
 
     if uw_bridge_user.has_bridge_id():
