@@ -6,7 +6,7 @@ accounts via the given worker.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
+from restclients.exceptions import DataFailureException, InvalidNetID
 from sis_provisioner.account_managers import get_validated_user
 from sis_provisioner.account_managers.loader import Loader
 from sis_provisioner.util.log import log_exception
@@ -34,6 +34,8 @@ class GwsBridgeLoader(Loader):
             try:
                 person, validation_status = get_validated_user(
                     self.logger, uwnetid)
+            except InvalidNetID as ex:
+                continue
             except DataFailureException as ex:
                 log_exception(
                     logger,
@@ -77,7 +79,7 @@ class GwsBridgeLoader(Loader):
         # merge learning history from del_user to uw_bridge_user
         # delete del_user
         self.logger.info("Delete %s" % del_user)
-        self.worker.delete_user(del_user)
+        self.worker.delete_user(del_user, is_merge=True)
 
     def apply_change_to_bridge(self, uw_bridge_user):
         """

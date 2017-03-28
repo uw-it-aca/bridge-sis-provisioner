@@ -141,6 +141,11 @@ class UwBridgeUser(models.Model):
             return self.prev_netid
         return ""
 
+    def clear_prev_netid(self):
+        if self.prev_netid is not None:
+            self.prev_netid = None
+            self.save()
+
     def set_prev_netid(self, prev_netid):
         if prev_netid is not None and len(prev_netid) > 0:
             self.prev_netid = prev_netid
@@ -189,6 +194,11 @@ class UwBridgeUser(models.Model):
 
     def disable(self):
         self.disabled = True
+        self.save()
+
+    def set_restored(self):
+        self.disabled = False
+        self.terminate_at = None
         self.save()
 
     def clear_terminate_date(self):

@@ -20,18 +20,22 @@ class TestUserUpdater(TransactionTestCase):
                             regid="9136CCB8F66711D5BE060004AC494FFE",
                             last_visited_at=get_now(),
                             email='javerage@uw.edu',
-                            first_name="James",
+                            display_name="James Changed",
                             last_name="Changed")
         user.save()
         loader = UserUpdater(BridgeWorker())
-        loader.load()
-        bri_users = loader.get_users_to_process()
+
+        bri_users = loader.fetch_users()
         self.assertEqual(len(bri_users), 1)
+        self.assertEqual(bri_users[0].netid, 'javerage')
+
+        loader.load()
         self.assertEqual(loader.get_total_count(), 1)
         self.assertEqual(loader.get_new_user_count(), 0)
         self.assertEqual(loader.get_loaded_count(), 1)
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_regid_changed_count(), 0)
+        self.assertFalse(loader.has_error())
 
     def test_changed_regid(self):
         user = UwBridgeUser(netid='javerage',
@@ -43,8 +47,6 @@ class TestUserUpdater(TransactionTestCase):
         user.save()
         loader = UserUpdater(BridgeWorker())
         loader.load()
-        bri_users = loader.get_users_to_process()
-        self.assertEqual(len(bri_users), 1)
         self.assertEqual(loader.get_total_count(), 1)
         self.assertEqual(loader.get_new_user_count(), 0)
         self.assertEqual(loader.get_loaded_count(), 1)
@@ -52,52 +54,36 @@ class TestUserUpdater(TransactionTestCase):
         self.assertEqual(loader.get_regid_changed_count(), 1)
 
     def test_terminate(self):
-        user = UwBridgeUser(netid='invalidu',
-                            regid="0136CCB8F66711D5BE060004AC494FFE",
-                            last_visited_at=get_now(),
-                            email='invalidu@uw.edu',
-                            first_name="Invalid",
-                            last_name="User")
-        user.save()
         loader = UserUpdater(BridgeWorker())
-
-        loader.terminate(user, LEFT_UW)
-        self.assertIsNotNone(user.terminate_at)
-        self.assertEqual(loader.get_deleted_count(), 0)
-
-        loader.terminate(user, DISALLOWED)
-        # delete invalidu get a 404
-        self.assertEqual(loader.get_deleted_count(), 0)
-
-        loader.load()
-        self.assertEqual(loader.get_total_count(), 1)
-        user = get_user_by_netid('invalidu')
-        self.assertIsNotNone(user.terminate_at)
-
-        user = UwBridgeUser(
-            netid='javerage',
-            regid="0",
-            last_visited_at=get_now() - timedelta(days=GRACE_PERIOD),
-            email='javerage@uw.edu',
-            first_name="James",
-            last_name="Student")
-        user.save()
-        loader.terminate(user, None)
-        self.assertEqual(loader.get_deleted_count(), 0)
-
         user = UwBridgeUser(
             netid='leftuw',
-            regid="0",
-            bridge_id=200,
-            last_visited_at=get_now() - timedelta(days=GRACE_PERIOD),
+            regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
+            last_visited_at=get_now(),
             email='leftuw@uw.edu',
-            first_name="Left",
-            last_name="UW")
+            first_name="Who",
+            last_name="Left")
         user.save()
-        loader.terminate(user, None)
-        self.assertEqual(loader.get_deleted_count(), 1)
 
-    def test_disabled_user(self):
+        loader.load()
+        user = get_user_by_netid('leftuw')
+        self.assertIsNotNone(user.terminate_at)
+
+        user = UwBridgeUser(
+            netid='invaliduser',
+            regid="1814EFBC6A7C11D5A4AE0004AC494FFE",
+            last_visited_at=get_now() - timedelta(days=GRACE_PERIOD),
+            email='invaliduser@uw.edu',
+            first_name="Old",
+            last_name="User")
+        user.save()
+        loader.load()
+        # get a 404
+        self.assertTrue(loader.has_error())
+
+        user = get_user_by_netid('invaliduser')
+        self.assertIsNotNone(user.terminate_at)
+
+    def test_disabled(self):
         user = UwBridgeUser(netid='invalidu',
                             regid="0136CCB8F66711D5BE060004AC494FFE",
                             last_visited_at=get_now(),
@@ -106,10 +92,23 @@ class TestUserUpdater(TransactionTestCase):
                             first_name="Invalid",
                             last_name="User")
         user.save()
+
         loader = UserUpdater(BridgeWorker())
+        user = UwBridgeUser(
+            netid='leftuw',
+            regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
+            last_visited_at=get_now(),
+            terminate_at=get_now() - timedelta(days=(GRACE_PERIOD + 1)),
+            email='leftuw@uw.edu',
+            first_name="Who",
+            last_name="Left")
+        user.save()
         loader.load()
-        bri_users = loader.get_users_to_process()
-        self.assertEqual(len(bri_users), 1)
-        self.assertEqual(loader.get_total_count(), 1)
         self.assertEqual(loader.get_deleted_count(), 0)
-        self.assertEqual(loader.get_loaded_count(), 0)
+
+        user.bridge_id = 200
+        user.disabled = False
+        user.terminate_at = get_now() - timedelta(days=(GRACE_PERIOD + 1))
+        user.save()
+        loader.load()
+        self.assertEqual(loader.get_deleted_count(), 1)

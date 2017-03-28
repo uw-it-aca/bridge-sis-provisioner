@@ -1,13 +1,14 @@
 from django.test import TransactionTestCase
 from restclients.exceptions import DataFailureException
 from sis_provisioner.models import UwBridgeUser, get_now
+from sis_provisioner.dao.user import get_user_from_db
 from sis_provisioner.dao.bridge import _get_bridge_user_to_add,\
     add_bridge_user, _get_bridge_user_to_upd, change_uwnetid,\
     delete_bridge_user, get_bridge_user, update_bridge_user,\
     get_bridge_user_object, get_all_bridge_users, restore_bridge_user,\
-    get_regid_from_bridge_user
-from sis_provisioner.test import fdao_pws_override, fdao_bridge_override
-from sis_provisioner.test.dao.user import mock_uw_bridge_user
+    get_regid_from_bridge_user, _no_change, _custom_field_no_change
+from sis_provisioner.test import fdao_pws_override, fdao_bridge_override,\
+    mock_uw_bridge_user
 
 
 @fdao_bridge_override
@@ -37,50 +38,76 @@ class TestBridgeDao(TransactionTestCase):
         self.assertEqual(buser.netid, 'leftuw')
 
     def test_get_bridge_user_to_add(self):
-        user, person = mock_uw_bridge_user('staff')
+        user, person = mock_uw_bridge_user('faculty')
         bridge_user = _get_bridge_user_to_add(user)
         self.assertEqual(
             bridge_user.to_json_post(),
-            {'user': {'first_name': user.first_name.title(),
-                      'last_name': user.last_name.title(),
-                      'full_name': user.get_display_name(),
-                      'email': user.email,
-                      'uid': user.netid + '@uw.edu',
-                      'custom_fields': [
-                          {'value': user.regid,
-                           'name': 'REGID',
-                           'custom_field_id': '5'}]}})
+            {'users': [
+                {'first_name': 'James',
+                 'last_name': 'Faculty',
+                 'full_name': 'James Faculty',
+                 'email': 'faculty@uw.edu',
+                 'uid': 'faculty@uw.edu',
+                 'custom_fields': [
+                     {'value': user.regid,
+                      'custom_field_id': '5'}]}]})
 
     def test_add_bridge_user(self):
-        uw_user, person = mock_uw_bridge_user('staff')
+        # not exist
+        uw_user, person = mock_uw_bridge_user('faculty')
         self.assertEqual(uw_user.bridge_id, 0)
-        busers = add_bridge_user(uw_user)
-        self.assertEqual(len(busers), 1)
-        buser = busers[0]
-        self.assertEqual(buser.bridge_id, 1)
-        self.assertEqual(buser.get_uid(),
-                         (person.uwnetid + "@uw.edu"))
-        self.assertEqual(buser.custom_fields[0].value_id, "1")
+
+        buser = _get_bridge_user_to_add(uw_user)
+        self.assertEqual(buser.netid, 'faculty')
+        self.assertEqual(buser.full_name, uw_user.get_display_name())
+        self.assertEqual(buser.email, uw_user.get_email())
         self.assertEqual(buser.custom_fields[0].value, person.uwregid)
         self.assertEqual(buser.custom_fields[0].field_id, '5')
-        uw_user1 = _get_bridge_user_to_add(uw_user)
+
+        user, exist = add_bridge_user(uw_user)
+        self.assertFalse(exist)
+        self.assertEqual(user.netid, 'faculty')
+        self.assertEqual(user.bridge_id, 201)
+        self.assertEqual(len(user.custom_fields), 0)
+
+        uw_user, person = mock_uw_bridge_user('javerage')
+        user, exist = add_bridge_user(uw_user)
+        self.assertTrue(exist)
 
     def test_delete_bridge_user(self):
-        uw_user, person = mock_uw_bridge_user('javerage')
-        self.assertEqual(uw_user.bridge_id, 0)
+        user = UwBridgeUser(netid='notexist',
+                            regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
+                            last_visited_at=get_now(),
+                            first_name="James",
+                            last_name="Student"
+                            )
+        self.assertRaises(DataFailureException,
+                          delete_bridge_user,
+                          user, False)
 
-        uw_user.bridge_id = 195
-        self.assertTrue(delete_bridge_user(uw_user, conditional=False))
-        self.assertFalse(delete_bridge_user(uw_user))
+        uw_user = UwBridgeUser(netid='leftuw',
+                               regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
+                               bridge_id=200,
+                               last_visited_at=get_now(),
+                               display_name="Who LEFT",
+                               first_name="WHO",
+                               last_name="LEFT",
+                               email="leftuw@uw.edu")
+        self.assertTrue(delete_bridge_user(uw_user, True))
+        self.assertTrue(delete_bridge_user(uw_user, False))
+
+        uw_user, person = mock_uw_bridge_user('javerage')
+        self.assertTrue(delete_bridge_user(uw_user, False))
+        self.assertFalse(delete_bridge_user(uw_user, True))
 
         uw_user, person = mock_uw_bridge_user('staff')
         self.assertRaises(DataFailureException,
                           delete_bridge_user,
-                          uw_user)
+                          uw_user, False)
         uw_user.bridge_id = 196
         self.assertRaises(DataFailureException,
                           delete_bridge_user,
-                          uw_user)
+                          uw_user, False)
 
     def test_get_bridge_user(self):
         uw_user, person = mock_uw_bridge_user('javerage')
@@ -89,25 +116,29 @@ class TestBridgeDao(TransactionTestCase):
         buser = busers[0]
         self.assertEqual(buser.bridge_id, 195)
         self.assertEqual(buser.netid, person.uwnetid)
-        self.assertEqual(buser.full_name, 'James Student')
+        self.assertEqual(buser.full_name, "James Old Student")
         self.assertEqual(len(buser.custom_fields), 1)
         self.assertEqual(buser.custom_fields[0].value_id, '1')
         self.assertEqual(buser.custom_fields[0].field_id, '5')
-        self.assertEqual(buser.custom_fields[0].value, person.uwregid)
+        self.assertEqual(buser.custom_fields[0].value,
+                         "0136CCB8F66711D5BE060004AC494FFE")
+
         uw_user.bridge_id = 195
         busers = get_bridge_user(uw_user)
         self.assertEqual(len(busers), 1)
         buser = busers[0]
         self.assertEqual(buser.bridge_id, 195)
-        self.assertEqual(buser.netid, person.uwnetid)
+        self.assertEqual(buser.netid, 'javerage')
+        self.assertEqual(buser.email, 'javerage@uw.edu')
         self.assertEqual(get_regid_from_bridge_user(buser),
-                         "9136CCB8F66711D5BE060004AC494FFE")
+                         "0136CCB8F66711D5BE060004AC494FFE")
 
     def test_get_bridge_user_object(self):
         uw_user, person = mock_uw_bridge_user('javerage')
         bridge_user = get_bridge_user_object(uw_user)
         self.assertEqual(bridge_user.bridge_id, 195)
         self.assertEqual(bridge_user.netid, 'javerage')
+        self.assertEqual(bridge_user.email, 'javerage@uw.edu')
 
         user = UwBridgeUser(netid='unknown',
                             regid="...",
@@ -117,54 +148,113 @@ class TestBridgeDao(TransactionTestCase):
                             )
         self.assertRaises(DataFailureException, get_bridge_user_object, user)
 
+    def test_custom_field_no_change(self):
+        uw_user, person = mock_uw_bridge_user('staff')
+        uw_user.bridge_id = 196
+        bridge_user = get_bridge_user_object(uw_user)
+        self.assertTrue(_custom_field_no_change(uw_user, bridge_user))
+        self.assertTrue(_no_change(uw_user, bridge_user))
+
     def test_get_bridge_user_to_upd(self):
-        uw_user, person = mock_uw_bridge_user('javerage')
-        busers = get_bridge_user(uw_user)
-        buser0 = busers[0]
-        self.assertEqual(buser0.bridge_id, 195)
-        self.assertEqual(buser0.netid, person.uwnetid)
-        self.assertEqual(buser0.full_name, 'James Student')
-        self.assertEqual(buser0.last_name, 'Student')
+        uw_user = UwBridgeUser(netid='javerage',
+                               regid="0136CCB8F66711D5BE060004AC494FFE",
+                               bridge_id=195,
+                               last_visited_at=get_now(),
+                               display_name="James Student",
+                               first_name="James",
+                               last_name="Student",
+                               email="javerage@uw.edu")
+        buser0 = get_bridge_user_object(uw_user)
         self.assertFalse(buser0.no_learning_history())
-        uw_user.full_name = 'James Changed'
-        uw_user.last_name = 'Changed'
+        self.assertFalse(_no_change(uw_user, buser0))
+        self.assertTrue(_custom_field_no_change(uw_user, buser0))
+
         buser = _get_bridge_user_to_upd(uw_user, buser0)
+        self.assertEqual(
+            buser.to_json_patch(),
+            {'user': {'id': 195,
+                      'last_name': 'Student',
+                      'uid': 'javerage@uw.edu',
+                      'full_name': 'James Student',
+                      'email': 'javerage@uw.edu'}})
+
+    def test_get_bridge_user_to_upd_changed_custom_field(self):
+        uw_user, person = mock_uw_bridge_user('javerage')
+        bridge_user = get_bridge_user_object(uw_user)
+        self.assertFalse(_no_change(uw_user, bridge_user))
+        self.assertFalse(_custom_field_no_change(uw_user, bridge_user))
+        buser = _get_bridge_user_to_upd(uw_user, bridge_user)
+        self.assertEqual(
+            buser.to_json_patch(),
+            {'user': {
+                'first_name': 'James Average',
+                'last_name': 'Student',
+                'uid': 'javerage@uw.edu',
+                'email': 'javerage@uw.edu',
+                'full_name': 'James Student',
+                'id': 195,
+                'custom_fields': [
+                    {'value': '9136CCB8F66711D5BE060004AC494FFE',
+                     'custom_field_id': '5'}]}})
+
+    def test_change_uwnetid(self):
+        uw_user = UwBridgeUser(netid='javerage',
+                               prev_netid='changed',
+                               regid="9136CCB8F66711D5BE060004AC494FFE",
+                               last_visited_at=get_now(),
+                               display_name="James Student",
+                               email="javerage@uw.edu")
+        buser = change_uwnetid(uw_user)
         self.assertEqual(buser.bridge_id, 195)
-        self.assertEqual(buser.netid, person.uwnetid)
-        self.assertEqual(buser.full_name, uw_user.full_name)
-        self.assertEqual(buser.last_name, uw_user.last_name)
-        self.assertEqual(len(buser.custom_fields), 1)
-        self.assertIsNotNone(buser.custom_fields[0].value_id)
-        #  changed custom field
-        uw_user.regid = "0136CCB8F66711D5BE060004AC494FFE"
-        uw_user.set_action_regid_changed()
-        buser = _get_bridge_user_to_upd(uw_user, buser0)
-        self.assertEqual(buser.bridge_id, 195)
-        self.assertEqual(buser.netid, person.uwnetid)
-        self.assertEqual(buser.full_name, uw_user.full_name)
-        self.assertEqual(buser.last_name, uw_user.last_name)
-        self.assertEqual(len(buser.custom_fields), 1)
-        self.assertIsNone(buser.custom_fields[0].value_id)
-        self.assertEqual(buser.custom_fields[0].value, uw_user.regid)
+        self.assertEqual(buser.netid, 'javerage')
+
+        uw_user, person = mock_uw_bridge_user('staff')
+        # failed at get_user
+        self.assertRaises(DataFailureException, change_uwnetid, uw_user)
+        uw_user.prev_netid = 'staff'
+        # failed at replace_uid
+        self.assertRaises(DataFailureException, change_uwnetid, uw_user)
+        uw_user.bridge_id = 196
+        # failed at change_uid
+        self.assertRaises(DataFailureException, change_uwnetid, uw_user)
+
+    def test_restore_bridge_user(self):
+        # mornal case
+        user, person = mock_uw_bridge_user('botgrad')
+        user.bridge_id = 203
+        buser = restore_bridge_user(user)
+        self.assertEqual(buser.netid, 'botgrad')
+
+        # netid changed
+        user, person = mock_uw_bridge_user('tacgrad')
+        user.bridge_id = 204
+        buser = restore_bridge_user(user)
+        self.assertEqual(buser.netid, 'oldgrad')
+
+        # already exist
+        uw_user = UwBridgeUser(netid='javerage',
+                               regid="0136CCB8F66711D5BE060004AC494FFE",
+                               last_visited_at=get_now(),
+                               email='javerage@uw.edu',
+                               display_name="James Student")
+        user = restore_bridge_user(uw_user)
+        self.assertEqual(user.netid, 'javerage')
+        self.assertEqual(user.bridge_id, 195)
+
+        user = UwBridgeUser(netid='unknown',
+                            regid="0136CCB8F66711D5BE060004AC494FFE",
+                            last_visited_at=get_now(),
+                            first_name="James",
+                            last_name="Student")
+        self.assertRaises(DataFailureException, restore_bridge_user, user)
 
     def test_update_bridge_user(self):
         uw_user, person = mock_uw_bridge_user('javerage')
-        busers = get_bridge_user(uw_user)
-        buser0 = busers[0]
-        self.assertEqual(buser0.bridge_id, 195)
-        uw_user.full_name = 'James Changed'
-        uw_user.last_name = 'Changed'
-        uw_user.regid = "0136CCB8F66711D5BE060004AC494FFE"
-        uw_user.set_action_regid_changed()
-        busers = update_bridge_user(uw_user)
-        self.assertEqual(len(busers), 1)
-        buser = busers[0]
-        self.assertEqual(buser.bridge_id, 195)
-        self.assertEqual(buser.netid, person.uwnetid)
-        self.assertEqual(buser.full_name, uw_user.full_name)
-        self.assertEqual(buser.last_name, uw_user.last_name)
-        self.assertEqual(len(buser.custom_fields), 1)
-        self.assertEqual(buser.custom_fields[0].value, uw_user.regid)
+        self.assertTrue(update_bridge_user(uw_user))
+
+        uw_user, person = mock_uw_bridge_user('staff')
+        uw_user.bridge_id = 196
+        self.assertIsNone(update_bridge_user(uw_user))
 
         user = UwBridgeUser(netid='unknown',
                             regid="...",
@@ -173,43 +263,3 @@ class TestBridgeDao(TransactionTestCase):
                             last_name="Student"
                             )
         self.assertRaises(DataFailureException, update_bridge_user, user)
-
-    def test_change_uwnetid(self):
-        uw_user, person = mock_uw_bridge_user('javerage')
-        self.assertFalse(uw_user.bridge_id)
-        uw_user.prev_netid = 'javerage'
-        uw_user.netid = 'changed'
-        busers = change_uwnetid(uw_user)
-        self.assertEqual(len(busers), 1)
-        buser = busers[0]
-        self.assertEqual(buser.bridge_id, 195)
-        self.assertEqual(buser.netid, uw_user.netid)
-        self.assertNotEqual(buser.netid, person.uwnetid)
-
-        uw_user.bridge_id = 195
-        busers = change_uwnetid(uw_user)
-        self.assertEqual(len(busers), 1)
-        buser = busers[0]
-        self.assertEqual(buser.bridge_id, 195)
-        self.assertEqual(buser.netid, uw_user.netid)
-        self.assertNotEqual(buser.netid, person.uwnetid)
-
-    def test_restore_bridge_user(self):
-        user = UwBridgeUser(netid='javerage',
-                            regid="9136CCB8F66711D5BE060004AC494FFE",
-                            last_visited_at=get_now(),
-                            first_name="James",
-                            last_name="Student"
-                            )
-        busers = restore_bridge_user(user)
-        self.assertEqual(len(busers), 1)
-        buser = busers[0]
-        self.assertEqual(buser.bridge_id, 195)
-        self.assertEqual(buser.netid, 'javerage')
-
-        user.bridge_id = 195
-        busers = restore_bridge_user(user)
-        self.assertEqual(len(busers), 1)
-        buser = busers[0]
-        self.assertEqual(buser.bridge_id, 195)
-        self.assertEqual(buser.netid, 'javerage')

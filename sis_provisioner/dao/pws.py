@@ -37,3 +37,25 @@ def get_person_by_regid(uwregid):
         return pws.get_person_by_regid(uwregid)
     finally:
         log_resp_time(logger, action, timer)
+
+
+def is_moved_netid(uwnetid):
+    """
+    Return True if the netid is Moved Permanently
+    """
+    try:
+        ret = pws.get_person_by_netid(uwnetid)
+        return False
+    except DataFailureException as ex:
+        return (ex.status == 301)
+
+
+def is_moved_regid(uwregid):
+    """
+    Return True if the regid is Moved Permanently
+    """
+    try:
+        ret = pws.get_person_by_regid(uwregid)
+        return False
+    except DataFailureException as ex:
+        return (ex.status == 301)

@@ -4,8 +4,8 @@ from datetime import timedelta, datetime
 from sis_provisioner.models import UwBridgeUser, EmployeeAppointment,\
     get_now, datetime_to_str, GRACE_PERIOD
 from sis_provisioner.dao.user import _appointments_json_dump
-from sis_provisioner.test import fdao_pws_override, fdao_hrp_override
-from sis_provisioner.test.dao import mock_uw_bridge_user
+from sis_provisioner.test import fdao_pws_override, fdao_hrp_override,\
+    mock_uw_bridge_user
 
 
 @fdao_pws_override
