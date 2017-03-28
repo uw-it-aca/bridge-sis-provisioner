@@ -68,7 +68,7 @@ class TestBridgeDao(TransactionTestCase):
         self.assertFalse(exist)
         self.assertEqual(user.netid, 'faculty')
         self.assertEqual(user.bridge_id, 201)
-        self.assertEqual(len(user.custom_fields), 1)
+        self.assertEqual(len(user.custom_fields), 0)
 
         uw_user, person = mock_uw_bridge_user('javerage')
         user, exist = add_bridge_user(uw_user)
