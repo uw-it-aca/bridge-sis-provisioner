@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 def add_bridge_user(uw_bridge_user):
     """
     :param uw_bridge_user: a valid sis_provisioner.models.UwBridgeUser object
-    :return: the BridgeUser object and True if the account already existed
+    :return: 1) the BridgeUser object (without custom fields)
+             2) True if the account already existed
     """
     try:
         # Check if the account was already created in Bridge
