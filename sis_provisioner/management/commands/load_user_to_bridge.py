@@ -43,10 +43,10 @@ class Command(BaseCommand):
 
         loader.load()
         print datetime.now()
-        print "Checked all %d users in %s," % (loader.get_total_count(),
-                                               source)
-        print "total %d users loaded," % loader.get_loaded_count()
-        print "%d new users added" % loader.get_new_user_count()
+        print "Checked all %d users in %s\n" % (loader.get_total_count(),
+                                                source)
+        print "total %d users loaded\n" % loader.get_loaded_count()
+        print "%d new users added\n" % loader.get_new_user_count()
         print "%d users changed netid\n" % loader.get_netid_changed_count()
         print "%d users changed regid\n" % loader.get_regid_changed_count()
         print "%d users deleted\n" % loader.get_deleted_count()
