@@ -27,8 +27,13 @@ def add_bridge_user(uw_bridge_user):
         user_in_bridge = _process_response("Check before add user",
                                            get_user(uw_bridge_user.netid),
                                            uw_bridge_user)
-        if user_in_bridge is not None:
-            return user_in_bridge, True
+        if user_in_bridge is None:
+            logger.error("Can't add new %s <== CHECK Terminated in Bridge!",
+                         uw_bridge_user)
+        else:
+            logger.error("Skip create %s <== exist user in Bridge %s",
+                         uw_bridge_user, user_in_bridge)
+        return user_in_bridge, True
     except DataFailureException as ex:
         if ex.status != 404:
             raise
@@ -49,9 +54,13 @@ def change_uwnetid(uw_bridge_user):
     user_in_bridge = _process_response("Check before change uid",
                                        get_user(uw_bridge_user.prev_netid),
                                        uw_bridge_user)
-    if user_in_bridge is not None and\
-       uw_bridge_user.prev_netid != user_in_bridge.netid:
-        logger.error("Can't change uid %s <== CHECK Bridge user %s!",
+    if user_in_bridge is None:
+        logger.error("Can't change uid %s <== CHECK Bridge Terminated user",
+                     uw_bridge_user)
+        return None
+
+    if uw_bridge_user.prev_netid != user_in_bridge.netid:
+        logger.error("Can't change uid %s <== CHECK Bridge user %s",
                      uw_bridge_user, user_in_bridge)
         return None
 
@@ -74,7 +83,7 @@ def delete_bridge_user(user, conditional):
     """
     user_in_bridge = get_bridge_user_object(user)
     if user_in_bridge is None:
-        logger.info("Skip delete %s <== Already deleted in Bridge", user)
+        logger.info("Skip delete %s <== Already terminated in Bridge", user)
         return True
 
     if not _uid_matched(user, user_in_bridge):
