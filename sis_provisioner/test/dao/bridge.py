@@ -74,6 +74,11 @@ class TestBridgeDao(TransactionTestCase):
         user, exist = add_bridge_user(uw_user)
         self.assertTrue(exist)
 
+        uw_user, person = mock_uw_bridge_user('botgrad')
+        user, exist = add_bridge_user(uw_user)
+        self.assertTrue(exist)
+        self.assertIsNone(user)
+
     def test_delete_bridge_user(self):
         user = UwBridgeUser(netid='notexist',
                             regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
@@ -85,6 +90,12 @@ class TestBridgeDao(TransactionTestCase):
                           delete_bridge_user,
                           user, False)
 
+        # already deleted
+        user, person = mock_uw_bridge_user('botgrad')
+        user.bridge_id = 203
+        self.assertTrue(delete_bridge_user(user, True))
+
+        # normal case
         uw_user = UwBridgeUser(netid='leftuw',
                                regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
                                bridge_id=200,
@@ -217,6 +228,12 @@ class TestBridgeDao(TransactionTestCase):
         uw_user.bridge_id = 196
         # failed at change_uid
         self.assertRaises(DataFailureException, change_uwnetid, uw_user)
+
+        # on a terminated user
+        user, person = mock_uw_bridge_user('botgrad')
+        user.prev_netid = 'botgrad'
+        user.bridge_id = 203
+        self.assertIsNone(change_uwnetid(user))
 
     def test_restore_bridge_user(self):
         # mornal case

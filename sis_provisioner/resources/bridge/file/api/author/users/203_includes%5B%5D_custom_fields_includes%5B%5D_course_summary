@@ -1,0 +1,52 @@
+{
+  "meta": {},
+  "linked":
+   {
+    "custom_fields": [
+       {
+        "id": "5",
+        "name": "REGID"
+      }],
+    "custom_field_values": [
+      {
+        "id": "103",
+        "value": "10000000000000000000000000000003",
+        "links": {
+          "custom_field": {
+            "id": "5",
+            "type": "custom_fields"
+          }
+        }
+      }
+    ]
+   },
+   "users":[
+     {
+       "id":"203",
+       "uid":"botgrad@uw.edu",
+       "hris_id":null,
+       "first_name":"Bothell Graduate",
+       "last_name":"Student",
+       "full_name":"Bothell Graduate Student",
+       "sortable_name":"Student, Bothell Graduate",
+       "email":"botgrad@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Bothell Graduate Student",
+       "avatar_url":null,
+       "updated_at":"2016-07-25T16:24:42.131-07:00",
+       "deleted_at":"2016-09-02T15:27:01.827-07:00",
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":"2016-09-02T15:27:01.827-07:00",
+       "welcomeUrl":"https://uw.bridgeapp.com/user-setup/eyJ0eXA",
+       "passwordUrl":"https://uw.bridgeapp.com/reset-password/eyeXIjx",
+       "next_due_date":null,
+       "completed_courses_count":0,
+       "links":{
+          "custom_field_values":["103"]
+       },
+       "meta":{"can_masquerade":true}
+     }
+   ]
+}
