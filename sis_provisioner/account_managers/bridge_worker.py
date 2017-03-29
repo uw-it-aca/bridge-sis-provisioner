@@ -63,11 +63,7 @@ class BridgeWorker(Worker):
                 self.append_error("Can't create %s ==> CHECK in Bridge\n" %
                                   uw_bridge_user.netid)
         except Exception as ex:
-            log_exception(logger,
-                          "Failed create %s" % uw_bridge_user,
-                          traceback.format_exc())
-            self.append_error("Failed to create user: %s ==> %s\n" %
-                              (uw_bridge_user.netid, ex))
+            self._handle_exception("create", uw_bridge_user, ex, traceback)
 
     def delete_user(self, user_to_del, is_merge=False):
         try:
@@ -77,14 +73,10 @@ class BridgeWorker(Worker):
                 logger.info("Disable user in DB %s", user_to_del)
                 self.total_deleted_count += 1
             else:
-                self.append_error("Failed to delete user: %s\n" %
-                                  user_to_del.netid)
+                self.append_error("Failed to delete %s\n" %
+                                  user_to_del)
         except Exception as ex:
-            log_exception(logger,
-                          "Failed delete user %s ==>" % user_to_del,
-                          traceback.format_exc())
-            self.append_error("Failed to delete user: %s ==> %s\n" %
-                              (user_to_del.netid, ex))
+            self._handle_exception("delete", user_to_del, ex, traceback)
 
     def mark_restored(self, uw_bridge_user, ret_bridge_user):
         logger.info("Restored %s in Bridge" % uw_bridge_user)
@@ -113,23 +105,19 @@ class BridgeWorker(Worker):
                     uw_bridge_user.set_prev_netid(ret_buser.netid)
 
                 else:
-                    self.append_error("Failed to restore user: %s\n" %
-                                      uw_bridge_user.netid)
+                    self.append_error("Failed to restore %s\n" %
+                                      uw_bridge_user)
                     return
 
                 self.mark_restored(uw_bridge_user, ret_buser)
                 self.update_user(uw_bridge_user)
             else:
-                self.append_error("Failed to restore user: %s\n" %
-                                  uw_bridge_user.netid)
+                self.append_error("Failed to restore %s\n" %
+                                  uw_bridge_user)
                 logger.error("Failed restore %s", uw_bridge_user)
 
         except Exception as ex:
-            log_exception(logger,
-                          "Failed restore user %s ==>" % uw_bridge_user,
-                          traceback.format_exc())
-            self.append_error("Failed to restore user: %s ==> %s\n" %
-                              (uw_bridge_user.netid, ex))
+            self._handle_exception("restore", uw_bridge_user, ex, traceback)
 
     def update_user(self, uw_bridge_user):
         if not uw_bridge_user.netid_changed() or\
@@ -147,14 +135,10 @@ class BridgeWorker(Worker):
                 self.total_netid_changes_count += 1
                 return True
 
-            self.append_error("Failed to Change-uid for: %s\n" %
-                              uw_bridge_user.netid)
+            self.append_error("Failed to Change-uid for %s\n" %
+                              uw_bridge_user)
         except Exception as ex:
-            log_exception(logger,
-                          "Failed to change-uid %s ==>" % uw_bridge_user,
-                          traceback.format_exc())
-            self.append_error("Failed to Change-uid for: %s ==> %s\n" %
-                              (uw_bridge_user.netid, ex))
+            self._handle_exception("change-uid", uw_bridge_user, ex, traceback)
         return False
 
     def _update_user(self, uw_bridge_user):
@@ -171,14 +155,28 @@ class BridgeWorker(Worker):
                         self.total_regid_changes_count += 1
                     self._save_verified(uw_bridge_user)
                 else:
-                    self.append_error("Failed to update user: %s\n" %
-                                      uw_bridge_user.netid)
+                    self.append_error("Failed to update: %s ==> restore?\n" %
+                                      uw_bridge_user)
         except Exception as ex:
-            log_exception(logger,
-                          "Failed update user %s ==>" % uw_bridge_user,
-                          traceback.format_exc())
-            self.append_error("Failed to update user: %s ==> %s\n" %
-                              (uw_bridge_user.netid, ex))
+            self._handle_exception("update", uw_bridge_user, ex, traceback)
+
+    def _handle_exception(self, action, uw_bridge_user,
+                          ex, traceback):
+        if self._not_exist(uw_bridge_user, ex):
+            return
+        log_exception(logger,
+                      "Failed %s: %s ==>" % (action, uw_bridge_user),
+                      traceback.format_exc())
+        self.append_error("Failed to %s: %s ==> %s\n" %
+                          (action, uw_bridge_user.netid, ex))
+
+    def _not_exist(self, uw_bridge_user, ex):
+        if ex.status == 404:
+            logger.info("Not exist in Bridge, delete from local DB %s" %
+                        uw_bridge_user)
+            uw_bridge_user.delete()
+            return True
+        return False
 
     def get_new_user_count(self):
         return self.total_new_users_count
