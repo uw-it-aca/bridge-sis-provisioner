@@ -30,7 +30,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertTrue("much_too_long_much_too_long" in users)
         self.assertTrue("affiemp" in users)
 
-    def _user_left_uw(self):
+    def test__user_left_uw(self):
         users_in_gws = fetch_users_from_gws(logger)
         self.assertFalse(_user_left_uw(users_in_gws, "faculty"))
         self.assertFalse(_user_left_uw(users_in_gws, "none"))
