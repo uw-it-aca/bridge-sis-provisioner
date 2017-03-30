@@ -64,32 +64,25 @@ class TestBridgeDao(TransactionTestCase):
         self.assertEqual(buser.custom_fields[0].value, person.uwregid)
         self.assertEqual(buser.custom_fields[0].field_id, '5')
 
+        # normal case
         user, exist = add_bridge_user(uw_user)
         self.assertFalse(exist)
         self.assertEqual(user.netid, 'faculty')
         self.assertEqual(user.bridge_id, 201)
         self.assertEqual(len(user.custom_fields), 0)
 
+        # skipped
         uw_user, person = mock_uw_bridge_user('javerage')
         user, exist = add_bridge_user(uw_user)
         self.assertTrue(exist)
 
+        # restored
         uw_user, person = mock_uw_bridge_user('botgrad')
         user, exist = add_bridge_user(uw_user)
-        self.assertTrue(exist)
-        self.assertIsNone(user)
+        self.assertFalse(exist)
+        self.assertIsNotNone(user)
 
     def test_delete_bridge_user(self):
-        user = UwBridgeUser(netid='notexist',
-                            regid="B814EFBC6A7C11D5A4AE0004AC494FFE",
-                            last_visited_at=get_now(),
-                            first_name="James",
-                            last_name="Student"
-                            )
-        self.assertRaises(DataFailureException,
-                          delete_bridge_user,
-                          user, False)
-
         # already deleted
         user, person = mock_uw_bridge_user('botgrad')
         user.bridge_id = 203
@@ -119,6 +112,9 @@ class TestBridgeDao(TransactionTestCase):
         self.assertRaises(DataFailureException,
                           delete_bridge_user,
                           uw_user, False)
+
+        self.assertRaises(DataFailureException, delete_bridge_user,
+                          self.get_mock_user_unknown(), False)
 
     def test_get_bridge_user(self):
         uw_user, person = mock_uw_bridge_user('javerage')
@@ -151,13 +147,8 @@ class TestBridgeDao(TransactionTestCase):
         self.assertEqual(bridge_user.netid, 'javerage')
         self.assertEqual(bridge_user.email, 'javerage@uw.edu')
 
-        user = UwBridgeUser(netid='unknown',
-                            regid="...",
-                            last_visited_at=get_now(),
-                            first_name="James",
-                            last_name="Student"
-                            )
-        self.assertRaises(DataFailureException, get_bridge_user_object, user)
+        self.assertRaises(DataFailureException, get_bridge_user_object,
+                          self.get_mock_user_unknown())
 
     def test_custom_field_no_change(self):
         uw_user, person = mock_uw_bridge_user('staff')
@@ -215,25 +206,33 @@ class TestBridgeDao(TransactionTestCase):
                                last_visited_at=get_now(),
                                display_name="James Student",
                                email="javerage@uw.edu")
+        # normal
         buser = change_uwnetid(uw_user)
         self.assertEqual(buser.bridge_id, 195)
         self.assertEqual(buser.netid, 'javerage')
 
+        # Skipped
         uw_user, person = mock_uw_bridge_user('staff')
-        # failed at get_user
-        self.assertRaises(DataFailureException, change_uwnetid, uw_user)
-        uw_user.prev_netid = 'staff'
-        # failed at replace_uid
-        self.assertRaises(DataFailureException, change_uwnetid, uw_user)
         uw_user.bridge_id = 196
-        # failed at change_uid
-        self.assertRaises(DataFailureException, change_uwnetid, uw_user)
+        buser = change_uwnetid(uw_user)
+        self.assertEqual(buser.netid, 'staff')
 
         # on a terminated user
         user, person = mock_uw_bridge_user('botgrad')
+        user.netid = 'newgrad'
         user.prev_netid = 'botgrad'
         user.bridge_id = 203
         self.assertIsNone(change_uwnetid(user))
+
+        # not match
+        user, person = mock_uw_bridge_user('leftuw')
+        user.netid = 'newuw'
+        user.prev_netid = 'withuw'
+        user.bridge_id = 200
+        self.assertIsNone(change_uwnetid(user))
+
+        self.assertRaises(DataFailureException, change_uwnetid,
+                          self.get_mock_user_unknown())
 
     def test_restore_bridge_user(self):
         # mornal case
@@ -248,7 +247,7 @@ class TestBridgeDao(TransactionTestCase):
         buser = restore_bridge_user(user)
         self.assertEqual(buser.netid, 'oldgrad')
 
-        # already exist
+        # already exists
         uw_user = UwBridgeUser(netid='javerage',
                                regid="0136CCB8F66711D5BE060004AC494FFE",
                                last_visited_at=get_now(),
@@ -258,12 +257,8 @@ class TestBridgeDao(TransactionTestCase):
         self.assertEqual(user.netid, 'javerage')
         self.assertEqual(user.bridge_id, 195)
 
-        user = UwBridgeUser(netid='unknown',
-                            regid="0136CCB8F66711D5BE060004AC494FFE",
-                            last_visited_at=get_now(),
-                            first_name="James",
-                            last_name="Student")
-        self.assertRaises(DataFailureException, restore_bridge_user, user)
+        self.assertRaises(DataFailureException, restore_bridge_user,
+                          self.get_mock_user_unknown())
 
     def test_update_bridge_user(self):
         uw_user, person = mock_uw_bridge_user('javerage')
@@ -273,10 +268,12 @@ class TestBridgeDao(TransactionTestCase):
         uw_user.bridge_id = 196
         self.assertIsNone(update_bridge_user(uw_user))
 
-        user = UwBridgeUser(netid='unknown',
-                            regid="...",
+        self.assertRaises(DataFailureException, update_bridge_user,
+                          self.get_mock_user_unknown())
+
+    def get_mock_user_unknown(self):
+        return UwBridgeUser(netid='invaliduid',
+                            regid="0036CCB8F66711D5BE060004AC494FFE",
                             last_visited_at=get_now(),
                             first_name="James",
-                            last_name="Student"
-                            )
-        self.assertRaises(DataFailureException, update_bridge_user, user)
+                            last_name="Student")

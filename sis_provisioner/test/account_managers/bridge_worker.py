@@ -2,7 +2,6 @@ from django.conf import settings
 from django.test import TransactionTestCase
 from sis_provisioner.models import UwBridgeUser, get_now
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
-from sis_provisioner.models import ACTION_CHANGE_REGID
 from sis_provisioner.test import fdao_pws_override, fdao_bridge_override,\
     mock_uw_bridge_user
 
@@ -36,6 +35,17 @@ class TestBridgeWorker(TransactionTestCase):
         self.assertTrue(user.no_action())
         self.assertEqual(user.bridge_id, 201)
 
+    def get_not_exist_user(self):
+        user = UwBridgeUser(netid='notexist',
+                            regid="0036CCB8F66711D5BE060004AC494FFE",
+                            bridge_id=1200,
+                            last_visited_at=get_now(),
+                            first_name="Not",
+                            last_name="Exist",
+                            email="notexist@uw.edu")
+        user.save()
+        return user
+
     def test_delete_user(self):
         uw_user, person = mock_uw_bridge_user('javerage')
         worker = BridgeWorker()
@@ -54,6 +64,16 @@ class TestBridgeWorker(TransactionTestCase):
         user = UwBridgeUser.objects.get(netid='leftuw')
         self.assertTrue(user.no_action())
         self.assertTrue(user.disabled)
+
+        user = UwBridgeUser.objects.get(netid='leftuw')
+        self.assertTrue(user.no_action())
+        self.assertTrue(user.disabled)
+
+        worker.delete_user(self.get_not_exist_user(), is_merge=False)
+        try:
+            user = UwBridgeUser.objects.get(netid='notexist')
+        except UwBridgeUser.DoesNotExist:
+            pass
 
     def test_netid_change_user(self):
         worker = BridgeWorker()
@@ -89,6 +109,15 @@ class TestBridgeWorker(TransactionTestCase):
         self.assertFalse(worker.update_uid(uw_user))
         self.assertTrue(worker.has_err())
 
+        worker = BridgeWorker()
+        worker.update_uid(self.get_not_exist_user())
+        self.assertEqual(worker.get_netid_changed_count(), 0)
+        self.assertEqual(worker.get_loaded_count(), 0)
+        try:
+            user = UwBridgeUser.objects.get(netid='notexist')
+        except UwBridgeUser.DoesNotExist:
+            pass
+
     def test_restore_user(self):
         worker = BridgeWorker()
         uw_user, person = mock_uw_bridge_user('botgrad')
@@ -101,16 +130,6 @@ class TestBridgeWorker(TransactionTestCase):
         user = UwBridgeUser.objects.get(netid='botgrad')
         self.assertFalse(user.disabled)
 
-        uw_user, person = mock_uw_bridge_user('tacgrad')
-        uw_user.bridge_id = 204
-        uw_user.disabled = True
-        uw_user.set_action_restore()
-        worker.restore_user(uw_user)
-        self.assertEqual(worker.get_restored_count(), 2)
-
-        user = UwBridgeUser.objects.get(netid='tacgrad')
-        self.assertFalse(user.disabled)
-
         uw_user = UwBridgeUser(netid='changed',
                                regid="9136CCB8F66711D5BE060004AC494FFE",
                                last_visited_at=get_now(),
@@ -120,7 +139,7 @@ class TestBridgeWorker(TransactionTestCase):
         uw_user.disabled = True
         uw_user.set_action_restore()
         worker.restore_user(uw_user)
-        self.assertEqual(worker.get_restored_count(), 3)
+        self.assertEqual(worker.get_restored_count(), 2)
 
         user = UwBridgeUser.objects.get(netid='changed')
         self.assertFalse(user.disabled)
@@ -131,22 +150,19 @@ class TestBridgeWorker(TransactionTestCase):
         uw_user.disabled = True
         uw_user.set_action_restore()
         worker.restore_user(uw_user)
-        self.assertEqual(worker.get_restored_count(), 4)
+        self.assertEqual(worker.get_restored_count(), 3)
         user = UwBridgeUser.objects.get(netid='javerage')
         self.assertFalse(user.disabled)
         self.assertTrue(user.no_action())
 
-        uw_user = UwBridgeUser(netid='unknown',
-                               regid="0136CCB8F66711D5BE060004AC494FFE",
-                               last_visited_at=get_now(),
-                               first_name="James",
-                               last_name="Student")
-        uw_user.disabled = True
-        uw_user.set_action_restore()
         worker = BridgeWorker()
-        worker.restore_user(uw_user)
-        self.assertTrue(worker.has_err())
+        worker.restore_user(self.get_not_exist_user())
+        self.assertFalse(worker.has_err())
         self.assertEqual(worker.get_restored_count(), 0)
+        try:
+            user = UwBridgeUser.objects.get(netid='notexist')
+        except UwBridgeUser.DoesNotExist:
+            pass
 
     def test_update_user(self):
         worker = BridgeWorker()
@@ -187,3 +203,11 @@ class TestBridgeWorker(TransactionTestCase):
 
         user = UwBridgeUser.objects.get(netid='javerage')
         self.assertTrue(user.no_action())
+
+        worker = BridgeWorker()
+        worker._update_user(self.get_not_exist_user())
+        self.assertEqual(worker.get_loaded_count(), 0)
+        try:
+            user = UwBridgeUser.objects.get(netid='notexist')
+        except UwBridgeUser.DoesNotExist:
+            pass
