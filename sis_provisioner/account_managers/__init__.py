@@ -102,4 +102,5 @@ def fetch_users_from_bridge(logger):
 
 
 def _user_left_uw(users_in_gws, uwnetid):
-    return len(users_in_gws) > 0 and uwnetid not in users_in_gws
+    return (uwnetid is not None and
+            len(users_in_gws) > 0 and uwnetid not in users_in_gws)
