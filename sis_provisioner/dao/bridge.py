@@ -16,6 +16,20 @@ from sis_provisioner.util.log import log_exception
 logger = logging.getLogger(__name__)
 
 
+def _check_user_exists(action, ret_users, uw_bridge_user):
+    """
+    Check if the uw_bridge_user exists in Bridge.
+    :return: the corresponding BridgeUser object.
+    """
+    if len(ret_users) == 0:
+        logger.info("Pre-%s Check %s ==> terminated in Bridge ==> restore",
+                    action, uw_bridge_user)
+        return _restore(uw_bridge_user)
+    logger.info("Pre-%s Check %s ==> user exists in Bridge",
+                action, uw_bridge_user)
+    return ret_users[0]
+
+
 def add_bridge_user(uw_bridge_user):
     """
     :param uw_bridge_user: a valid sis_provisioner.models.UwBridgeUser object
@@ -23,22 +37,22 @@ def add_bridge_user(uw_bridge_user):
              2) True if the account already existed
     """
     try:
-        # Check if the account was already created in Bridge
-        user_in_bridge = _process_response("Check before add user",
-                                           get_user(uw_bridge_user.netid),
-                                           uw_bridge_user)
+        user_in_bridge = _check_user_exists("create",
+                                            get_user(uw_bridge_user.netid),
+                                            uw_bridge_user)
         if user_in_bridge is None:
-            logger.error("Can't add new %s <== CHECK Terminated in Bridge!",
+            # unable to restore the terminated existing user
+            logger.error("Can't create %s <== CHECK in Bridge",
                          uw_bridge_user)
         else:
-            logger.error("Skip create %s <== exist user in Bridge %s",
+            logger.error("Skip create %s <== user exists in Bridge %s",
                          uw_bridge_user, user_in_bridge)
         return user_in_bridge, True
     except DataFailureException as ex:
         if ex.status != 404:
             raise
 
-    # Add a new account
+    # Create a new account
     bri_user = _process_response(
         "Add Bridge User",
         add_user(_get_bridge_user_to_add(uw_bridge_user)),
@@ -51,19 +65,28 @@ def change_uwnetid(uw_bridge_user):
     :param uw_bridge_user: a valid UwBridgeUser object
     :return: the returned BridgeUser object
     """
-    user_in_bridge = _process_response("Check before change uid",
-                                       get_user(uw_bridge_user.prev_netid),
-                                       uw_bridge_user)
-    if user_in_bridge is None:
-        logger.error("Can't change uid %s <== CHECK Bridge Terminated user",
+    if uw_bridge_user.has_bridge_id():
+        ret_users = get_user_by_id(uw_bridge_user.bridge_id)
+    else:
+        ret_users = get_user(uw_bridge_user.prev_netid)
+
+    if len(ret_users) == 0:
+        # terminated existing user
+        logger.error("Can't change uid %s <== CHECK in Bridge",
                      uw_bridge_user)
         return None
+    user_in_bridge = ret_users[0]
+    if uw_bridge_user.netid == user_in_bridge.netid:
+        logger.info("Skip change uid %s <== Already changed in  Bridge %s",
+                    uw_bridge_user, user_in_bridge)
+        return user_in_bridge
 
     if uw_bridge_user.prev_netid != user_in_bridge.netid:
         logger.error("Can't change uid %s <== CHECK Bridge user %s",
                      uw_bridge_user, user_in_bridge)
         return None
 
+    # Change UID
     if uw_bridge_user.has_bridge_id():
         busers = change_uid(uw_bridge_user.bridge_id,
                             uw_bridge_user.netid)
@@ -141,7 +164,10 @@ def restore_bridge_user(uw_bridge_user):
         logger.info("Skip restore %s <== exists in Bridge %s",
                     uw_bridge_user, user_in_bridge)
         return user_in_bridge
+    return _restore(uw_bridge_user)
 
+
+def _restore(uw_bridge_user):
     if uw_bridge_user.has_bridge_id():
         busers = restore_user_by_id(uw_bridge_user.bridge_id,
                                     no_custom_fields=False)
@@ -158,7 +184,9 @@ def update_bridge_user(uw_bridge_user):
     :return: None if updating is not necessary
              True if updated successfully, otherwise False.
     """
-    user_in_bridge = get_bridge_user_object(uw_bridge_user)
+    user_in_bridge = _check_user_exists("update",
+                                        get_bridge_user(uw_bridge_user),
+                                        uw_bridge_user)
 
     if not _uid_matched(uw_bridge_user, user_in_bridge):
         logger.error("Can't update %s <== NOT match, CHECK in Bridge %s",
@@ -264,12 +292,9 @@ def _no_change(uw_bridge_user, user_in_bridge):
 
 
 def _process_response(action, ret_users, uw_bridge_user):
-    if ret_users is None:
-        logger.error("%s %s ==> returned None", action, uw_bridge_user)
-        return None
-
     if len(ret_users) == 0:
-        logger.info("%s %s ==> is deleted account", action, uw_bridge_user)
+        logger.info("%s %s ==> user terminated in Bridge",
+                    action, uw_bridge_user)
         return None
 
     if len(ret_users) > 1:

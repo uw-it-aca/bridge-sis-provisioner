@@ -5,6 +5,7 @@ via the Bridge APIs.
 
 import logging
 import traceback
+from restclients.exceptions import DataFailureException
 from sis_provisioner.dao import is_using_file_dao
 from sis_provisioner.dao.bridge import add_bridge_user, change_uwnetid,\
     get_regid_from_bridge_user, delete_bridge_user, update_bridge_user,\
@@ -171,7 +172,8 @@ class BridgeWorker(Worker):
                           (action, uw_bridge_user.netid, ex))
 
     def _not_exist(self, uw_bridge_user, ex):
-        if ex.status == 404:
+        if isinstance(ex, DataFailureException) and\
+           ex.status == 404:
             logger.info("Not exist in Bridge, delete from local DB %s" %
                         uw_bridge_user)
             uw_bridge_user.delete()
