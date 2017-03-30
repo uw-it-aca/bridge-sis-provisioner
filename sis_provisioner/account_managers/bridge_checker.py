@@ -7,7 +7,7 @@ accounts via the given worker.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
+from restclients.exceptions import DataFailureException, InvalidNetID
 from sis_provisioner.dao.user import get_user_from_db, save_user
 from sis_provisioner.dao.bridge import get_regid_from_bridge_user
 from sis_provisioner.models import UwBridgeUser
@@ -40,13 +40,15 @@ class BridgeChecker(UserUpdater):
                     uwnetid,
                     uwregid=uwregid,
                     users_in_gws=self.get_users_in_gws())
+            except InvalidNetID as ex:
+                continue
             except DataFailureException as ex:
                 log_exception(
                     logger,
                     "Validate user (%s) failed, skip!" % bridge_user,
                     traceback.format_exc())
                 self.worker.append_error(
-                    "Validate user %s: %s" % (bridge_user, ex))
+                    "Validate user %s ==> %s" % (bridge_user, ex))
                 continue
 
             uw_bridge_user = get_user_from_db(bridge_user.bridge_id,
@@ -60,15 +62,18 @@ class BridgeChecker(UserUpdater):
                 self.take_action(person, bridge_user, in_db)
                 continue
 
+            # person is None
             self.logger.info(
-                "%s no longer a valid learner, terminate!" % bridge_user)
+                "No longer a valid learner, terminate %s" % bridge_user)
+
             if uw_bridge_user is not None:
-                # The Bridge account is in our DB
+                # The Bridge account is in local DB
                 if uw_bridge_user.disabled:
-                    # marked disabled, but exists as a valid user in Bridge
-                    # report an inconsistent state!
-                    self.add_error(
-                        "Inconsistent State: %s DISABLED!" % bridge_user)
+                    # Marked disabled, but exists as a valid user in Bridge
+                    logger.info(
+                        "Disabled user in DB %s ==> Terminate Bridge user %s",
+                        uw_bridge_user, bridge_user)
+                    self.worker.delete_user(del_user, is_merge=False)
                     continue
                 self.terminate(uw_bridge_user, validation_status)
                 continue
@@ -95,14 +100,14 @@ class BridgeChecker(UserUpdater):
                         uw_bridge_user.set_no_action()
                     else:
                         self.add_error(
-                            "Bridge user (%s) NOT in DB, %s" % (
+                            "Bridge user %s == NOT in DB ==> %s" % (
                                 bridge_user,
                                 "but save_user found it EXIST in DB"))
                         return
                 else:
                     if uw_bridge_user.is_new():
                         self.add_error(
-                            "Bridge user (%s) in DB, %s" % (
+                            "Bridge user %s == in DB ==> %s" % (
                                 bridge_user,
                                 "but save_user NOT found it"))
                         return

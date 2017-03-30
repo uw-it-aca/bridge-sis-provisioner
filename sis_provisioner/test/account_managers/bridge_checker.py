@@ -169,20 +169,28 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_loaded_count(), 0)
 
     def test_load(self):
-        uw_bri_user1, person = mock_uw_bridge_user('javerage')
-        uw_bri_user1.bridge_id = 195
-        uw_bri_user1.netid = 'changed'
-        uw_bri_user1.save()
+        user1, person = mock_uw_bridge_user('javerage')
+        user1.netid = 'changed'
+        user1.bridge_id = 195
+        user1.save()
+
         user2, person = mock_uw_bridge_user('staff')
-        user2.bridge_id = 196
         user2.email = 'staff@washington.edu'
+        user2.bridge_id = 196
         user2.save()
+
+        user3, person = mock_uw_bridge_user('seagrad')
+        user3.bridge_id = 197
+        user3.save()
 
         loader = BridgeChecker(BridgeWorker())
         loader.load()
 
         self.assertIsNotNone(get_user_from_db(195, None, None))
-        self.assertIsNotNone(get_user_from_db(0, 'seagrad', None))
+        try:
+            user = UwBridgeUser.objects.get(netid='seagrad')
+        except UwBridgeUser.DoesNotExist:
+            pass
 
         user = get_user_from_db(0, 'affiemp', None)
         self.assertEqual(user.bridge_id, 198)
@@ -200,4 +208,4 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_loaded_count(), 0)
         self.assertIsNotNone(loader.get_error_report())
         self.assertTrue(loader.has_error())
-        self.assertEqual(get_total_users(), 4)
+        self.assertEqual(get_total_users(), 3)
