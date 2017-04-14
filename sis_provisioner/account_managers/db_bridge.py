@@ -44,7 +44,8 @@ class UserUpdater(GwsBridgeLoader):
                 continue
             if validation_status == INVALID:
                 continue
-            if validation_status >= NO_CHANGE:
+
+            if person is not None and validation_status >= NO_CHANGE:
                 self.take_action(person)
             else:
                 self.terminate(uw_bri_user, validation_status)
