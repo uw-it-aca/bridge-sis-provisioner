@@ -62,7 +62,7 @@ class BridgeChecker(UserUpdater):
                         "Bridge %s not match local record %s" %
                         (bridge_user, user))
 
-            if validation_status >= NO_CHANGE:
+            if person is not None and validation_status >= NO_CHANGE:
                 logger.info("%s Bridge user %s in local DB",
                             "Update" if in_db else "Create", bridge_user)
                 self.take_action(person, bridge_user, in_db)
@@ -93,23 +93,18 @@ class BridgeChecker(UserUpdater):
             uw_bridge_user, del_user = save_user(
                 person, include_hrp=self.include_hrp())
 
-            if uw_bridge_user is None:
+            if uw_bridge_user is None or\
+               in_db and uw_bridge_user.is_new() or\
+               not in_db and not uw_bridge_user.is_new():
                 self.add_error(
-                    "FAILED to %s Bridge user in DB: %s" %
-                    (("update" if in_db else "create"), bridge_user))
-
-            if not in_db:
-                if uw_bridge_user.is_new():
-                    # created manually in Bridge, now added in DB
-                    uw_bridge_user.set_no_action()
-                    self.update_bridge(bridge_user, uw_bridge_user)
-                else:
-                    self.add_error(
-                        "Bridge user %s == NOT in DB ==> %s %s" % (
-                            bridge_user,
-                            "but save_user found ",
-                            uw_bridge_user))
+                    "%s Bridge user %s ==> error state in DB %s" %
+                    (("update" if in_db else "create"),
+                     bridge_user, uw_bridge_user))
                 return
+
+            if uw_bridge_user.is_new():
+                # created manually in Bridge, now added in DB
+                uw_bridge_user.set_no_action()
 
             if del_user is not None:
                 self.merge_user_accounts(del_user, uw_bridge_user)
