@@ -30,27 +30,10 @@ def get_total_users():
     return len(get_all_users())
 
 
-def get_user_from_db(bridgeid, uwnetid, uwregid):
-    try:
-        uw_bri_user = get_user_by_regid(uwregid)
-        if uw_bri_user is not None:
-            return uw_bri_user
-    except UwBridgeUser.DoesNotExist:
-        pass
-
-    try:
-        uw_bri_user = get_user_by_netid(uwnetid)
-        if uw_bri_user is not None:
-            return uw_bri_user
-    except UwBridgeUser.DoesNotExist:
-        pass
-
-    try:
-        return get_user_by_bridgeid(bridgeid)
-    except UwBridgeUser.DoesNotExist:
-        pass
-
-    return None
+def get_users_from_db(bridgeid, uwnetid, uwregid):
+    return UwBridgeUser.objects.filter(Q(regid=uwregid) |
+                                       Q(netid=uwnetid) |
+                                       Q(bridge_id=bridgeid))
 
 
 def get_user_by_bridgeid(bridge_id):
@@ -83,7 +66,7 @@ def get_user_by_regid(uwregid):
     return None
 
 
-def filter_by_ids(uwnetid, uwregid):
+def _filter_by_ids(uwnetid, uwregid):
     """
     returns a list of UwBridgeUser objects
     """
@@ -111,7 +94,7 @@ def save_user(person, include_hrp=True):
     emp_apps_unchanged = True
     prev_netid = None
 
-    uw_bri_users = filter_by_ids(person.uwnetid, person.uwregid)
+    uw_bri_users = _filter_by_ids(person.uwnetid, person.uwregid)
     if len(uw_bri_users) == 0:
         action = ACTION_NEW
 

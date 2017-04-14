@@ -7,13 +7,13 @@ accounts via the given worker.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException, InvalidNetID
-from sis_provisioner.dao.user import get_user_from_db, save_user
+from restclients.exceptions import DataFailureException
+from sis_provisioner.dao.user import get_users_from_db, save_user
 from sis_provisioner.dao.bridge import get_regid_from_bridge_user
 from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import get_validated_user,\
-    fetch_users_from_bridge
+    fetch_users_from_bridge, INVALID, NO_CHANGE
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 
 
@@ -33,15 +33,12 @@ class BridgeChecker(UserUpdater):
         for bridge_user in self.get_users_to_process():
             uwnetid = bridge_user.netid
             uwregid = get_regid_from_bridge_user(bridge_user)
-            person = None
             try:
                 person, validation_status = get_validated_user(
                     logger,
                     uwnetid,
                     uwregid=uwregid,
                     users_in_gws=self.get_users_in_gws())
-            except InvalidNetID as ex:
-                continue
             except DataFailureException as ex:
                 log_exception(
                     logger,
@@ -51,35 +48,41 @@ class BridgeChecker(UserUpdater):
                     "Validate user %s ==> %s" % (bridge_user, ex))
                 continue
 
-            uw_bridge_user = get_user_from_db(bridge_user.bridge_id,
-                                              uwnetid,
-                                              uwregid)
+            if validation_status == INVALID:
+                continue
 
-            if person is not None:
-                in_db = uw_bridge_user is not None
-                logger.info("%s Bridge user in DB: %s" % (
-                        "Update" if in_db else "Create", bridge_user))
+            uw_bri_users = get_users_from_db(bridge_user.bridge_id,
+                                             uwnetid,
+                                             uwregid)
+            in_db = len(uw_bri_users) > 0
+            for user in uw_bri_users:
+                if person.uwregid != user.regid and\
+                   person.uwnetid != user.netid:
+                    self.add_error(
+                        "Bridge %s not match local record %s" %
+                        (bridge_user, user))
+
+            if person is not None and validation_status >= NO_CHANGE:
+                logger.info("%s Bridge user %s in local DB",
+                            "Update" if in_db else "Create", bridge_user)
                 self.take_action(person, bridge_user, in_db)
                 continue
 
-            # person is None
-            self.logger.info(
-                "No longer a valid learner, terminate %s" % bridge_user)
-
-            if uw_bridge_user is not None:
-                # The Bridge account is in local DB
-                if uw_bridge_user.disabled:
-                    # Marked disabled, but exists as a valid user in Bridge
-                    logger.info(
-                        "Disabled user in DB %s ==> Terminate Bridge user %s",
-                        uw_bridge_user, bridge_user)
-                    self.worker.delete_user(del_user, is_merge=False)
-                    continue
-                self.terminate(uw_bridge_user, validation_status)
+            self.logger.info("No longer a valid learner: %s", bridge_user)
+            if not in_db:
+                # not in local DB (created manually)
+                self.add_error("Unknown Bridge user: %s" % bridge_user)
                 continue
 
-            # not in local DB (created manually)
-            self.add_error("Unknown Bridge user: %s" % bridge_user)
+            for user in uw_bri_users:
+                if bridge_user.bridge_id == user.bridge_id and\
+                   uwregid == user.regid and\
+                   uwnetid == user.netid:
+                    self.terminate(user, validation_status)
+                else:
+                    self.add_error(
+                        "Bridge %s not match local record %s" %
+                        (bridge_user, user))
 
     def take_action(self, person, bridge_user, in_db=False):
         """
@@ -90,38 +93,23 @@ class BridgeChecker(UserUpdater):
             uw_bridge_user, del_user = save_user(
                 person, include_hrp=self.include_hrp())
 
-            if in_db and del_user is not None:
-                self.merge_user_accounts(del_user, uw_bridge_user)
-
-            if uw_bridge_user is not None:
-                if not in_db:
-                    if uw_bridge_user.is_new():
-                        # created manually in Bridge, now added in DB
-                        uw_bridge_user.set_no_action()
-                    else:
-                        self.add_error(
-                            "Bridge user %s == NOT in DB ==> %s" % (
-                                bridge_user,
-                                "but save_user found it EXIST in DB"))
-                        return
-                else:
-                    if uw_bridge_user.is_new():
-                        self.add_error(
-                            "Bridge user %s == in DB ==> %s" % (
-                                bridge_user,
-                                "but save_user NOT found it"))
-                        return
-            else:
+            if uw_bridge_user is None or\
+               in_db and uw_bridge_user.is_new() or\
+               not in_db and not uw_bridge_user.is_new():
                 self.add_error(
-                    "FAILED to %s Bridge user in DB: %s" % (
-                        ("update" if in_db else "create"), bridge_user))
+                    "%s Bridge user %s ==> error state in DB %s" %
+                    (("update" if in_db else "create"),
+                     bridge_user, uw_bridge_user))
                 return
 
-            uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
+            if uw_bridge_user.is_new():
+                # created manually in Bridge, now added in DB
+                uw_bridge_user.set_no_action()
 
-            if self.changed_attributes(bridge_user, uw_bridge_user):
-                self.logger.info("worker.update %s" % uw_bridge_user)
-                self.worker.update_user(uw_bridge_user)
+            if del_user is not None:
+                self.merge_user_accounts(del_user, uw_bridge_user)
+
+            self.update_bridge(bridge_user, uw_bridge_user)
 
         except Exception as ex:
             log_exception(self.logger,
@@ -129,6 +117,12 @@ class BridgeChecker(UserUpdater):
                           traceback.format_exc())
             self.worker.append_error(
                 "Take_action failed %s: %s" % (bridge_user, ex))
+
+    def update_bridge(self, bridge_user, uw_bridge_user):
+        uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
+        if self.changed_attributes(bridge_user, uw_bridge_user):
+            self.logger.info("worker.update %s" % uw_bridge_user)
+            self.worker.update_user(uw_bridge_user)
 
     def changed_attributes(self, bridge_user, uw_bridge_user):
         if uw_bridge_user.netid_changed():
@@ -151,7 +145,7 @@ class BridgeChecker(UserUpdater):
 
         # current attributes 12/10/2016.
         if bridge_user.full_name != uw_bridge_user.get_display_name() or\
-                bridge_user.email != uw_bridge_user.get_email():
+           bridge_user.email != uw_bridge_user.get_email():
             uw_bridge_user.set_action_update()
             return True
         return False

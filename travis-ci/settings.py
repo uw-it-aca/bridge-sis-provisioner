@@ -20,14 +20,15 @@ STATIC_ROOT = ''
 # Application definition
 
 INSTALLED_APPS = [
+    'rc_django',
+    'restclients',
+    'sis_provisioner.apps.BridgeProvisionerConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'restclients',
-    'sis_provisioner.apps.Sis_provisionerConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
