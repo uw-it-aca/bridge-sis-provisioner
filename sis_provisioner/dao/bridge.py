@@ -45,8 +45,8 @@ def add_bridge_user(uw_bridge_user):
             logger.error("Can't create %s <== CHECK in Bridge",
                          uw_bridge_user)
         else:
-            logger.error("Skip create %s <== user exists in Bridge %s",
-                         uw_bridge_user, user_in_bridge)
+            logger.info("Skip create %s <== user exists in Bridge %s",
+                        uw_bridge_user, user_in_bridge)
         return user_in_bridge, True
     except DataFailureException as ex:
         if ex.status != 404:

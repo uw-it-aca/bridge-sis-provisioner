@@ -63,6 +63,9 @@ class EmployeeAppointment(models.Model):
                 'job_class_code', self.job_class_code,
                 'org_code', self.org_code))
 
+    class Meta:
+        app_label = 'sis_provisioner'
+
 
 ACTION_NONE = 0
 ACTION_NEW = 1
@@ -358,3 +361,4 @@ class UwBridgeUser(models.Model):
 
     class Meta:
         db_table = 'uw_bridge_users'
+        app_label = 'sis_provisioner'

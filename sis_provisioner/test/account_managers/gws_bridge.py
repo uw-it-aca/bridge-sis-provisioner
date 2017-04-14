@@ -1,12 +1,8 @@
 import logging
 from datetime import timedelta
 from django.test import TransactionTestCase
-from restclients.exceptions import InvalidNetID, InvalidRegID
 from sis_provisioner.models import UwBridgeUser, get_now, ACTION_RESTORE,\
     ACTION_CHANGE_REGID, ACTION_UPDATE
-from sis_provisioner.account_managers import get_validated_user,\
-    _user_left_uw, NO_CHANGE, CHANGED, DISALLOWED, LEFT_UW,\
-    fetch_users_from_gws
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
@@ -21,64 +17,6 @@ logger = logging.getLogger(__name__)
 @fdao_pws_override
 @fdao_hrp_override
 class TestGwsBridgeLoader(TransactionTestCase):
-
-    def test_fetch_users_from_gws(self):
-        users = fetch_users_from_gws(logger)
-        self.assertEqual(len(users), 12)
-        self.assertTrue("botgrad" in users)
-        self.assertTrue("faculty" in users)
-        self.assertTrue("much_too_long_much_too_long" in users)
-        self.assertTrue("affiemp" in users)
-
-    def test__user_left_uw(self):
-        users_in_gws = fetch_users_from_gws(logger)
-        self.assertFalse(_user_left_uw(users_in_gws, "faculty"))
-        self.assertFalse(_user_left_uw(users_in_gws, "none"))
-        self.assertFalse(_user_left_uw(users_in_gws, "retiree"))
-        self.assertTrue(_user_left_uw(users_in_gws, "leftuw"))
-        self.assertTrue(_user_left_uw(users_in_gws, "invaliduid"))
-
-    def test_get_validated_user(self):
-        users_in_gws = fetch_users_from_gws(logger)
-        self.assertRaises(InvalidRegID,
-                          get_validated_user,
-                          logger, 'renamed',
-                          "136CCB8F66711D5BE060004AC494FFE",
-                          users_in_gws=users_in_gws)
-
-        self.assertRaises(InvalidNetID,
-                          get_validated_user,
-                          logger, 'much_too_long_much_too_long',
-                          "136CCB8F66711D5BE060004AC494FFE",
-                          users_in_gws=users_in_gws)
-
-        person, validation_status = get_validated_user(
-            logger, 'javerage', users_in_gws=users_in_gws)
-        self.assertIsNotNone(person)
-        self.assertEqual(validation_status, NO_CHANGE)
-
-        person, validation_status = get_validated_user(
-            logger, "botgrad", users_in_gws=users_in_gws)
-        self.assertEqual(person.uwnetid, 'botgrad')
-        self.assertEqual(validation_status, NO_CHANGE)
-
-        person, validation_status = get_validated_user(
-            logger, "botgrad",
-            uwregid='10000000000000000000000000000001',
-            users_in_gws=users_in_gws)
-        self.assertEqual(
-            person.uwregid, '10000000000000000000000000000003')
-        self.assertEqual(validation_status, CHANGED)
-
-        person, validation_status = get_validated_user(
-            logger, 'none', users_in_gws=users_in_gws)
-        self.assertIsNone(person)
-        self.assertEqual(validation_status, DISALLOWED)
-
-        person, validation_status = get_validated_user(
-            logger, 'leftuw', users_in_gws=users_in_gws)
-        self.assertIsNone(person)
-        self.assertEqual(validation_status, LEFT_UW)
 
     def test_load_new_users(self):
         loader = GwsBridgeLoader(BridgeWorker())
