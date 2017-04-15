@@ -35,20 +35,12 @@ class GwsBridgeLoader(Loader):
                 person, validation_status = get_validated_user(
                     self.logger, uwnetid)
             except DataFailureException as ex:
-                log_exception(
-                    logger,
-                    "Validate user (%s) failed, skip!" % uwnetid,
-                    traceback.format_exc())
                 self.worker.append_error(
-                    "Validate user %s: %s" % (uwnetid, ex))
+                    "Validate user %s ==> %s" % (uwnetid, ex))
                 continue
 
-            if person is None:
-                self.logger.info(
-                    "%s is not a valid learner, skip!" % uwnetid)
-                continue
-
-            self.take_action(person)
+            if person is not None:
+                self.take_action(person)
 
     def take_action(self, person):
         """
@@ -60,9 +52,9 @@ class GwsBridgeLoader(Loader):
         except Exception as ex:
             uwnetid = person.uwnetid
             log_exception(self.logger,
-                          "Failed to save user (%s)" % uwnetid,
+                          "Save user %s " % uwnetid,
                           traceback.format_exc())
-            self.worker.append_error("save user %s: %s" % (uwnetid, ex))
+            self.worker.append_error("Save user %s ==> %s" % (uwnetid, ex))
             return
 
         if del_user is not None:
@@ -77,7 +69,7 @@ class GwsBridgeLoader(Loader):
         # TO-DO:
         # merge learning history from del_user to uw_bridge_user
         # delete del_user
-        self.logger.info("Delete %s" % del_user)
+        self.logger.info("Delete %s after merge learning history", del_user)
         self.worker.delete_user(del_user, is_merge=True)
 
     def apply_change_to_bridge(self, uw_bridge_user):
@@ -90,9 +82,11 @@ class GwsBridgeLoader(Loader):
         if uw_bridge_user.is_new():
             self.logger.info("worker.add_new %s", uw_bridge_user)
             self.worker.add_new_user(uw_bridge_user)
+
         elif uw_bridge_user.is_restore():
             self.logger.info("worker.restore %s", uw_bridge_user)
             self.worker.restore_user(uw_bridge_user)
+
         else:
             self.logger.info("worker.update %s", uw_bridge_user)
             self.worker.update_user(uw_bridge_user)
