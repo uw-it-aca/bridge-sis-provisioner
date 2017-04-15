@@ -35,12 +35,8 @@ class UserUpdater(GwsBridgeLoader):
                     uwregid=uw_bri_user.regid,
                     users_in_gws=self.get_users_in_gws())
             except DataFailureException as ex:
-                log_exception(
-                    logger,
-                    "Validate user (%s) failed, skip!" % uw_bri_user,
-                    traceback.format_exc())
                 self.worker.append_error(
-                    "Validate user %s: %s" % (uw_bri_user, ex))
+                    "Validate user %s ==> %s" % (uw_bri_user, ex))
                 continue
 
             if person is not None and validation_status >= NO_CHANGE:
@@ -56,7 +52,7 @@ class UserUpdater(GwsBridgeLoader):
         """
         if validation_status == LEFT_UW:
             if uw_bri_user.disabled:
-                self.logger.info("%s is already disabled!", uw_bri_user)
+                self.logger.info("%s left, already disabled!", uw_bri_user)
                 return
 
             if not uw_bri_user.has_terminate_date():
@@ -67,21 +63,20 @@ class UserUpdater(GwsBridgeLoader):
         elif validation_status <= DISALLOWED:
             # rare case
             self.logger.info(
-                "Not a personal netid, worker.delete %s" % uw_bri_user)
+                "Not valid personal netid, worker.delete %s" % uw_bri_user)
             self.worker.delete_user(uw_bri_user)
 
         else:
-            self.logger.error("%s invalid (status: %s), check in DB!",
+            self.logger.error("Invalid %s (status: %s), check in DB!",
                               uw_bri_user, validation_status)
             return
 
         if uw_bri_user.is_stalled():
-            # stalled user can be removed now
-            self.logger.info("%s is a stalled account!" % uw_bri_user)
+            self.logger.info("Stalled user %s, delete!" % uw_bri_user)
             uw_bri_user.save_terminate_date(graceful=False)
 
         if uw_bri_user.passed_terminate_date() and\
                 not uw_bri_user.disabled:
             self.logger.info(
-                "Passed the terminate date, worker.delete %s" % uw_bri_user)
+                "Passed terminate date, worker.delete %s" % uw_bri_user)
             self.worker.delete_user(uw_bri_user)

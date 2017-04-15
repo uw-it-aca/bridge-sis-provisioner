@@ -34,21 +34,21 @@ def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
             if uwregid is None or person.uwregid == uwregid:
 
                 if _user_left_uw(users_in_gws, uwnetid):
-                    logger.info("user validation: %s left uw!", uwnetid)
+                    logger.info("validation: %s left uw!", uwnetid)
                     return None, LEFT_UW
                 return person, NO_CHANGE
 
-        logger.info("User (%s, %s) changed netid or regid to (%s, %s)",
+        logger.info("validation (%s, %s) changed netid/regid to (%s, %s)",
                     uwnetid, uwregid,
                     person.uwnetid, person.uwregid)
         return person, CHANGED
 
     except InvalidNetID:
-        logger.error("validate_user_by_netid: %s invalid!",
+        logger.error("validate_by_netid: %s invalid!",
                      uwnetid)
         return None, INVALID
     except InvalidRegID:
-        logger.error("validate_user_by_regid: %s invalid!",
+        logger.error("validate_by_regid: %s invalid!",
                      uwregid)
         return None, INVALID
     except DataFailureException as ex:
@@ -57,8 +57,8 @@ def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
             logger.info("Not a personal netid: %s", uwnetid)
             return None, DISALLOWED
         log_exception(logger,
-                      "validate_user (%s, %s) failed!" % (uwnetid,
-                                                          uwregid),
+                      "validation (%s, %s) failed, skip!" % (uwnetid,
+                                                             uwregid),
                       traceback.format_exc())
         raise
 
