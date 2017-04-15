@@ -152,10 +152,14 @@ class TestBridgeUserChecker(TransactionTestCase):
         user3, person = mock_uw_bridge_user('botgrad')
         user3.save()
 
+        user4, person = mock_uw_bridge_user('leftuw')
+        user4.regid = "B814EFBC6A7C11D5A4AE0004AC494FFE"
+        user4.save()
+
         loader = BridgeChecker(BridgeWorker())
         loader.load()
 
-        self.assertEqual(get_total_users(), 4)
+        self.assertEqual(get_total_users(), 5)
 
         self.assertEqual(len(get_users_from_db(
             198, 'affiemp', "10000000000000000000000000000011")), 1)
@@ -170,9 +174,10 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(
             len(get_users_from_db(
                 199, 'unknown', "10000000000000000000000000000000")), 0)
-        self.assertEqual(
-            len(get_users_from_db(
-                200, 'leftuw', "B814EFBC6A7C11D5A4AE0004AC494FFE")), 0)
+
+        leftuw = get_user_by_netid('leftuw')
+        self.assertEqual(leftuw.bridge_id, 200)
+        self.assertTrue(leftuw.has_terminate_date())
 
         self.assertEqual(loader.get_total_count(), 6)
         self.assertEqual(loader.get_new_user_count(), 0)
@@ -181,4 +186,4 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_loaded_count(), 0)
         self.assertIsNotNone(loader.get_error_report())
         self.assertTrue(loader.has_error())
-        self.assertEqual(get_total_users(), 4)
+        self.assertEqual(get_total_users(), 5)

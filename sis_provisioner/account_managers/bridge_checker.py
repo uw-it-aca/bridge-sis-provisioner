@@ -57,14 +57,14 @@ class BridgeChecker(UserUpdater):
                 continue
 
             for user in uw_bri_users:
-                if bridge_user.bridge_id == user.bridge_id and\
-                   uwregid == user.regid and\
+                if uwregid == user.regid and\
                    uwnetid == user.netid:
                     # only those with local records can be terminated
+                    user.set_bridge_id(bridge_user.bridge_id)
                     self.terminate(user, validation_status)
                 else:
                     self.add_error(
-                        "Bridge %s not match local record %s" %
+                        "Bridge user %s not match local record %s" %
                         (bridge_user, user))
 
     def take_action(self, person, bridge_user, in_db=False):
@@ -83,13 +83,10 @@ class BridgeChecker(UserUpdater):
                 "Save user in DB %s ==> %s" % (bridge_user, ex))
             return
 
-        if uw_bridge_user is None or\
-           in_db and uw_bridge_user.is_new() or\
-           not in_db and not uw_bridge_user.is_new():
+        if uw_bridge_user is None:
             self.add_error(
-                "%s Bridge user %s ==> error state in DB %s" %
-                (("Update" if in_db else "Create"),
-                 bridge_user, uw_bridge_user))
+                "%s Bridge user %s in DB ==> return None" %
+                (("Update" if in_db else "Create"), bridge_user))
             return
 
         if uw_bridge_user.is_new():
