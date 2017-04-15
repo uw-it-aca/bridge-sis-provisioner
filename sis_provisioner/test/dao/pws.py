@@ -33,17 +33,14 @@ class TestPwsDao(TestCase):
         self.assertRaises(DataFailureException,
                           get_person,
                           "supple")
-
         self.assertRaises(DataFailureException,
                           get_person,
                           'none')
-        try:
-            person = get_person('none')
-        except DataFailureException as ex:
-            self.assertEqual(ex.status, 404)
+        self.assertRaises(DataFailureException,
+                          get_person,
+                          'renamed')
 
     def test_is_moved_netid(self):
-        self.assertTrue(is_moved_netid('renamed'))
         self.assertTrue(is_moved_netid('changed'))
         self.assertFalse(is_moved_netid('javerage'))
 
