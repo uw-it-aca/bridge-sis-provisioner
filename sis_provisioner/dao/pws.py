@@ -44,9 +44,10 @@ def is_moved_netid(uwnetid):
     Return True if the netid is Moved Permanently
     """
     try:
-        ret = pws.get_person_by_netid(uwnetid)
-        return False
+        person = pws.get_person_by_netid(uwnetid)
+        return person.uwnetid != uwnetid
     except DataFailureException as ex:
+        # if not follow redirect
         return (ex.status == 301)
 
 
@@ -55,7 +56,8 @@ def is_moved_regid(uwregid):
     Return True if the regid is Moved Permanently
     """
     try:
-        ret = pws.get_person_by_regid(uwregid)
-        return False
+        person = pws.get_person_by_regid(uwregid)
+        return person.uwregid != uwregid
     except DataFailureException as ex:
+        # if not follow redirect
         return (ex.status == 301)

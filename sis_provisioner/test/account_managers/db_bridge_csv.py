@@ -34,12 +34,12 @@ class TestUserCsvUpdater(TransactionTestCase):
         self.assertEqual(loader.get_regid_changed_count(), 0)
 
     def test_changed_regid(self):
-        user = UwBridgeUser(netid='javerage',
-                            regid="0136CCB8F66711D5BE060004AC494FFE",
+        user = UwBridgeUser(netid='leftuw',
+                            regid="56229F4D3B504559AF23956737A3CF9D",
                             last_visited_at=get_now(),
-                            email='javerage@uw.edu',
-                            first_name="James",
-                            last_name="Student")
+                            email='leftuw@uw.edu',
+                            first_name="Who",
+                            last_name="Left")
         user.save()
         loader = UserUpdater(CsvWorker())
         loader.load()

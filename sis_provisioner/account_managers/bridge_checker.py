@@ -40,10 +40,6 @@ class BridgeChecker(UserUpdater):
                     uwregid=uwregid,
                     users_in_gws=self.get_users_in_gws())
             except DataFailureException as ex:
-                log_exception(
-                    logger,
-                    "Validate user (%s) failed, skip!" % bridge_user,
-                    traceback.format_exc())
                 self.worker.append_error(
                     "Validate user %s ==> %s" % (bridge_user, ex))
                 continue
@@ -65,7 +61,6 @@ class BridgeChecker(UserUpdater):
                 self.take_action(person, bridge_user, in_db)
                 continue
 
-            self.logger.info("No longer a valid learner: %s", bridge_user)
             if not in_db:
                 # not in local DB (created manually)
                 self.add_error("Unknown Bridge user: %s" % bridge_user)
@@ -89,34 +84,35 @@ class BridgeChecker(UserUpdater):
         try:
             uw_bridge_user, del_user = save_user(
                 person, include_hrp=self.include_hrp())
-
-            if uw_bridge_user is None or\
-               in_db and uw_bridge_user.is_new() or\
-               not in_db and not uw_bridge_user.is_new():
-                self.add_error(
-                    "%s Bridge user %s ==> error state in DB %s" %
-                    (("update" if in_db else "create"),
-                     bridge_user, uw_bridge_user))
-                return
-
-            if uw_bridge_user.is_new():
-                # created manually in Bridge, now added in DB
-                uw_bridge_user.set_no_action()
-
-            if del_user is not None:
-                self.merge_user_accounts(del_user, uw_bridge_user)
-
-            self.update_bridge(bridge_user, uw_bridge_user)
-
         except Exception as ex:
             log_exception(self.logger,
-                          "Take_action failed (%s)" % bridge_user,
+                          "Save user %s " % bridge_user,
                           traceback.format_exc())
             self.worker.append_error(
-                "Take_action failed %s: %s" % (bridge_user, ex))
+                "Save user in DB %s ==> %s" % (bridge_user, ex))
+            return
+
+        if uw_bridge_user is None or\
+           in_db and uw_bridge_user.is_new() or\
+           not in_db and not uw_bridge_user.is_new():
+            self.add_error(
+                "%s Bridge user %s ==> error state in DB %s" %
+                (("update" if in_db else "create"),
+                 bridge_user, uw_bridge_user))
+            return
+
+        if uw_bridge_user.is_new():
+            # created manually in Bridge, now added in DB
+            uw_bridge_user.set_no_action()
+
+        if del_user is not None:
+            self.merge_user_accounts(del_user, uw_bridge_user)
+
+        self.update_bridge(bridge_user, uw_bridge_user)
 
     def update_bridge(self, bridge_user, uw_bridge_user):
         uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
+
         if self.changed_attributes(bridge_user, uw_bridge_user):
             self.logger.info("worker.update %s" % uw_bridge_user)
             self.worker.update_user(uw_bridge_user)
