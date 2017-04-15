@@ -59,11 +59,6 @@ class BridgeChecker(UserUpdater):
                 # the db_updator will take car that.
                 continue
 
-            if not in_db:
-                # not in local DB (created manually)
-                self.add_error("Unknown Bridge user: %s" % bridge_user)
-                continue
-
             for user in uw_bri_users:
                 if bridge_user.bridge_id == user.bridge_id and\
                    uwregid == user.regid and\
