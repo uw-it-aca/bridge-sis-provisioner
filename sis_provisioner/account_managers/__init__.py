@@ -44,21 +44,21 @@ def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
         return person, CHANGED
 
     except InvalidNetID:
-        logger.error("validate_by_netid: %s invalid!",
+        logger.error("validate_by_netid: '%s' invalid!",
                      uwnetid)
         return None, INVALID
     except InvalidRegID:
-        logger.error("validate_by_regid: %s invalid!",
+        logger.error("validate_by_regid: '%s' invalid!",
                      uwregid)
         return None, INVALID
     except DataFailureException as ex:
         if ex.status == 404:
             # shared or system netids
-            logger.info("Not a personal netid: %s", uwnetid)
+            logger.info("Not a personal netid: '%s'", uwnetid)
             return None, DISALLOWED
         log_exception(logger,
-                      "validation (%s, %s) failed, skip!" % (uwnetid,
-                                                             uwregid),
+                      "validation ('%s', '%s') failed, skip!" % (uwnetid,
+                                                                 uwregid),
                       traceback.format_exc())
         raise
 
