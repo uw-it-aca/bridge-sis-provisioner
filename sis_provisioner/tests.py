@@ -9,6 +9,7 @@ from sis_provisioner.test.csv import TestCsv
 from sis_provisioner.test.csv.user_formatter import TestUserFormatter
 from sis_provisioner.test.csv.user_writer import TestUserWriter
 from sis_provisioner.test.models import TestModels
+from sis_provisioner.test.account_managers import TestValidUser
 from sis_provisioner.test.account_managers.bridge_worker\
     import TestBridgeWorker
 from sis_provisioner.test.account_managers.gws_bridge\
@@ -37,3 +38,5 @@ from sis_provisioner.test.management.commands.load_user_to_bridge\
     import TestLoadUserViaBridgeApi
 from sis_provisioner.test.management.commands.set_bridge_ids\
     import TestSetBridgeIds
+from sis_provisioner.test.management.commands.clear_db_record\
+    import TestClearDbRecord

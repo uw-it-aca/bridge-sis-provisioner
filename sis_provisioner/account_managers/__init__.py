@@ -1,6 +1,7 @@
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
+from restclients.exceptions import DataFailureException,\
+     InvalidNetID, InvalidRegID
 from sis_provisioner.dao.bridge import get_all_bridge_users
 from sis_provisioner.dao.gws import get_potential_users
 from sis_provisioner.dao.pws import get_person, get_person_by_regid
@@ -8,10 +9,13 @@ from sis_provisioner.dao.user import get_all_users
 from sis_provisioner.util.log import log_exception
 
 
-NO_CHANGE = 0  # user exist without netid/regid change
-CHANGED = 1  # changed netid or regid
-LEFT_UW = 2
-DISALLOWED = 3  # not personal netid
+INVALID = -3
+DISALLOWED = -2  # not personal netid
+LEFT_UW = -1
+NO_CHANGE = 0  # no id changes
+NETID_CHANGE = 1
+REGID_CHANGE = 2
+BOTH_ID_CHANGE = 3
 
 
 def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
@@ -22,45 +26,66 @@ def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
 
     raise DataFailureException if failed to access GWS or PWS
     """
-    if _user_left_uw(users_in_gws, uwnetid):
-        logger.error("user validation: %s has left uw!" % uwnetid)
-        return None, LEFT_UW
-
     try:
         person = get_person(uwnetid)
 
-        if person.uwregid is None or len(person.uwregid) == 0:
-            logger.error("%s has invalid uwregid in PWS.Person!" % uwnetid)
-            return None, None
+        if uwregid is not None and person.uwregid is not None and\
+           person.uwregid == uwregid:
+            if _user_left_uw(users_in_gws, uwnetid):
+                logger.info("user validation: %s left uw!", uwnetid)
+                return None, LEFT_UW
+            return person, NO_CHANGE
 
-        if uwregid is not None and person.uwregid != uwregid:
-            return person, CHANGED
+        logger.info("User (%s, %s) changed regid to %s",
+                    uwnetid, uwregid, person.uwregid)
+        return person, REGID_CHANGE
 
-        return person, NO_CHANGE
+    except InvalidNetID:
+        logger.error("validate_user_by_netid: %s is invalid netid!",
+                     uwnetid)
+        return None, INVALID
     except DataFailureException as ex:
         if ex.status == 301:
-            # netid changed
-            logger.error(
-                "user validation: %s (301) netid has changed!" % uwnetid)
-            if uwregid is not None:
-                try:
-                    person = get_person_by_regid(uwregid)
-                    return person, CHANGED
-                except DataFailureException as ex:
-                    log_exception(
-                        logger,
-                        "user validation: (%s, %s) failed!" % (uwnetid,
-                                                               uwregid),
-                        traceback.format_exc())
+            if uwregid is None:
+                logger.error("Netid changed: %s, no regid", uwnetid)
+                return None, NETID_CHANGE
+            return _validate_by_regid(logger, uwnetid, uwregid)
 
         elif ex.status == 404:
             # shared or system netids
-            logger.error(
-                "user validation: %s is not a personal netid!" % uwnetid)
+            logger.info("Not a personal netid: %s", uwnetid)
             return None, DISALLOWED
         else:
             raise
-    return None, None
+
+
+def _validate_by_regid(logger, uwnetid, uwregid):
+    try:
+        person = get_person_by_regid(uwregid)
+        logger.info("Netid changed (%s, %s) to %s",
+                    uwnetid, uwregid, person.uwnetid)
+        return person, NETID_CHANGE
+
+    except InvalidRegID:
+        logger.error("Invalid regid (%s, %s)",
+                     uwnetid, uwregid)
+        return None, INVALID
+
+    except DataFailureException as ex:
+        if ex.status == 301:
+            logger.error(
+                "Both netid & regid changed (%s, %s)",
+                uwnetid, uwregid)
+            return None, BOTH_ID_CHANGE
+        elif ex.status == 404:
+            logger.info("Netid changed, regid not personal (%s, %s)",
+                        uwnetid, uwregid)
+            return None, DISALLOWED
+        log_exception(logger,
+                      "validate_user_by_regid (%s, %s) failed!" % (uwnetid,
+                                                                   uwregid),
+                      traceback.format_exc())
+        raise
 
 
 def fetch_users_from_gws(logger):
@@ -102,4 +127,5 @@ def fetch_users_from_bridge(logger):
 
 
 def _user_left_uw(users_in_gws, uwnetid):
-    return len(users_in_gws) > 0 and uwnetid not in users_in_gws
+    return (uwnetid is not None and
+            len(users_in_gws) > 0 and uwnetid not in users_in_gws)

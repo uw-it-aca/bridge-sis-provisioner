@@ -6,7 +6,7 @@ accounts via the given worker.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException, InvalidNetID
+from restclients.exceptions import DataFailureException
 from sis_provisioner.account_managers import get_validated_user
 from sis_provisioner.account_managers.loader import Loader
 from sis_provisioner.util.log import log_exception
@@ -34,8 +34,6 @@ class GwsBridgeLoader(Loader):
             try:
                 person, validation_status = get_validated_user(
                     self.logger, uwnetid)
-            except InvalidNetID as ex:
-                continue
             except DataFailureException as ex:
                 log_exception(
                     logger,
@@ -49,6 +47,7 @@ class GwsBridgeLoader(Loader):
                 self.logger.info(
                     "%s is not a valid learner, skip!" % uwnetid)
                 continue
+
             self.take_action(person)
 
     def take_action(self, person):

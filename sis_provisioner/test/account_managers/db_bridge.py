@@ -53,6 +53,21 @@ class TestUserUpdater(TransactionTestCase):
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_regid_changed_count(), 1)
 
+    def test_changed_netid(self):
+        user = UwBridgeUser(netid='changed',
+                            regid="9136CCB8F66711D5BE060004AC494FFE",
+                            last_visited_at=get_now(),
+                            email='javerage@uw.edu',
+                            first_name="James",
+                            last_name="Student")
+        user.save()
+        loader = UserUpdater(BridgeWorker())
+        loader.load()
+        self.assertEqual(loader.get_total_count(), 1)
+        self.assertEqual(loader.get_new_user_count(), 0)
+        self.assertEqual(loader.get_netid_changed_count(), 1)
+        self.assertEqual(loader.get_regid_changed_count(), 0)
+
     def test_terminate(self):
         loader = UserUpdater(BridgeWorker())
         user = UwBridgeUser(

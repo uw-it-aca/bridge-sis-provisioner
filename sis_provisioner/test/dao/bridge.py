@@ -1,7 +1,6 @@
 from django.test import TransactionTestCase
 from restclients.exceptions import DataFailureException
 from sis_provisioner.models import UwBridgeUser, get_now
-from sis_provisioner.dao.user import get_user_from_db
 from sis_provisioner.dao.bridge import _get_bridge_user_to_add,\
     add_bridge_user, _get_bridge_user_to_upd, change_uwnetid,\
     delete_bridge_user, get_bridge_user, update_bridge_user,\

@@ -10,7 +10,7 @@ from restclients.exceptions import DataFailureException
 from sis_provisioner.dao.user import save_user
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import fetch_users_from_db,\
-    get_validated_user, LEFT_UW, DISALLOWED
+    get_validated_user, LEFT_UW, DISALLOWED, INVALID, NO_CHANGE
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 
@@ -43,33 +43,37 @@ class UserUpdater(GwsBridgeLoader):
                     "Validate user %s: %s" % (uw_bri_user, ex))
                 continue
 
-            if person is None:
-                if uw_bri_user.disabled:
-                    self.logger.info("%s has been disabled!" % uw_bri_user)
-                    continue
-                self.logger.info(
-                    "%s is no longer a valid learner, terminate!" %
-                    uw_bri_user)
-                self.terminate(uw_bri_user, validation_status)
-            else:
+            if person is not None and validation_status >= NO_CHANGE:
                 self.take_action(person)
+            else:
+                self.terminate(uw_bri_user, validation_status)
 
     def terminate(self, uw_bri_user, validation_status):
         """
         @param uw_bri_user the UwBridgeUser object of an existing account
         Check the existing users for termination.
-        If the user's termination date has been reached, return True
+        If the user's termination date has been reached, disable user.
         """
         if validation_status == LEFT_UW:
-            self.logger.info(
-                "%s: has left UW, set terminate date" % uw_bri_user)
-            uw_bri_user.save_terminate_date(graceful=True)
+            if uw_bri_user.disabled:
+                self.logger.info("%s is already disabled!", uw_bri_user)
+                return
 
-        elif validation_status == DISALLOWED:
+            if not uw_bri_user.has_terminate_date():
+                self.logger.info("%s: has left UW, set terminate date",
+                                 uw_bri_user)
+                uw_bri_user.save_terminate_date(graceful=True)
+
+        elif validation_status <= DISALLOWED:
             # rare case
             self.logger.info(
                 "Not a personal netid, worker.delete %s" % uw_bri_user)
             self.worker.delete_user(uw_bri_user)
+
+        else:
+            self.logger.error("%s invalid (status: %s), check in DB!",
+                              uw_bri_user, validation_status)
+            return
 
         if uw_bri_user.is_stalled():
             # stalled user can be removed now

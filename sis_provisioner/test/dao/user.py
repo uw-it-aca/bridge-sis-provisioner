@@ -7,10 +7,10 @@ from sis_provisioner.models import UwBridgeUser, get_now,\
 from sis_provisioner.dao.pws import get_person, is_moved_netid, is_moved_regid
 from sis_provisioner.dao.hrp import get_appointments
 from sis_provisioner.dao.user import normalize_email, normalize_name,\
-    _emp_attr_unchanged, filter_by_ids, get_user_by_netid, get_user_by_regid,\
+    _emp_attr_unchanged, _filter_by_ids, get_user_by_netid, get_user_by_regid,\
     get_all_users, save_user, _get_netid_changed_user, _changed_regid,\
     _are_all_disabled, _are_all_active, _appointments_json_dump,\
-    get_user_from_db, get_total_users, get_user_by_bridgeid
+    get_users_from_db, get_total_users, get_user_by_bridgeid
 from sis_provisioner.test import fdao_pws_override, fdao_hrp_override,\
     mock_uw_bridge_user
 
@@ -42,12 +42,12 @@ class TestUserDao(TransactionTestCase):
         self.assertEqual(normalize_name(None), "")
         self.assertEqual(normalize_name(""), "")
 
-    def test_get(self):
+    def test_filter_by_ids(self):
         user, person = mock_uw_bridge_user('staff')
         user.bridge_id = 100
         user.save()
 
-        users = filter_by_ids(person.uwnetid, person.uwregid)
+        users = _filter_by_ids(person.uwnetid, person.uwregid)
         self.assertEqual(len(users), 1)
 
         self.assertEqual(get_total_users(), 1)
@@ -55,10 +55,14 @@ class TestUserDao(TransactionTestCase):
         users = get_all_users()
         self.assertEqual(len(users), 1)
 
-        users = filter_by_ids(person.uwnetid, None)
+        users = _filter_by_ids(person.uwnetid, None)
         self.assertEqual(len(users), 1)
         self.assertEqual(users[0].netid, person.uwnetid)
 
+    def test_get_by_ids(self):
+        user, person = mock_uw_bridge_user('staff')
+        user.bridge_id = 100
+        user.save()
         user = get_user_by_bridgeid(100)
         self.assertEqual(user.bridge_id, 100)
         self.assertEqual(user.netid, person.uwnetid)
@@ -69,34 +73,67 @@ class TestUserDao(TransactionTestCase):
         user = get_user_by_regid(person.uwregid)
         self.assertEqual(user.regid, person.uwregid)
 
-        user = get_user_from_db(100, None, None)
-        self.assertEqual(user.bridge_id, 100)
-        self.assertEqual(user.netid, person.uwnetid)
-        self.assertEqual(user.regid, person.uwregid)
-
-        user = get_user_from_db(0, person.uwnetid, None)
-        self.assertEqual(user.netid, person.uwnetid)
-        self.assertEqual(user.regid, person.uwregid)
-
-        user = get_user_from_db(0, None, person.uwregid)
-        self.assertEqual(user.netid, person.uwnetid)
-        self.assertEqual(user.regid, person.uwregid)
+        self.assertRaises(UwBridgeUser.DoesNotExist,
+                          get_user_by_bridgeid,
+                          120)
+        self.assertRaises(UwBridgeUser.DoesNotExist,
+                          get_user_by_netid,
+                          'none')
+        self.assertRaises(UwBridgeUser.DoesNotExist,
+                          get_user_by_regid,
+                          "10000000000000000000000000000003")
 
         user = get_user_by_bridgeid(0)
         self.assertIsNone(user)
-
         user = get_user_by_netid(None)
         self.assertIsNone(user)
-
         user = get_user_by_regid(None)
         self.assertIsNone(user)
 
-        user = get_user_from_db(0, None, None)
-        self.assertIsNone(user)
+    def test_get_users(self):
+        user, person = mock_uw_bridge_user('staff')
+        user.bridge_id = 100
+        user.save()
+        users = get_users_from_db(100, person.uwnetid, person.uwregid)
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].bridge_id, 100)
+        self.assertEqual(users[0].netid, person.uwnetid)
+        self.assertEqual(users[0].regid, person.uwregid)
+
+        users = get_users_from_db(0, person.uwnetid, None)
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].bridge_id, 100)
+        self.assertEqual(users[0].netid, person.uwnetid)
+        self.assertEqual(users[0].regid, person.uwregid)
+
+        users = get_users_from_db(0, None, person.uwregid)
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].bridge_id, 100)
+        self.assertEqual(users[0].netid, person.uwnetid)
+        self.assertEqual(users[0].regid, person.uwregid)
+
+        self.assertEqual(len(get_users_from_db(0, None, None)), 0)
+
+        user.netid = 'changed'
+        user.save()
+        users = get_users_from_db(100, person.uwnetid, person.uwregid)
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].bridge_id, 100)
+        self.assertEqual(users[0].netid, 'changed')
+        self.assertEqual(users[0].regid, person.uwregid)
+
+        user1, person1 = mock_uw_bridge_user('staff')
+        user1.regid = "10000000000000000000000000000003"
+        user1.bridge_id = 100
+        user1.save()
+        users = get_users_from_db(100, person.uwnetid, person.uwregid)
+        self.assertEqual(len(users), 2)
+        self.assertEqual(users[0].netid, 'changed')
+        self.assertEqual(users[1].netid, 'staff')
 
     def test_err_case(self):
         self.assertEqual(len(get_all_users()), 0)
-        self.assertEqual(len(filter_by_ids(None, None)), 0)
+        self.assertEqual(len(_filter_by_ids(None, None)), 0)
         self.assertIsNone(get_user_by_netid(None))
         self.assertIsNone(get_user_by_regid(None))
         user, user_del = save_user(None)

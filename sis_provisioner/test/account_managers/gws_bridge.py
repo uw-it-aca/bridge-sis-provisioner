@@ -3,8 +3,6 @@ from datetime import timedelta
 from django.test import TransactionTestCase
 from sis_provisioner.models import UwBridgeUser, get_now, ACTION_RESTORE,\
     ACTION_CHANGE_REGID, ACTION_UPDATE
-from sis_provisioner.account_managers import get_validated_user,\
-    NO_CHANGE, CHANGED, DISALLOWED, fetch_users_from_gws
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
@@ -19,30 +17,6 @@ logger = logging.getLogger(__name__)
 @fdao_pws_override
 @fdao_hrp_override
 class TestGwsBridgeLoader(TransactionTestCase):
-
-    def test_fetch_users_from_gws(self):
-        users = fetch_users_from_gws(logger)
-        self.assertEqual(len(users), 12)
-        self.assertEqual(users[0], "botgrad")
-        self.assertEqual(users[1], "faculty")
-        self.assertEqual(users[10], "much_too_long_much_too_long")
-        self.assertEqual(users[11], "affiemp")
-
-    def test_get_validated_user(self):
-        person, validation_status = get_validated_user(logger, "botgrad")
-        self.assertEqual(person.uwnetid, 'botgrad')
-        self.assertEqual(validation_status, NO_CHANGE)
-
-        person, validation_status = get_validated_user(
-            logger, "botgrad",
-            uwregid='10000000000000000000000000000001')
-        self.assertEqual(
-            person.uwregid, '10000000000000000000000000000003')
-        self.assertEqual(validation_status, CHANGED)
-
-        person, validation_status = get_validated_user(logger, 'none')
-        self.assertIsNone(person)
-        self.assertEqual(validation_status, DISALLOWED)
 
     def test_load_new_users(self):
         loader = GwsBridgeLoader(BridgeWorker())

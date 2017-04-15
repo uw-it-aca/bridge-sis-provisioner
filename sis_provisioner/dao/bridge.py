@@ -45,8 +45,8 @@ def add_bridge_user(uw_bridge_user):
             logger.error("Can't create %s <== CHECK in Bridge",
                          uw_bridge_user)
         else:
-            logger.error("Skip create %s <== user exists in Bridge %s",
-                         uw_bridge_user, user_in_bridge)
+            logger.info("Skip create %s <== user exists in Bridge %s",
+                        uw_bridge_user, user_in_bridge)
         return user_in_bridge, True
     except DataFailureException as ex:
         if ex.status != 404:
@@ -65,6 +65,7 @@ def change_uwnetid(uw_bridge_user):
     :param uw_bridge_user: a valid UwBridgeUser object
     :return: the returned BridgeUser object
     """
+    # Pre-change-uid check:
     if uw_bridge_user.has_bridge_id():
         ret_users = get_user_by_id(uw_bridge_user.bridge_id)
     else:
@@ -85,8 +86,13 @@ def change_uwnetid(uw_bridge_user):
         logger.error("Can't change uid %s <== CHECK Bridge user %s",
                      uw_bridge_user, user_in_bridge)
         return None
+    return _change_uid(uw_bridge_user)
 
-    # Change UID
+
+def _change_uid(uw_bridge_user):
+    """
+    :return: the BridgeUser object returned from Bridge
+    """
     if uw_bridge_user.has_bridge_id():
         busers = change_uid(uw_bridge_user.bridge_id,
                             uw_bridge_user.netid)
@@ -168,6 +174,9 @@ def restore_bridge_user(uw_bridge_user):
 
 
 def _restore(uw_bridge_user):
+    """
+    :return: the BridgeUser object returned from Bridge
+    """
     if uw_bridge_user.has_bridge_id():
         busers = restore_user_by_id(uw_bridge_user.bridge_id,
                                     no_custom_fields=False)
@@ -189,9 +198,10 @@ def update_bridge_user(uw_bridge_user):
                                         uw_bridge_user)
 
     if not _uid_matched(uw_bridge_user, user_in_bridge):
-        logger.error("Can't update %s <== NOT match, CHECK in Bridge %s",
-                     uw_bridge_user, user_in_bridge)
-        return False
+        logger.info("Pre-update check %s ==> change uid on %s",
+                    uw_bridge_user, user_in_bridge)
+        uw_bridge_user.set_prev_netid(user_in_bridge.netid)
+        user_in_bridge = _change_uid(uw_bridge_user)
 
     if _no_change(uw_bridge_user, user_in_bridge):
         logger.info("Skip updating %s with %s <== NO change",
