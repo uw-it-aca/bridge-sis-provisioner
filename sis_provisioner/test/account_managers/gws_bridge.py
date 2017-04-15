@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.test import TransactionTestCase
 from sis_provisioner.models import UwBridgeUser, get_now, ACTION_RESTORE,\
     ACTION_CHANGE_REGID, ACTION_UPDATE
+from sis_provisioner.dao.user import get_user_by_regid
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
@@ -26,6 +27,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertEqual(loader.get_loaded_count(), 2)
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_regid_changed_count(), 0)
+        self.assertTrue(loader.has_error())
 
     def test_load_new_users_with_hrp(self):
         loader = GwsBridgeLoader(BridgeWorker(),
@@ -70,8 +72,10 @@ class TestGwsBridgeLoader(TransactionTestCase):
         user.save()
         loader = GwsBridgeLoader(BridgeWorker())
         loader.load()
+        self.assertRaises(UwBridgeUser.DoesNotExist,
+                          get_user_by_regid,
+                          "0136CCB8F66711D5BE060004AC494FFE")
         self.assertEqual(loader.get_regid_changed_count(), 1)
-        self.assertEqual(loader.get_loaded_count(), 2)
 
     def test_restore_user(self):
         user = UwBridgeUser(netid='javerage',
