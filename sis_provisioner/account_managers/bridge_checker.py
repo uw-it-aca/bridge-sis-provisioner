@@ -47,16 +47,13 @@ class BridgeChecker(UserUpdater):
             uw_bri_users = get_users_from_db(bridge_user.bridge_id,
                                              uwnetid,
                                              uwregid)
+            # it's possible uw_bri_users contains a user whose
+            # regid and netid do not match with those of person,
+            # this is handled in the db_bridge.
             in_db = len(uw_bri_users) > 0
 
             if person is not None and validation_status >= NO_CHANGE:
-                logger.info("%s Bridge user %s in local DB",
-                            "Update" if in_db else "Create", bridge_user)
                 self.take_action(person, bridge_user, in_db)
-
-                # it's possible uw_bri_users contains a user whose
-                # regid and netid not match with that of person,
-                # the db_updator will take car that.
                 continue
 
             for user in uw_bri_users:
@@ -91,7 +88,7 @@ class BridgeChecker(UserUpdater):
            not in_db and not uw_bridge_user.is_new():
             self.add_error(
                 "%s Bridge user %s ==> error state in DB %s" %
-                (("update" if in_db else "create"),
+                (("Update" if in_db else "Create"),
                  bridge_user, uw_bridge_user))
             return
 
