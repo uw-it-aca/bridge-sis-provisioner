@@ -64,8 +64,7 @@ class UserUpdater(GwsBridgeLoader):
                                  uw_bri_user)
                 uw_bri_user.save_terminate_date(graceful=True)
 
-        elif validation_status == DISALLOWED or\
-             validation_status == INVALID:
+        elif validation_status <= DISALLOWED:
             # rare case
             self.logger.info(
                 "Not a personal netid, worker.delete %s" % uw_bri_user)
