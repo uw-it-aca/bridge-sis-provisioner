@@ -48,9 +48,6 @@ class BridgeChecker(UserUpdater):
                     "Validate user %s ==> %s" % (bridge_user, ex))
                 continue
 
-            if validation_status == INVALID:
-                continue
-
             uw_bri_users = get_users_from_db(bridge_user.bridge_id,
                                              uwnetid,
                                              uwregid)

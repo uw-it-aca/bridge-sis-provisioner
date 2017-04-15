@@ -42,8 +42,6 @@ class UserUpdater(GwsBridgeLoader):
                 self.worker.append_error(
                     "Validate user %s: %s" % (uw_bri_user, ex))
                 continue
-            if validation_status == INVALID:
-                continue
 
             if person is not None and validation_status >= NO_CHANGE:
                 self.take_action(person)
@@ -66,7 +64,7 @@ class UserUpdater(GwsBridgeLoader):
                                  uw_bri_user)
                 uw_bri_user.save_terminate_date(graceful=True)
 
-        elif validation_status == DISALLOWED:
+        elif validation_status <= DISALLOWED:
             # rare case
             self.logger.info(
                 "Not a personal netid, worker.delete %s" % uw_bri_user)
