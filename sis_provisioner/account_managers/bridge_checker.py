@@ -13,7 +13,7 @@ from sis_provisioner.dao.bridge import get_regid_from_bridge_user
 from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import get_validated_user,\
-    fetch_users_from_bridge, INVALID, NO_CHANGE
+    fetch_users_from_bridge, INVALID, VALID
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 
 
@@ -52,7 +52,9 @@ class BridgeChecker(UserUpdater):
             # this is handled in the db_bridge.
             in_db = len(uw_bri_users) > 0
 
-            if person is not None and validation_status >= NO_CHANGE:
+            if person is not None and validation_status == VALID:
+                logger.info("Bridge user %s matched person (%s, %s)",
+                            bridge_user, person.uwnetid, person.uwregid)
                 self.take_action(person, bridge_user, in_db)
                 continue
 
@@ -101,31 +103,31 @@ class BridgeChecker(UserUpdater):
     def update_bridge(self, bridge_user, uw_bridge_user):
         uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
 
-        if self.changed_attributes(bridge_user, uw_bridge_user):
-            self.logger.info("worker.update %s" % uw_bridge_user)
+        if self.has_updates(bridge_user, uw_bridge_user):
+            self.logger.info("worker.update Bridge user %s with %s",
+                             bridge_user, uw_bridge_user)
             self.worker.update_user(uw_bridge_user)
         else:
             self.logger.info(
-                "Update Bridge user %s with %s ==> No change, Skip!",
+                "Verified Bridge user %s with %s ==> No change!",
                 bridge_user, uw_bridge_user)
+            uw_bridge_user.save_verified()
 
-    def changed_attributes(self, bridge_user, uw_bridge_user):
-        if uw_bridge_user.netid_changed():
+    def has_updates(self, bridge_user, uw_bridge_user):
+        if not uw_bridge_user.no_action():
             return True
 
         if bridge_user.netid != uw_bridge_user.netid:
+            self.logger.info("Bridge %s == changed netid ==> %s",
+                             bridge_user, uw_bridge_user)
             uw_bridge_user.set_prev_netid(bridge_user.netid)
-            return True
-
-        if uw_bridge_user.regid_changed():
             return True
 
         regid = get_regid_from_bridge_user(bridge_user)
         if regid != uw_bridge_user.regid:
+            self.logger.info("Bridge %s == changed regid ==> %s",
+                             bridge_user, uw_bridge_user)
             uw_bridge_user.set_action_regid_changed()
-            return True
-
-        if uw_bridge_user.is_update():
             return True
 
         # current attributes 12/10/2016.

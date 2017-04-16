@@ -10,7 +10,7 @@ from restclients.exceptions import DataFailureException
 from sis_provisioner.dao.user import save_user
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import fetch_users_from_db,\
-    get_validated_user, LEFT_UW, DISALLOWED, INVALID, NO_CHANGE
+    get_validated_user, LEFT_UW, DISALLOWED, INVALID, VALID
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 
@@ -39,7 +39,7 @@ class UserUpdater(GwsBridgeLoader):
                     "Validate user %s ==> %s" % (uw_bri_user, ex))
                 continue
 
-            if person is not None and validation_status >= NO_CHANGE:
+            if person is not None and validation_status == VALID:
                 self.take_action(person)
             else:
                 self.terminate(uw_bri_user, validation_status)
