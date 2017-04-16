@@ -190,7 +190,7 @@ class UwBridgeUser(models.Model):
         return self.has_prev_netid()
 
     def no_action(self):
-        return self.action_priority == ACTION_NONE
+        return self.action_priority == ACTION_NONE and not self.netid_changed()
 
     def regid_changed(self):
         return self.action_priority == ACTION_CHANGE_REGID

@@ -24,15 +24,15 @@ class Reloader(UserUpdater):
                 logger.info("worker.restore %s" % uw_bridge_user)
                 self.worker.restore_user(uw_bridge_user)
 
-            elif uw_bridge_user.passed_terminate_date():
-
-                if not uw_bridge_user.disabled:
-                    logger.info("worker.delete %s" % uw_bridge_user)
-                    self.worker.delete_user(uw_bridge_user)
-
             elif uw_bridge_user.is_new():
                 self.logger.info("worker.add_new %s", uw_bridge_user)
                 self.worker.add_new_user(uw_bridge_user)
+
+            elif (uw_bridge_user.no_action() and
+                  uw_bridge_user.passed_terminate_date()):
+                if not uw_bridge_user.disabled:
+                    logger.info("worker.delete %s" % uw_bridge_user)
+                    self.worker.delete_user(uw_bridge_user)
 
             else:
                 self.logger.info("worker.update %s", uw_bridge_user)
