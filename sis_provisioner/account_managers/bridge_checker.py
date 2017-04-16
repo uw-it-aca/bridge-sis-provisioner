@@ -104,6 +104,10 @@ class BridgeChecker(UserUpdater):
         if self.changed_attributes(bridge_user, uw_bridge_user):
             self.logger.info("worker.update %s" % uw_bridge_user)
             self.worker.update_user(uw_bridge_user)
+        else:
+            self.logger.info(
+                "Update Bridge user %s with %s ==> No change, Skip!",
+                bridge_user, uw_bridge_user)
 
     def changed_attributes(self, bridge_user, uw_bridge_user):
         if uw_bridge_user.netid_changed():

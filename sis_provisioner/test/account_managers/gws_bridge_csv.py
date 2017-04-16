@@ -40,15 +40,6 @@ class TestGwsBridgeCsvLoader(TransactionTestCase):
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_regid_changed_count(), 0)
 
-    def test_error_case(self):
-        loader = GwsBridgeLoader(CsvWorker())
-        loader.apply_change_to_bridge(None)
-        self.assertEqual(loader.get_total_count(), 0)
-        self.assertEqual(loader.get_new_user_count(), 0)
-        self.assertEqual(loader.get_loaded_count(), 0)
-        self.assertEqual(loader.get_netid_changed_count(), 0)
-        self.assertEqual(loader.get_regid_changed_count(), 0)
-
     def test_netid_change_user(self):
         user = UwBridgeUser(netid='changed',
                             bridge_id=195,

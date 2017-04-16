@@ -42,8 +42,13 @@ class TestGwsBridgeLoader(TransactionTestCase):
 
     def test_error_case(self):
         loader = GwsBridgeLoader(BridgeWorker())
-        loader.apply_change_to_bridge(None)
-        self.assertEqual(loader.get_total_count(), 0)
+        user = UwBridgeUser(netid='whatever',
+                            prev_netid='unknown',
+                            regid="136CCB8F66711D5BE060004AC494FFE",
+                            last_visited_at=get_now(),
+                            display_name="James Student",
+                            email="changed@uw.edu")
+        loader.apply_change_to_bridge(user)
         self.assertEqual(loader.get_new_user_count(), 0)
         self.assertEqual(loader.get_loaded_count(), 0)
         self.assertEqual(loader.get_netid_changed_count(), 0)
@@ -61,7 +66,6 @@ class TestGwsBridgeLoader(TransactionTestCase):
         user.save()
         loader.load()
         self.assertEqual(loader.get_netid_changed_count(), 1)
-        self.assertEqual(loader.get_loaded_count(), 2)
 
     def test_regid_change_user(self):
         user = UwBridgeUser(netid='javerage',
@@ -91,7 +95,6 @@ class TestGwsBridgeLoader(TransactionTestCase):
         loader = GwsBridgeLoader(BridgeWorker())
         loader.load()
         self.assertEqual(loader.get_restored_count(), 1)
-        self.assertEqual(loader.get_loaded_count(), 2)
 
     def test_merge_user_accounts(self):
         loader = GwsBridgeLoader(BridgeWorker())
