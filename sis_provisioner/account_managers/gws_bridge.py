@@ -57,6 +57,12 @@ class GwsBridgeLoader(Loader):
             self.worker.append_error("Save user %s ==> %s" % (uwnetid, ex))
             return
 
+        if uw_bridge_user is None:
+            self.add_error(
+                "Save user (%s, %s) in DB ==> return None" %
+                (person.uwnetid, person.uwregid))
+            return
+
         if del_user is not None:
             self.merge_user_accounts(del_user, uw_bridge_user)
 
@@ -76,9 +82,6 @@ class GwsBridgeLoader(Loader):
         """
         @param: uw_bridge_user a valid UwBridgeUser object to take action upon
         """
-        if uw_bridge_user is None or uw_bridge_user.no_action():
-            return
-
         if uw_bridge_user.is_new():
             self.logger.info("worker.add_new %s", uw_bridge_user)
             self.worker.add_new_user(uw_bridge_user)
