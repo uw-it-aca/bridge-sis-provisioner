@@ -1,13 +1,14 @@
 import logging
 from datetime import timedelta
 from django.test import TransactionTestCase
+from sis_provisioner.dao.user import get_user_by_netid, _filter_by_ids
 from sis_provisioner.models import UwBridgeUser, get_now, ACTION_RESTORE,\
     ACTION_CHANGE_REGID, ACTION_UPDATE
 from sis_provisioner.dao.user import get_user_by_regid
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
-    fdao_bridge_override, fdao_hrp_override
+    fdao_bridge_override, fdao_hrp_override, mock_uw_bridge_user
 
 
 logger = logging.getLogger(__name__)
@@ -93,22 +94,26 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertEqual(loader.get_loaded_count(), 2)
 
     def test_merge_user_accounts(self):
-        del_user = UwBridgeUser(netid='changed',
-                                bridge_id=195,
-                                regid="9136CCB8F66711D5BE060004AC494FFE",
-                                action_priority=ACTION_UPDATE,
-                                last_visited_at=get_now(),
-                                first_name="Changed",
-                                last_name="Netid")
-        user = UwBridgeUser(netid='javerage',
-                            bridge_id=195,
-                            prev_netid='changed',
-                            regid="9136CCB8F66711D5BE060004AC494FFE",
-                            action_priority=ACTION_UPDATE,
-                            last_visited_at=get_now(),
-                            first_name="Changed",
-                            last_name="Netid")
         loader = GwsBridgeLoader(BridgeWorker())
-        loader.merge_user_accounts(del_user, user)
-        self.assertEqual(loader.get_deleted_count(), 0)
-        self.assertTrue(loader.has_error())
+        user, person = mock_uw_bridge_user('javerage')
+        user.regid = "0136CCB8F66711D5BE060004AC494FFE"
+        user.save()
+
+        user1, person = mock_uw_bridge_user('javerage')
+        user1.netid = 'changed'
+        user1.save()
+
+        self.assertEqual(
+            len(_filter_by_ids('javerage',
+                               "9136CCB8F66711D5BE060004AC494FFE")),
+            2)
+        loader = GwsBridgeLoader(BridgeWorker())
+        loader.load()
+        self.assertEqual(
+            len(_filter_by_ids('javerage',
+                               "9136CCB8F66711D5BE060004AC494FFE")),
+            1)
+        self.assertRaises(UwBridgeUser.DoesNotExist,
+                          get_user_by_netid,
+                          'changed')
+        self.assertEqual(loader.get_loaded_count(), 2)

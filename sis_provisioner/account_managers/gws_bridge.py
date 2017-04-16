@@ -68,8 +68,8 @@ class GwsBridgeLoader(Loader):
     def merge_user_accounts(self, del_user, uw_bridge_user):
         # TO-DO:
         # merge learning history from del_user to uw_bridge_user
-        # delete del_user
-        self.logger.info("Delete %s after merge learning history", del_user)
+        # then delete del_user
+        self.logger.info("Delete %s if no learning history", del_user)
         self.worker.delete_user(del_user, is_merge=True)
 
     def apply_change_to_bridge(self, uw_bridge_user):
