@@ -1,6 +1,7 @@
 import logging
 from django.test import TransactionTestCase
-from sis_provisioner.models import UwBridgeUser, get_now
+from sis_provisioner.models import UwBridgeUser, get_now,\
+    ACTION_NONE, ACTION_UPDATE
 from sis_provisioner.dao.user import get_total_users, get_users_from_db,\
     get_user_by_netid
 from sis_provisioner.account_managers import fetch_users_from_bridge
@@ -29,41 +30,56 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(get_regid_from_bridge_user(bridge_users[1]),
                          '10000000000000000000000000000001')
 
-    def test_changed_attributes(self):
+    def test_has_updates(self):
         uw_bri_user1, person = mock_uw_bridge_user('javerage')
+        uw_bri_user1.action_priority = ACTION_NONE
         buser1 = mock_bridge_user(
-            195, uw_bri_user1.netid, uw_bri_user1.regid,
-            uw_bri_user1.get_email(), uw_bri_user1.get_display_name())
-        uw_bri_user1.netid = 'changed'
-        uw_bri_user1.email = 'changed@washington.edu'
+            195, 'changed', uw_bri_user1.regid,
+            'changed@washington.edu', uw_bri_user1.get_display_name())
+
         loader = BridgeChecker(BridgeWorker())
-        self.assertTrue(loader.changed_attributes(buser1, uw_bri_user1))
+        self.assertTrue(loader.has_updates(buser1, uw_bri_user1))
         self.assertTrue(uw_bri_user1.netid_changed())
         self.assertFalse(uw_bri_user1.regid_changed())
-        self.assertTrue(loader.changed_attributes(None, uw_bri_user1))
-
-        uw_bri_user1.action_priority = 0
 
         uw_bri_user1, person = mock_uw_bridge_user('javerage')
-        uw_bri_user1.last_name = 'Changed'
-        self.assertTrue(loader.changed_attributes(buser1, uw_bri_user1))
+        uw_bri_user1.action_priority = ACTION_NONE
+        buser1 = mock_bridge_user(
+            195, uw_bri_user1.netid, uw_bri_user1.regid,
+            'changed@washington.edu', uw_bri_user1.get_display_name())
+        self.assertTrue(loader.has_updates(buser1, uw_bri_user1))
+        self.assertFalse(uw_bri_user1.netid_changed())
+        self.assertFalse(uw_bri_user1.regid_changed())
         self.assertTrue(uw_bri_user1.is_update())
-        self.assertTrue(loader.changed_attributes(buser1, uw_bri_user1))
 
+        uw_bri_user1, person = mock_uw_bridge_user('javerage')
+        uw_bri_user1.action_priority = ACTION_NONE
         buser1 = mock_bridge_user(
             195, uw_bri_user1.netid,
-            '9136CCB8F66711D5BE060004AC494FFF',
+            '0136CCB8F66711D5BE060004AC494FFF',
             uw_bri_user1.get_email(),
             uw_bri_user1.get_display_name())
-        self.assertTrue(loader.changed_attributes(buser1, uw_bri_user1))
+        self.assertTrue(loader.has_updates(buser1, uw_bri_user1))
         self.assertFalse(uw_bri_user1.netid_changed())
         self.assertTrue(uw_bri_user1.regid_changed())
+
+        uw_bri_user1, person = mock_uw_bridge_user('javerage')
+        uw_bri_user1.action_priority = ACTION_NONE
         buser1 = mock_bridge_user(
             195, uw_bri_user1.netid,
             uw_bri_user1.regid,
             uw_bri_user1.get_email(),
             uw_bri_user1.get_display_name())
-        self.assertTrue(loader.changed_attributes(buser1, uw_bri_user1))
+        self.assertFalse(loader.has_updates(buser1, uw_bri_user1))
+
+        uw_bri_user1, person = mock_uw_bridge_user('javerage')
+        uw_bri_user1.action_priority = ACTION_UPDATE
+        buser1 = mock_bridge_user(
+            195, uw_bri_user1.netid,
+            uw_bri_user1.regid,
+            uw_bri_user1.get_email(),
+            uw_bri_user1.get_display_name())
+        self.assertTrue(loader.has_updates(buser1, uw_bri_user1))
 
     def test_update_attribute(self):
         uw_bri_user1, person = mock_uw_bridge_user('javerage')

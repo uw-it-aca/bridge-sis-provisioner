@@ -9,11 +9,10 @@ from sis_provisioner.dao.user import get_all_users
 from sis_provisioner.util.log import log_exception
 
 
-INVALID = -3
-DISALLOWED = -2  # not personal netid
-LEFT_UW = -1
-NO_CHANGE = 0  # no id changes
-CHANGED = 1
+INVALID = -2
+DISALLOWED = -1  # not personal netid
+LEFT_UW = 0
+VALID = 1
 
 
 def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
@@ -36,13 +35,7 @@ def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
                 if _user_left_uw(users_in_gws, uwnetid):
                     logger.info("validate '%s' has left uw!", uwnetid)
                     return None, LEFT_UW
-                return person, NO_CHANGE
-
-        logger.info("validate (%s, %s) changed netid/regid to (%s, %s)",
-                    uwnetid, uwregid,
-                    person.uwnetid, person.uwregid)
-        return person, CHANGED
-
+        return person, VALID
     except InvalidNetID:
         logger.error("validate_by_netid: '%s' invalid!",
                      uwnetid)
