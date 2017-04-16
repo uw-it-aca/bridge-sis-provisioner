@@ -118,11 +118,15 @@ class BridgeChecker(UserUpdater):
             return True
 
         if bridge_user.netid != uw_bridge_user.netid:
+            self.logger.info("Bridge %s == changed netid ==> %s",
+                             bridge_user, uw_bridge_user)
             uw_bridge_user.set_prev_netid(bridge_user.netid)
             return True
 
         regid = get_regid_from_bridge_user(bridge_user)
         if regid != uw_bridge_user.regid:
+            self.logger.info("Bridge %s == changed regid ==> %s",
+                             bridge_user, uw_bridge_user)
             uw_bridge_user.set_action_regid_changed()
             return True
 
