@@ -47,33 +47,24 @@ class BridgeChecker(UserUpdater):
             uw_bri_users = get_users_from_db(bridge_user.bridge_id,
                                              uwnetid,
                                              uwregid)
+            # it's possible uw_bri_users contains a user whose
+            # regid and netid do not match with those of person,
+            # this is handled in the db_bridge.
             in_db = len(uw_bri_users) > 0
-            for user in uw_bri_users:
-                if person.uwregid != user.regid and\
-                   person.uwnetid != user.netid:
-                    self.add_error(
-                        "Bridge %s not match local record %s" %
-                        (bridge_user, user))
 
             if person is not None and validation_status >= NO_CHANGE:
-                logger.info("%s Bridge user %s in local DB",
-                            "Update" if in_db else "Create", bridge_user)
                 self.take_action(person, bridge_user, in_db)
                 continue
 
-            if not in_db:
-                # not in local DB (created manually)
-                self.add_error("Unknown Bridge user: %s" % bridge_user)
-                continue
-
             for user in uw_bri_users:
-                if bridge_user.bridge_id == user.bridge_id and\
-                   uwregid == user.regid and\
+                if uwregid == user.regid and\
                    uwnetid == user.netid:
+                    # only those with local records can be terminated
+                    user.set_bridge_id(bridge_user.bridge_id)
                     self.terminate(user, validation_status)
                 else:
                     self.add_error(
-                        "Bridge %s not match local record %s" %
+                        "Bridge user %s not match local record %s" %
                         (bridge_user, user))
 
     def take_action(self, person, bridge_user, in_db=False):
@@ -92,13 +83,10 @@ class BridgeChecker(UserUpdater):
                 "Save user in DB %s ==> %s" % (bridge_user, ex))
             return
 
-        if uw_bridge_user is None or\
-           in_db and uw_bridge_user.is_new() or\
-           not in_db and not uw_bridge_user.is_new():
+        if uw_bridge_user is None:
             self.add_error(
-                "%s Bridge user %s ==> error state in DB %s" %
-                (("update" if in_db else "create"),
-                 bridge_user, uw_bridge_user))
+                "%s Bridge user %s in DB ==> return None" %
+                (("Update" if in_db else "Create"), bridge_user))
             return
 
         if uw_bridge_user.is_new():

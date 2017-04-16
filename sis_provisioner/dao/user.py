@@ -115,8 +115,9 @@ def save_user(person, include_hrp=True):
             user_in_db = uw_bri_users[0]
     else:
         # two existing accounts
-        logger.info("%s has two accounts: %s, %s" %
-                    (person.uwnetid, uw_bri_users[0], uw_bri_users[1]))
+        logger.info("(%s, %s) has two accounts: %s, %s" %
+                    (person.uwnetid, person.uwregid,
+                     uw_bri_users[0], uw_bri_users[1]))
         old_user = _get_netid_changed_user(uw_bri_users, person)
 
         if _are_all_disabled(uw_bri_users):
