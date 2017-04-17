@@ -5,7 +5,8 @@ from sis_provisioner.dao.bridge import _get_bridge_user_to_add,\
     add_bridge_user, _get_bridge_user_to_upd, change_uwnetid,\
     delete_bridge_user, get_bridge_user, update_bridge_user,\
     get_bridge_user_object, get_all_bridge_users, restore_bridge_user,\
-    get_regid_from_bridge_user, _no_change, _custom_field_no_change
+    get_regid_from_bridge_user, _no_change, _custom_field_no_change,\
+    is_active_user_exist
 from sis_provisioner.test import fdao_pws_override, fdao_bridge_override,\
     mock_uw_bridge_user
 
@@ -276,3 +277,11 @@ class TestBridgeDao(TransactionTestCase):
                             last_visited_at=get_now(),
                             first_name="James",
                             last_name="Student")
+    def test_is_active_user_exist(self):
+        exists, user = is_active_user_exist('javerage')
+        self.assertTrue(exists)
+        self.assertEqual(user.bridge_id, 195)
+
+        exists, user2 = is_active_user_exist('unknown')
+        self.assertFalse(exists)
+        self.assertIsNone(user2)
