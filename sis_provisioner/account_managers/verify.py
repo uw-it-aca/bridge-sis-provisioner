@@ -29,9 +29,9 @@ def set_bridge_ids():
                     set_bridge_id_total = set_bridge_id_total + 1
                 else:
                     if bridge_user.bridge_id != uw_bri_user.bridge_id:
-                        logger.info("Update BridgeID on local %s by %s",
-                                    bridge_user, uw_bri_user)
                         uw_bri_user.set_bridge_id(bridge_user.bridge_id)
+                        logger.info("Update BridgeID on local %s by %s",
+                                    uw_bri_user, bridge_user)
                         set_bridge_id_total = set_bridge_id_total + 1
         except DataFailureException as ex:
             logger.error("GET %s ==> %s" % (uw_bri_user, ex))
