@@ -277,6 +277,7 @@ class TestBridgeDao(TransactionTestCase):
                             last_visited_at=get_now(),
                             first_name="James",
                             last_name="Student")
+
     def test_is_active_user_exist(self):
         exists, user = is_active_user_exist('javerage')
         self.assertTrue(exists)
