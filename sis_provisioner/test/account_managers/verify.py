@@ -2,6 +2,7 @@ from django.conf import settings
 from django.test import TransactionTestCase
 from datetime import timedelta
 from sis_provisioner.test import fdao_bridge_override
+from sis_provisioner.dao.user import get_user_by_netid
 from sis_provisioner.models import UwBridgeUser, get_now
 from sis_provisioner.account_managers.verify import set_bridge_ids
 
@@ -28,7 +29,7 @@ class TestUserVerifier(TransactionTestCase):
 
         UwBridgeUser(netid='staff',
                      regid="10000000000000000000000000000001",
-                     bridge_id=196,
+                     bridge_id=197,
                      last_visited_at=get_now(),
                      email='staff@uw.edu',
                      first_name='Staff',
@@ -36,10 +37,19 @@ class TestUserVerifier(TransactionTestCase):
                      action_priority=1).save()
 
         UwBridgeUser(netid='toremove',
-                     regid='...',
+                     regid='10000000000000000000000000000000',
                      last_visited_at=get_now(),
-                     email='leftuw@uw.edu',
+                     email='toremove@uw.edu',
                      first_name='Not In',
                      last_name='Bridge').save()
 
-        self.assertEqual(set_bridge_ids(), 2)
+        self.assertEqual(set_bridge_ids(), 3)
+
+        user = get_user_by_netid('javerage')
+        self.assertEqual(user.bridge_id, 195)
+
+        user1 = get_user_by_netid('leftuw')
+        self.assertEqual(user1.bridge_id, 200)
+
+        user2 = get_user_by_netid('staff')
+        self.assertEqual(user2.bridge_id, 196)

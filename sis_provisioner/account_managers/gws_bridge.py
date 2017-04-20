@@ -7,10 +7,12 @@ accounts via the given worker.
 import logging
 import traceback
 from restclients.exceptions import DataFailureException
+from restclients.models.bridge import BridgeUser
+from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.account_managers import get_validated_user
 from sis_provisioner.account_managers.loader import Loader
 from sis_provisioner.util.log import log_exception
-from sis_provisioner.dao.bridge import delete_bridge_user
+from sis_provisioner.dao.bridge import is_active_user_exist
 from sis_provisioner.dao.user import save_user
 
 
@@ -64,6 +66,7 @@ class GwsBridgeLoader(Loader):
             return
 
         if del_user is not None:
+            # deleted from local DB as result of a merge
             self.merge_user_accounts(del_user, uw_bridge_user)
 
         self.apply_change_to_bridge(uw_bridge_user)
@@ -72,11 +75,35 @@ class GwsBridgeLoader(Loader):
             self.emp_app_totals.append(uw_bridge_user.get_total_emp_apps())
 
     def merge_user_accounts(self, del_user, uw_bridge_user):
-        # TO-DO:
-        # merge learning history from del_user to uw_bridge_user
-        # then delete del_user
-        self.logger.info("Delete %s if no learning history", del_user)
-        self.worker.delete_user(del_user, is_merge=True)
+        """
+        :param del_user: user to be terminated in Bridge
+        :param uw_bridge_user: merge to if del_user has learning history,
+        """
+        exists2, kp_user = is_active_user_exist(uw_bridge_user.netid)
+        if not exists2 or kp_user is None:
+            self.logger.error("Merge %s to %s, #2 not exists in Bridge, skip!",
+                              del_user, uw_bridge_user)
+            return
+        uw_bridge_user.set_bridge_id(kp_user.bridge_id)
+
+        if isinstance(del_user, UwBridgeUser):
+            exists1, user = is_active_user_exist(del_user.netid)
+            if not exists1 or user is None:
+                self.logger.error("Merge %s to %s, #1 not exists in Bridge",
+                                  del_user, uw_bridge_user)
+                return
+
+        if isinstance(del_user, BridgeUser):
+            user = del_user
+
+        if user.bridge_id != kp_user.bridge_id:
+            # TO-DO:
+            # merge learning history from user to kp_user
+            self.logger.info(
+                "Exist 2 active Bridge users: 1. %s, 2. %s, delete #1",
+                user, kp_user)
+            self.logger.info("Delete %s if no learning history", del_user)
+            self.worker.delete_user(del_user, is_merge=True)
 
     def apply_change_to_bridge(self, uw_bridge_user):
         """

@@ -9,7 +9,8 @@ import logging
 import traceback
 from restclients.exceptions import DataFailureException
 from sis_provisioner.dao.user import get_users_from_db, save_user
-from sis_provisioner.dao.bridge import get_regid_from_bridge_user
+from sis_provisioner.dao.bridge import get_regid_from_bridge_user,\
+    is_active_user_exist
 from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import get_validated_user,\
@@ -91,30 +92,59 @@ class BridgeChecker(UserUpdater):
                 (("Update" if in_db else "Create"), bridge_user))
             return
 
-        if uw_bridge_user.is_new():
-            # created manually in Bridge, now added in DB
-            uw_bridge_user.set_no_action()
-
         if del_user is not None:
+            # deleted from local DB as result of a merge
             self.merge_user_accounts(del_user, uw_bridge_user)
+
+            if del_user.bridge_id == bridge_user.bridge_id or\
+               not del_user.has_bridge_id() and\
+               del_user.netid == bridge_user.netid:
+                self.logger.info("Bridge user %s ==match del_user %s",
+                                 bridge_user, del_user)
+                self.apply_change_to_bridge(uw_bridge_user)
+                return
 
         self.update_bridge(bridge_user, uw_bridge_user)
 
     def update_bridge(self, bridge_user, uw_bridge_user):
-        uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
+        if not self.accounts_match(bridge_user, uw_bridge_user):
+            return
 
+        # Check if multiple accounts with old and current uwnetids
+        # exist for the same user in Bridge
         if self.has_updates(bridge_user, uw_bridge_user):
             self.logger.info("worker.update Bridge user %s with %s",
                              bridge_user, uw_bridge_user)
-            self.worker.update_user(uw_bridge_user)
-        else:
-            self.logger.info(
-                "Verified Bridge user %s with %s ==> No change!",
-                bridge_user, uw_bridge_user)
-            uw_bridge_user.save_verified()
+            self.apply_change_to_bridge(uw_bridge_user)
+
+    def accounts_match(self, bridge_user, uw_bridge_user):
+        exists, buser = is_active_user_exist(uw_bridge_user.netid)
+        if exists and buser is not None:
+            uw_bridge_user.set_bridge_id(buser.bridge_id)
+
+            if bridge_user.bridge_id != buser.bridge_id:
+                # this user has another account in Bridge
+                self.logger.info("Merge Bridge %s to local %s",
+                                 bridge_user, uw_bridge_user)
+                self.merge_user_accounts(bridge_user, uw_bridge_user)
+                return False
+            return True
+
+        if not exists and buser is None:
+            # uw_bridge_user.netid not exist in Bridge
+            # bridge_user.netid must have changed
+            uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
+            return True
+
+        # exists another terminated account, unable to apply change now
+        self.logger.info("Bridge user % not match %s, check terminated!",
+                         bridge_user, uw_bridge_user)
+        return False
 
     def has_updates(self, bridge_user, uw_bridge_user):
-        if not uw_bridge_user.no_action():
+        if bridge_user.netid == uw_bridge_user.prev_netid:
+            self.logger.info("Bridge %s == netid changed == %s",
+                             bridge_user, uw_bridge_user)
             return True
 
         if bridge_user.netid != uw_bridge_user.netid:
@@ -125,9 +155,10 @@ class BridgeChecker(UserUpdater):
 
         regid = get_regid_from_bridge_user(bridge_user)
         if regid != uw_bridge_user.regid:
-            self.logger.info("Bridge %s == changed regid ==> %s",
+            self.logger.info("Bridge %s == regid changed == %s",
                              bridge_user, uw_bridge_user)
-            uw_bridge_user.set_action_regid_changed()
+            if not uw_bridge_user.regid_changed():
+                uw_bridge_user.set_action_regid_changed()
             return True
 
         # current attributes 12/10/2016.
@@ -135,4 +166,9 @@ class BridgeChecker(UserUpdater):
            bridge_user.email != uw_bridge_user.get_email():
             uw_bridge_user.set_action_update()
             return True
+
+        self.logger.info(
+            "Verified Bridge user %s with %s ==> No change!",
+            bridge_user, uw_bridge_user)
+        uw_bridge_user.set_no_action()
         return False

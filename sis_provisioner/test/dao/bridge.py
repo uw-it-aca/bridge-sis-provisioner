@@ -5,7 +5,8 @@ from sis_provisioner.dao.bridge import _get_bridge_user_to_add,\
     add_bridge_user, _get_bridge_user_to_upd, change_uwnetid,\
     delete_bridge_user, get_bridge_user, update_bridge_user,\
     get_bridge_user_object, get_all_bridge_users, restore_bridge_user,\
-    get_regid_from_bridge_user, _no_change, _custom_field_no_change
+    get_regid_from_bridge_user, _no_change, _custom_field_no_change,\
+    is_active_user_exist
 from sis_provisioner.test import fdao_pws_override, fdao_bridge_override,\
     mock_uw_bridge_user
 
@@ -16,23 +17,26 @@ class TestBridgeDao(TransactionTestCase):
 
     def test_get_all_bridge_users(self):
         busers = get_all_bridge_users()
-        self.assertEqual(len(busers), 6)
+        self.assertEqual(len(busers), 7)
         buser = busers[0]
-        self.assertEqual(buser.bridge_id, 195)
+        self.assertEqual(buser.bridge_id, 194)
         self.assertEqual(buser.netid, 'javerage')
         buser = busers[1]
+        self.assertEqual(buser.bridge_id, 195)
+        self.assertEqual(buser.netid, 'changed')
+        buser = busers[2]
         self.assertEqual(buser.bridge_id, 196)
         self.assertEqual(buser.netid, 'staff')
-        buser = busers[2]
+        buser = busers[3]
         self.assertEqual(buser.bridge_id, 197)
         self.assertEqual(buser.netid, 'seagrad')
-        buser = busers[3]
+        buser = busers[4]
         self.assertEqual(buser.bridge_id, 198)
         self.assertEqual(buser.netid, 'affiemp')
-        buser = busers[4]
+        buser = busers[5]
         self.assertEqual(buser.bridge_id, 199)
         self.assertEqual(buser.netid, 'unknown')
-        buser = busers[5]
+        buser = busers[6]
         self.assertEqual(buser.bridge_id, 200)
         self.assertEqual(buser.netid, 'leftuw')
 
@@ -100,6 +104,7 @@ class TestBridgeDao(TransactionTestCase):
         self.assertTrue(delete_bridge_user(uw_user, False))
 
         uw_user, person = mock_uw_bridge_user('javerage')
+        uw_user.bridge_id = 194
         self.assertTrue(delete_bridge_user(uw_user, False))
         self.assertFalse(delete_bridge_user(uw_user, True))
 
@@ -137,7 +142,7 @@ class TestBridgeDao(TransactionTestCase):
         self.assertEqual(buser.netid, 'javerage')
         self.assertEqual(buser.email, 'javerage@uw.edu')
         self.assertEqual(get_regid_from_bridge_user(buser),
-                         "0136CCB8F66711D5BE060004AC494FFE")
+                         "9136CCB8F66711D5BE060004AC494FFE")
 
     def test_get_bridge_user_object(self):
         uw_user, person = mock_uw_bridge_user('javerage')
@@ -158,7 +163,7 @@ class TestBridgeDao(TransactionTestCase):
 
     def test_get_bridge_user_to_upd(self):
         uw_user = UwBridgeUser(netid='javerage',
-                               regid="0136CCB8F66711D5BE060004AC494FFE",
+                               regid="9136CCB8F66711D5BE060004AC494FFE",
                                bridge_id=195,
                                last_visited_at=get_now(),
                                display_name="James Student",
@@ -276,3 +281,16 @@ class TestBridgeDao(TransactionTestCase):
                             last_visited_at=get_now(),
                             first_name="James",
                             last_name="Student")
+
+    def test_is_active_user_exist(self):
+        exists, user = is_active_user_exist('botgrad')
+        self.assertTrue(exists)
+        self.assertIsNone(user)
+
+        exists, user = is_active_user_exist('javerage')
+        self.assertTrue(exists)
+        self.assertEqual(user.bridge_id, 195)
+
+        exists, user2 = is_active_user_exist('unknown')
+        self.assertFalse(exists)
+        self.assertIsNone(user2)

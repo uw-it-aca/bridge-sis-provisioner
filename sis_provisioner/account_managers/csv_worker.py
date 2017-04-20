@@ -6,6 +6,9 @@ which can be imported on the Bridge UI.
 
 import logging
 import traceback
+from restclients.models.bridge import BridgeUser
+from sis_provisioner.models import UwBridgeUser
+from sis_provisioner.dao.bridge import get_regid_from_bridge_user
 from sis_provisioner.util.list_helper import get_item_counts_dict
 from sis_provisioner.account_managers.worker import Worker
 
@@ -24,43 +27,48 @@ class CsvWorker(Worker):
         self.users_to_del = []
         self.users_to_restore = []
 
-    def _load_user(self, uw_bri_user):
-        self.users_to_load.append(uw_bri_user)
+    def _load_user(self, bridge_user):
+        self.users_to_load.append(
+            self.convert_to_uw_beidge_user(bridge_user))
         logger.info(
-            "Add user %s to users csv file" % uw_bri_user)
+            "Add user %s to users csv file" % bridge_user)
 
-    def add_new_user(self, uw_bri_user):
+    def add_new_user(self, bridge_user):
         self.total_new_users_count += 1
-        self._load_user(uw_bri_user)
+        self._load_user(bridge_user)
 
     def delete_user(self, user_to_del, is_merge=False):
-        self.users_to_del.append(user_to_del)
+        self.users_to_del.append(
+            self.convert_to_uw_beidge_user(user_to_del))
         logger.info(
             "Add user %s to delete csv file" % user_to_del)
 
-    def restore_user(self, uw_bri_user):
-        self.users_to_restore.append(uw_bri_user)
+    def restore_user(self, bridge_user):
+        self.users_to_restore.append(
+            self.convert_to_uw_beidge_user(bridge_user))
         logger.info(
-            "Add user %s to restore csv file" % uw_bri_user)
+            "Add user %s to restore csv file" % bridge_user)
 
-    def update_user(self, uw_bri_user):
-        if uw_bri_user.netid_changed():
-            self.update_uid(uw_bri_user)
+    def update_user(self, bridge_user):
+        if bridge_user.netid_changed():
+            self.update_uid(bridge_user)
             return
-        if uw_bri_user.regid_changed():
-            self.update_regid(uw_bri_user)
+        if bridge_user.regid_changed():
+            self.update_regid(bridge_user)
             return
-        self._load_user(uw_bri_user)
+        self._load_user(bridge_user)
 
-    def update_uid(self, uw_bri_user):
-        self.users_changed_netid.append(uw_bri_user)
+    def update_uid(self, bridge_user):
+        self.users_changed_netid.append(
+            self.convert_to_uw_beidge_user(bridge_user))
         logger.info(
-            "Add user %s to changed_netid csv file" % uw_bri_user)
+            "Add user %s to changed_netid csv file" % bridge_user)
 
-    def update_regid(self, uw_bri_user):
-        self.users_changed_regid.append(uw_bri_user)
+    def update_regid(self, bridge_user):
+        self.users_changed_regid.append(
+            self.convert_to_uw_beidge_user(bridge_user))
         logger.info(
-            "Add user %s to changed_regid csv file" % uw_bri_user)
+            "Add user %s to changed_regid csv file" % bridge_user)
 
     def get_new_user_count(self):
         return self.total_new_users_count
@@ -110,3 +118,14 @@ class CsvWorker(Worker):
         return a list of UwBridgeUser objects
         """
         return self.users_to_restore
+
+    def convert_to_uw_beidge_user(self, user):
+        if isinstance(user, BridgeUser):
+            return UwBridgeUser(
+                bridge_id=user.bridge_id,
+                netid=user.netid,
+                display_name=user.full_name,
+                email=user.email,
+                regid=get_regid_from_bridge_user(user)
+            )
+        return user
