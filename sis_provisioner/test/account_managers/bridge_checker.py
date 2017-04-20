@@ -24,25 +24,46 @@ class TestBridgeUserChecker(TransactionTestCase):
     def test_fetch_users_from_bridge(self):
         bridge_users = fetch_users_from_bridge(logger)
         self.assertIsNotNone(bridge_users)
-        self.assertEqual(len(bridge_users), 6)
+        self.assertEqual(len(bridge_users), 7)
         self.assertEqual(get_regid_from_bridge_user(bridge_users[0]),
-                         '9136CCB8F66711D5BE060004AC494FFE')
+                         '0136CCB8F66711D5BE060004AC494FFE')
+        self.assertEqual(bridge_users[0].netid, 'javerage')
+        self.assertEqual(bridge_users[0].bridge_id, 194)
         self.assertEqual(get_regid_from_bridge_user(bridge_users[1]),
+                         '9136CCB8F66711D5BE060004AC494FFE')
+        self.assertEqual(bridge_users[1].netid, 'changed')
+        self.assertEqual(bridge_users[1].bridge_id, 195)
+        self.assertEqual(get_regid_from_bridge_user(bridge_users[2]),
                          '10000000000000000000000000000001')
 
     def test_has_updates(self):
         uw_bri_user1, person = mock_uw_bridge_user('javerage')
         uw_bri_user1.action_priority = ACTION_NONE
         buser1 = mock_bridge_user(
+            195,
+            uw_bri_user1.netid,
+            uw_bri_user1.regid,
+            uw_bri_user1.get_email(),
+            uw_bri_user1.get_display_name())
+        loader = BridgeChecker(BridgeWorker())
+
+        # bridge ids not match
+        uw_bri_user1.bridge_id = 194
+        self.assertFalse(loader.has_updates(buser1, uw_bri_user1))
+
+        # netid changed
+        uw_bri_user1.bridge_id = 195
+        uw_bri_user1.action_priority = ACTION_NONE
+        buser1 = mock_bridge_user(
             195, 'changed', uw_bri_user1.regid,
             'changed@washington.edu', uw_bri_user1.get_display_name())
-
-        loader = BridgeChecker(BridgeWorker())
         self.assertTrue(loader.has_updates(buser1, uw_bri_user1))
         self.assertTrue(uw_bri_user1.netid_changed())
         self.assertFalse(uw_bri_user1.regid_changed())
 
+        # attribute changed
         uw_bri_user1, person = mock_uw_bridge_user('javerage')
+        uw_bri_user1.bridge_id = 195
         uw_bri_user1.action_priority = ACTION_NONE
         buser1 = mock_bridge_user(
             195, uw_bri_user1.netid, uw_bri_user1.regid,
@@ -52,10 +73,13 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertFalse(uw_bri_user1.regid_changed())
         self.assertTrue(uw_bri_user1.is_update())
 
+        # regid changed
         uw_bri_user1, person = mock_uw_bridge_user('javerage')
+        uw_bri_user1.bridge_id = 195
         uw_bri_user1.action_priority = ACTION_NONE
         buser1 = mock_bridge_user(
-            195, uw_bri_user1.netid,
+            195,
+            uw_bri_user1.netid,
             '0136CCB8F66711D5BE060004AC494FFF',
             uw_bri_user1.get_email(),
             uw_bri_user1.get_display_name())
@@ -63,7 +87,9 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertFalse(uw_bri_user1.netid_changed())
         self.assertTrue(uw_bri_user1.regid_changed())
 
+        # no change
         uw_bri_user1, person = mock_uw_bridge_user('javerage')
+        uw_bri_user1.bridge_id = 195
         uw_bri_user1.action_priority = ACTION_NONE
         buser1 = mock_bridge_user(
             195, uw_bri_user1.netid,
@@ -71,15 +97,6 @@ class TestBridgeUserChecker(TransactionTestCase):
             uw_bri_user1.get_email(),
             uw_bri_user1.get_display_name())
         self.assertFalse(loader.has_updates(buser1, uw_bri_user1))
-
-        uw_bri_user1, person = mock_uw_bridge_user('javerage')
-        uw_bri_user1.action_priority = ACTION_UPDATE
-        buser1 = mock_bridge_user(
-            195, uw_bri_user1.netid,
-            uw_bri_user1.regid,
-            uw_bri_user1.get_email(),
-            uw_bri_user1.get_display_name())
-        self.assertTrue(loader.has_updates(buser1, uw_bri_user1))
 
     def test_update_attribute(self):
         uw_bri_user1, person = mock_uw_bridge_user('javerage')
@@ -89,7 +106,8 @@ class TestBridgeUserChecker(TransactionTestCase):
                                   uw_bri_user1.get_email(),
                                   uw_bri_user1.get_display_name())
         loader = BridgeChecker(BridgeWorker())
-        # no change
+
+        # save uw_bri_user1 in db
         loader.take_action(person, buser1)
         self.assertEqual(loader.get_loaded_count(), 0)
 
@@ -99,14 +117,39 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_loaded_count(), 0)
 
         # name changed
-        user = UwBridgeUser.objects.get(netid='javerage')
-        user.display_name = "Old Student"
-        user.save()
+        buser1.full_name = "Old Student"
         loader.take_action(person, buser1, in_db=True)
         self.assertEqual(loader.get_loaded_count(), 1)
 
+    def test_update_regid(self):
+        uw_bri_user1, person = mock_uw_bridge_user('javerage')
+        buser = mock_bridge_user(195,
+                                 uw_bri_user1.netid,
+                                 "0136CCB8F66711D5BE060004AC494FFE",
+                                 uw_bri_user1.regid,
+                                 uw_bri_user1.get_email(),
+                                 uw_bri_user1.get_display_name())
+        loader = BridgeChecker(BridgeWorker())
+        loader.take_action(person, buser)
+        self.assertEqual(loader.get_regid_changed_count(), 1)
+        self.assertEqual(loader.get_loaded_count(), 1)
+
+    def test_load_bridge_users_with_empty_db(self):
+        loader = BridgeChecker(BridgeWorker())
+        loader.load()
+        self.assertEqual(get_total_users(), 3)
+        self.assertEqual(loader.get_loaded_count(), 1)
+        users = UwBridgeUser.objects.all()
+        self.assertEqual(users[0].netid, "javerage")
+        self.assertEqual(users[0].bridge_id, 195)
+        self.assertEqual(users[1].netid, "staff")
+        self.assertEqual(users[1].bridge_id, 196)
+        self.assertEqual(users[2].netid, "affiemp")
+        self.assertEqual(users[2].bridge_id, 198)
+
     def test_update_netid(self):
         user = UwBridgeUser(netid='changed',
+                            bridge_id=195,
                             regid="9136CCB8F66711D5BE060004AC494FFE",
                             email="changed@uw.edu",
                             last_visited_at=get_now(),
@@ -116,19 +159,6 @@ class TestBridgeUserChecker(TransactionTestCase):
         loader = BridgeChecker(BridgeWorker())
         loader.load()
         self.assertEqual(loader.get_netid_changed_count(), 1)
-        self.assertEqual(loader.get_loaded_count(), 1)
-
-    def test_update_regid(self):
-        user = UwBridgeUser(netid='javerage',
-                            regid="0136CCB8F66711D5BE060004AC494FFE",
-                            email="changed@uw.edu",
-                            last_visited_at=get_now(),
-                            display_name="James Changed",
-                            last_name="Changed")
-        user.save()
-        loader = BridgeChecker(BridgeWorker())
-        loader.load()
-        self.assertEqual(loader.get_regid_changed_count(), 1)
         self.assertEqual(loader.get_loaded_count(), 1)
 
     def test_update_error(self):
@@ -141,18 +171,6 @@ class TestBridgeUserChecker(TransactionTestCase):
 
         self.assertTrue(loader.has_error())
         self.assertEqual(loader.get_loaded_count(), 0)
-
-    def test_load_from_bridge_to_db(self):
-        loader = BridgeChecker(BridgeWorker())
-        loader.load()
-        self.assertEqual(get_total_users(), 3)
-        users = UwBridgeUser.objects.all()
-        self.assertEqual(users[0].netid, "javerage")
-        self.assertEqual(users[0].bridge_id, 195)
-        self.assertEqual(users[1].netid, "staff")
-        self.assertEqual(users[1].bridge_id, 196)
-        self.assertEqual(users[2].netid, "affiemp")
-        self.assertEqual(users[2].bridge_id, 198)
 
     def test_load(self):
         user1, person = mock_uw_bridge_user('javerage')
@@ -177,6 +195,10 @@ class TestBridgeUserChecker(TransactionTestCase):
 
         self.assertEqual(get_total_users(), 5)
 
+        self.assertEqual(
+            len(get_users_from_db(
+                199, 'unknown', "10000000000000000000000000000000")), 0)
+
         self.assertEqual(len(get_users_from_db(
             198, 'affiemp', "10000000000000000000000000000011")), 1)
 
@@ -187,15 +209,11 @@ class TestBridgeUserChecker(TransactionTestCase):
                           get_user_by_netid,
                           'seagrad')
 
-        self.assertEqual(
-            len(get_users_from_db(
-                199, 'unknown', "10000000000000000000000000000000")), 0)
-
         leftuw = get_user_by_netid('leftuw')
         self.assertEqual(leftuw.bridge_id, 200)
         self.assertTrue(leftuw.has_terminate_date())
 
-        self.assertEqual(loader.get_total_count(), 6)
+        self.assertEqual(loader.get_total_count(), 7)
         self.assertEqual(loader.get_new_user_count(), 0)
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_regid_changed_count(), 0)

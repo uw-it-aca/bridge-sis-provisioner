@@ -17,8 +17,8 @@ class TestBridgeUserCsvChecker(TransactionTestCase):
     def test_update(self):
         loader = BridgeChecker(CsvWorker())
         loader.load()
-        self.assertEqual(loader.get_total_count(), 6)
+        self.assertEqual(loader.get_total_count(), 7)
         self.assertEqual(loader.get_new_user_count(), 0)
-        self.assertEqual(loader.get_netid_changed_count(), 0)
+        self.assertEqual(loader.get_netid_changed_count(), 1)
         self.assertEqual(loader.get_regid_changed_count(), 0)
         self.assertEqual(loader.get_loaded_count(), 2)

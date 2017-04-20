@@ -6,6 +6,7 @@ via the Bridge APIs.
 import logging
 import traceback
 from restclients.exceptions import DataFailureException
+from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.dao import is_using_file_dao
 from sis_provisioner.dao.bridge import add_bridge_user, change_uwnetid,\
     get_regid_from_bridge_user, delete_bridge_user, update_bridge_user,\
@@ -70,7 +71,8 @@ class BridgeWorker(Worker):
         try:
             if delete_bridge_user(user_to_del, is_merge):
                 logger.info("Deleted %s from Bridge" % user_to_del)
-                user_to_del.disable()
+                if isinstance(user_to_del, UwBridgeUser):
+                    user_to_del.disable()
                 logger.info("Disable user in DB %s", user_to_del)
                 self.total_deleted_count += 1
             else:
@@ -161,22 +163,22 @@ class BridgeWorker(Worker):
         except Exception as ex:
             self._handle_exception("update", uw_bridge_user, ex, traceback)
 
-    def _handle_exception(self, action, uw_bridge_user,
+    def _handle_exception(self, action, user,
                           ex, traceback):
-        if self._not_exist(uw_bridge_user, ex):
+        if isinstance(user, UwBridgeUser) and self._not_exist(user, ex):
             return
         log_exception(logger,
-                      "Failed %s: %s ==>" % (action, uw_bridge_user),
+                      "Failed %s: %s ==>" % (action, user),
                       traceback.format_exc())
         self.append_error("Failed to %s: %s ==> %s\n" %
-                          (action, uw_bridge_user.netid, ex))
+                          (action, user.netid, ex))
 
-    def _not_exist(self, uw_bridge_user, ex):
+    def _not_exist(self, user, ex):
         if isinstance(ex, DataFailureException) and\
            ex.status == 404:
             logger.info("Not exist in Bridge, delete from local DB %s" %
-                        uw_bridge_user)
-            uw_bridge_user.delete()
+                        user)
+            user.delete()
             return True
         return False
 

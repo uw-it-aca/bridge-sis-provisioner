@@ -22,7 +22,7 @@ def set_bridge_ids():
         try:
             total = total + 1
             active, bridge_user = is_active_user_exist(uw_bri_user.netid)
-            if active:
+            if active and bridge_user is not None:
                 if not uw_bri_user.has_bridge_id():
                     uw_bri_user.set_bridge_id(bridge_user.bridge_id)
                     logger.info("Set bridge id for %s" % uw_bri_user)

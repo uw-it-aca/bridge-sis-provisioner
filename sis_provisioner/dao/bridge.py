@@ -162,15 +162,19 @@ def get_bridge_user(user):
 
 def is_active_user_exist(uwnetid):
     """
-    fetch user by uid, return boolean and the BridgeUser object
+    fetch user by uid, return a boolean value and the BridgeUser object
     """
     try:
         ret_users = get_user(uwnetid)
-        if len(ret_users) == 1:
+        if len(ret_users) > 0:
             return True, ret_users[0]
-    except DataFailureException:
-        pass
-    return False, None
+
+        # exist a terminated account
+        return True, None
+    except DataFailureException as ex:
+        if ex.status == 404:
+            return False, None
+        raise
 
 
 def restore_bridge_user(uw_bridge_user):
