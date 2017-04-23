@@ -9,7 +9,7 @@ import traceback
 from restclients.exceptions import DataFailureException
 from restclients.models.bridge import BridgeUser
 from sis_provisioner.models import UwBridgeUser
-from sis_provisioner.account_managers import get_validated_user
+from sis_provisioner.account_managers import get_validated_user, VALID
 from sis_provisioner.account_managers.loader import Loader
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.dao.bridge import is_active_user_exist
@@ -30,7 +30,8 @@ class GwsBridgeLoader(Loader):
 
     def process_users(self):
         """
-        Validate the users and Update the corresponding records
+        Process potential learners in GWS, add new users or update
+        the exsiting users
         """
         for uwnetid in self.get_users_to_process():
             try:
@@ -40,8 +41,8 @@ class GwsBridgeLoader(Loader):
                 self.worker.append_error(
                     "Validate user %s ==> %s" % (uwnetid, ex))
                 continue
-
-            if person is not None:
+            # Ignore DISALLOWED, INVALID ones
+            if person is not None and validation_status >= VALID:
                 self.take_action(person)
 
     def take_action(self, person):
@@ -74,36 +75,39 @@ class GwsBridgeLoader(Loader):
         if self.include_hrp() and uw_bridge_user.is_employee:
             self.emp_app_totals.append(uw_bridge_user.get_total_emp_apps())
 
-    def merge_user_accounts(self, del_user, uw_bridge_user):
+    def merge_user_accounts(self, del_user, user_to_keep):
         """
         :param del_user: user to be terminated in Bridge
-        :param uw_bridge_user: merge to if del_user has learning history,
+        :param user_to_keep: accunt to be merged to
         """
-        exists2, kp_user = is_active_user_exist(uw_bridge_user.netid)
-        if not exists2 or kp_user is None:
-            self.logger.error("Merge %s to %s, #2 not exists in Bridge, skip!",
-                              del_user, uw_bridge_user)
-            return
-        uw_bridge_user.set_bridge_id(kp_user.bridge_id)
+        if type(user_to_keep) == BridgeUser:
+            kp_user = user_to_keep
+        else:   # user_to_keep is UwBridgeUser
+            exists2, kp_user = is_active_user_exist(user_to_keep.netid)
+            if not exists2 or kp_user is None:
+                self.logger.error("Merge %s to %s, #2 not in Bridge, skip!",
+                                  del_user, user_to_keep)
+                return
+            user_to_keep.set_bridge_id(kp_user.bridge_id)
 
-        if isinstance(del_user, UwBridgeUser):
+        if type(del_user) == BridgeUser:
+            user = del_user
+        else:   # type(del_user) == UwBridgeUser
             exists1, user = is_active_user_exist(del_user.netid)
             if not exists1 or user is None:
                 self.logger.error("Merge %s to %s, #1 not exists in Bridge",
-                                  del_user, uw_bridge_user)
+                                  del_user, user_to_keep)
                 return
-
-        if isinstance(del_user, BridgeUser):
-            user = del_user
-
         if user.bridge_id != kp_user.bridge_id:
-            # TO-DO:
-            # merge learning history from user to kp_user
-            self.logger.info(
-                "Exist 2 active Bridge users: 1. %s, 2. %s, delete #1",
-                user, kp_user)
-            self.logger.info("Delete %s if no learning history", del_user)
-            self.worker.delete_user(del_user, is_merge=True)
+            self.merge_users_in_bridge(user, kp_user)
+
+    def merge_users_in_bridge(self, user_to_del, user_to_keep):
+        self.logger.info(
+            "Merge Bridge users %s to %s, then delete the 1st.",
+            user_to_del, user_to_keep)
+        # TO add: merge learning history from user_to_del to user_to_keep
+        self.logger.info("Delete %s if no learning history", user_to_del)
+        self.worker.delete_user(user_to_del, is_merge=True)
 
     def apply_change_to_bridge(self, uw_bridge_user):
         """

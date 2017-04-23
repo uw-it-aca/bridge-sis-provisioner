@@ -24,14 +24,15 @@ def set_bridge_ids():
             active, bridge_user = is_active_user_exist(uw_bri_user.netid)
             if active and bridge_user is not None:
                 if not uw_bri_user.has_bridge_id():
+                    logger.info("Set bridge id for %s with %s",
+                                uw_bri_user, bridge_user)
                     uw_bri_user.set_bridge_id(bridge_user.bridge_id)
-                    logger.info("Set bridge id for %s" % uw_bri_user)
                     set_bridge_id_total = set_bridge_id_total + 1
                 else:
                     if bridge_user.bridge_id != uw_bri_user.bridge_id:
-                        uw_bri_user.set_bridge_id(bridge_user.bridge_id)
                         logger.info("Update BridgeID on local %s by %s",
                                     uw_bri_user, bridge_user)
+                        uw_bri_user.set_bridge_id(bridge_user.bridge_id)
                         set_bridge_id_total = set_bridge_id_total + 1
         except DataFailureException as ex:
             logger.error("GET %s ==> %s" % (uw_bri_user, ex))

@@ -9,18 +9,17 @@ from sis_provisioner.dao.user import get_all_users
 from sis_provisioner.util.log import log_exception
 
 
-INVALID = -2
-DISALLOWED = -1  # not personal netid
-LEFT_UW = 0
-VALID = 1
+INVALID = -2  # netid or regid itself is invalid
+DISALLOWED = -1  # not a personal netid or regid
+LEFT_UW = 0   # netid and regid are up-to-date and no longer with UW
+VALID = 1     # netid and regid are up-to-date (match with Person)
+CHANGED = 2   # netid or regid or both changed
 
 
 def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
     """
-    Validate an existing user in the local DB or Bridge.
-    If he/she is in one of the good groups and in pws.person,
+    Validate an existing user.
     return the corresponding Person object and a status
-
     raise DataFailureException if failed to access GWS or PWS
     """
     try:
@@ -29,13 +28,19 @@ def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
         else:
             person = get_person_by_regid(uwregid)
 
-        if person.uwnetid == uwnetid:
-            if uwregid is None or person.uwregid == uwregid:
+        # changed takes priority over left UW
+        if person.uwnetid != uwnetid:
+            return person, CHANGED
 
-                if _user_left_uw(users_in_gws, uwnetid):
-                    logger.info("validate '%s' has left uw!", uwnetid)
-                    return None, LEFT_UW
+        if uwregid is not None and person.uwregid != uwregid:
+            return person, CHANGED
+
+        if _user_left_uw(users_in_gws, uwnetid):
+            logger.info("validate '%s' has left uw!", uwnetid)
+            return person, LEFT_UW
+
         return person, VALID
+
     except InvalidNetID:
         logger.error("validate_by_netid: '%s' invalid!",
                      uwnetid)
