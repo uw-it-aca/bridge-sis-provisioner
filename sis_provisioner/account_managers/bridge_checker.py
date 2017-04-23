@@ -14,7 +14,7 @@ from sis_provisioner.dao.bridge import get_regid_from_bridge_user,\
 from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import get_validated_user,\
-    fetch_users_from_bridge, INVALID, VALID
+    fetch_users_from_bridge, INVALID, VALID, CHANGED
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 
 
@@ -45,24 +45,33 @@ class BridgeChecker(UserUpdater):
                     "Validate user %s ==> %s" % (bridge_user, ex))
                 continue
 
+            if validation_status == CHANGED:
+                exists2, kp_user = is_active_user_exist(person.uwnetid)
+                if exists2 and kp_user is not None and\
+                   bridge_user.bridge_id != kp_user.bridge_id:
+                    # There is another account in Bridge
+                    # match to the up-to-date netid, merge them!
+                    self.merge_user_accounts(bridge_user, kp_user)
+                    # The local record with bridge_user.netid
+                    # will be deleted by UserUpdater
+                    continue
+
+            # find the DB record(s) that match with the bridge_user
             uw_bri_users = get_users_from_db(bridge_user.bridge_id,
                                              uwnetid,
                                              uwregid)
-            # it's possible uw_bri_users contains a user whose
-            # regid and netid do not match with those of person,
-            # this is handled in the db_bridge.
             in_db = len(uw_bri_users) > 0
 
-            if person is not None and validation_status == VALID:
+            if person is not None and validation_status >= VALID:
                 logger.info("Bridge user %s matched person (%s, %s)",
                             bridge_user, person.uwnetid, person.uwregid)
                 self.take_action(person, bridge_user, in_db)
                 continue
 
             for user in uw_bri_users:
-                if uwregid == user.regid and\
+                if (uwregid is None or uwregid == user.regid) and\
                    uwnetid == user.netid:
-                    # only those with local records can be terminated
+                    # only the matched record can be terminated
                     user.set_bridge_id(bridge_user.bridge_id)
                     self.terminate(user, validation_status)
                 else:
@@ -94,37 +103,39 @@ class BridgeChecker(UserUpdater):
 
         if del_user is not None:
             # deleted from local DB as result of a merge
-            self.merge_user_accounts(del_user, uw_bridge_user)
-
-            if del_user.bridge_id == bridge_user.bridge_id or\
-               not del_user.has_bridge_id() and\
-               del_user.netid == bridge_user.netid:
-                self.logger.info("Bridge user %s ==match del_user %s",
-                                 bridge_user, del_user)
-                self.apply_change_to_bridge(uw_bridge_user)
-                return
+            if del_user.has_bridge_id() and\
+               del_user.bridge_id != bridge_user.bridge_id:
+                self.merge_user_accounts(del_user, uw_bridge_user)
+            else:
+                if del_user.netid == bridge_user.netid:
+                    self.logger.info("Bridge user %s match deleted user %s",
+                                     bridge_user, del_user)
+                    self.apply_change_to_bridge(uw_bridge_user)
+                    return
 
         self.update_bridge(bridge_user, uw_bridge_user)
 
     def update_bridge(self, bridge_user, uw_bridge_user):
         if not self.accounts_match(bridge_user, uw_bridge_user):
+            self.apply_change_to_bridge(uw_bridge_user)
             return
 
-        # Check if multiple accounts with old and current uwnetids
-        # exist for the same user in Bridge
         if self.has_updates(bridge_user, uw_bridge_user):
             self.logger.info("worker.update Bridge user %s with %s",
                              bridge_user, uw_bridge_user)
             self.apply_change_to_bridge(uw_bridge_user)
 
     def accounts_match(self, bridge_user, uw_bridge_user):
+        """
+        Check if the up-to-date account matches bridge_user
+        """
         exists, buser = is_active_user_exist(uw_bridge_user.netid)
         if exists and buser is not None:
             uw_bridge_user.set_bridge_id(buser.bridge_id)
 
             if bridge_user.bridge_id != buser.bridge_id:
                 # this user has another account in Bridge
-                self.logger.info("Merge Bridge %s to local %s",
+                self.logger.info("Merge Bridge user %s to %s in Bridge",
                                  bridge_user, uw_bridge_user)
                 self.merge_user_accounts(bridge_user, uw_bridge_user)
                 return False
@@ -137,7 +148,7 @@ class BridgeChecker(UserUpdater):
             return True
 
         # exists another terminated account, unable to apply change now
-        self.logger.info("Bridge user % not match %s, check terminated!",
+        self.logger.info("Bridge user % not match local %s, deleted #2?",
                          bridge_user, uw_bridge_user)
         return False
 
