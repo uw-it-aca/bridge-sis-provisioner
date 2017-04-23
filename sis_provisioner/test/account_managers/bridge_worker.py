@@ -119,6 +119,7 @@ class TestBridgeWorker(TransactionTestCase):
             pass
 
     def test_restore_user(self):
+        # normal case
         worker = BridgeWorker()
         uw_user, person = mock_uw_bridge_user('botgrad')
         uw_user.bridge_id = 203
@@ -130,27 +131,19 @@ class TestBridgeWorker(TransactionTestCase):
         user = UwBridgeUser.objects.get(netid='botgrad')
         self.assertFalse(user.disabled)
 
-        uw_user = UwBridgeUser(netid='changed',
+        # restored user netid and regid not match
+        uw_user = UwBridgeUser(netid='javerage',
+                               bridge_id=195,
                                regid="9136CCB8F66711D5BE060004AC494FFE",
                                last_visited_at=get_now(),
+                               disabled=True,
                                first_name="James",
                                last_name="Student",
                                email="changed@uw.edu")
-        uw_user.disabled = True
         uw_user.set_action_restore()
         worker.restore_user(uw_user)
         self.assertEqual(worker.get_restored_count(), 2)
 
-        user = UwBridgeUser.objects.get(netid='changed')
-        self.assertFalse(user.disabled)
-        self.assertTrue(user.regid_changed())
-
-        # with bridge_id
-        uw_user.netid = 'javerage'
-        uw_user.disabled = True
-        uw_user.set_action_restore()
-        worker.restore_user(uw_user)
-        self.assertEqual(worker.get_restored_count(), 3)
         user = UwBridgeUser.objects.get(netid='javerage')
         self.assertFalse(user.disabled)
         self.assertTrue(user.no_action())

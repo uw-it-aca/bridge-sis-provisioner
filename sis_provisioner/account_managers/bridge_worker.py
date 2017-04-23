@@ -100,16 +100,14 @@ class BridgeWorker(Worker):
                     else:
                         uw_bridge_user.set_action_regid_changed()
 
-                elif (uw_bridge_user.netid_changed() and
-                      uw_bridge_user.prev_netid == ret_buser.netid):
-                    pass
-
-                elif regid is None or uw_bridge_user.regid == regid:
-                    uw_bridge_user.set_prev_netid(ret_buser.netid)
+                elif uw_bridge_user.regid == regid:
+                    # netid changed
+                    if not uw_bridge_user.has_prev_netid():
+                        uw_bridge_user.set_prev_netid(ret_buser.netid)
 
                 else:
-                    self.append_error("Failed to restore %s\n" %
-                                      uw_bridge_user)
+                    self.append_error("Retored user %s not match %s\n" %
+                                      ret_buser, uw_bridge_user)
                     return
 
                 self.mark_restored(uw_bridge_user, ret_buser)
