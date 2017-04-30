@@ -33,6 +33,7 @@ class UserUpdater(GwsBridgeLoader):
         update those changed.
         """
         for uw_bri_user in self.get_users_to_process():
+            self.logger.debug("process DB user %s", uw_bri_user)
             try:
                 person, validation_status = get_validated_user(
                     self.logger,
@@ -56,8 +57,10 @@ class UserUpdater(GwsBridgeLoader):
                                 "Delete local %s another %s in Bridge",
                                 uw_bri_user, kp_user)
                             uw_bri_user.delete()
-                        if user.bridge_id != kp_user.bridge_id:
-                            self.merge_users_in_bridge(user, kp_user)
+                            continue
+                        else:
+                            if user.bridge_id != kp_user.bridge_id:
+                                self.merge_users_in_bridge(user, kp_user)
 
                 self.take_action(person)
             else:

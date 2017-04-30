@@ -106,7 +106,8 @@ class GwsBridgeLoader(Loader):
             "Merge Bridge users %s to %s, then delete the 1st.",
             user_to_del, user_to_keep)
         # TO add: merge learning history from user_to_del to user_to_keep
-        self.logger.info("Delete %s if no learning history", user_to_del)
+        self.logger.info("worker.delete if no history %s",
+                         user_to_del)
         self.worker.delete_user(user_to_del, is_merge=True)
 
     def apply_change_to_bridge(self, uw_bridge_user):

@@ -32,6 +32,7 @@ class BridgeChecker(UserUpdater):
 
     def process_users(self):
         for bridge_user in self.get_users_to_process():
+            self.logger.debug("process Bridge user %s", bridge_user)
             uwnetid = bridge_user.netid
             uwregid = get_regid_from_bridge_user(bridge_user)
             try:
@@ -52,9 +53,9 @@ class BridgeChecker(UserUpdater):
                     # There is another account in Bridge
                     # match to the up-to-date netid, merge them!
                     self.merge_user_accounts(bridge_user, kp_user)
-                    # The local record with bridge_user.netid
-                    # will be deleted by UserUpdater
                     continue
+                    # If local record with bridge_user.netid exists
+                    # it will be deleted by UserUpdater
 
             # find the DB record(s) that match with the bridge_user
             uw_bri_users = get_users_from_db(bridge_user.bridge_id,
@@ -120,10 +121,11 @@ class BridgeChecker(UserUpdater):
             self.apply_change_to_bridge(uw_bridge_user)
             return
 
-        if self.has_updates(bridge_user, uw_bridge_user):
-            self.logger.info("worker.update Bridge user %s with %s",
-                             bridge_user, uw_bridge_user)
-            self.apply_change_to_bridge(uw_bridge_user)
+        need_to_update, user = self.has_updates(bridge_user, uw_bridge_user)
+        if need_to_update:
+            self.logger.info("worker.update %s to Bridge user %s",
+                             uw_bridge_user, bridge_user)
+            self.apply_change_to_bridge(user)
 
     def accounts_match(self, bridge_user, uw_bridge_user):
         """
@@ -148,38 +150,41 @@ class BridgeChecker(UserUpdater):
             return True
 
         # exists another terminated account, unable to apply change now
-        self.logger.info("Bridge user % not match local %s, deleted #2?",
-                         bridge_user, uw_bridge_user)
+        self.add_error("Bridge user % not match local %s, check!" %
+                       (bridge_user, uw_bridge_user))
         return False
 
     def has_updates(self, bridge_user, uw_bridge_user):
+        if uw_bridge_user.is_new():
+            uw_bridge_user.set_action_update()
+
         if bridge_user.netid == uw_bridge_user.prev_netid:
-            self.logger.info("Bridge %s == netid changed == %s",
+            self.logger.info("Bridge %s == match prev_netid in %s",
                              bridge_user, uw_bridge_user)
-            return True
+            return True, uw_bridge_user
 
         if bridge_user.netid != uw_bridge_user.netid:
             self.logger.info("Bridge %s == changed netid ==> %s",
                              bridge_user, uw_bridge_user)
             uw_bridge_user.set_prev_netid(bridge_user.netid)
-            return True
+            return True, uw_bridge_user
 
         regid = get_regid_from_bridge_user(bridge_user)
         if regid != uw_bridge_user.regid:
-            self.logger.info("Bridge %s == regid changed == %s",
+            self.logger.info("Bridge %s == changed regid ==> %s",
                              bridge_user, uw_bridge_user)
             if not uw_bridge_user.regid_changed():
                 uw_bridge_user.set_action_regid_changed()
-            return True
+            return True, uw_bridge_user
 
         # current attributes 12/10/2016.
         if bridge_user.full_name != uw_bridge_user.get_display_name() or\
            bridge_user.email != uw_bridge_user.get_email():
             uw_bridge_user.set_action_update()
-            return True
+            return True, uw_bridge_user
 
         self.logger.info(
             "Verified Bridge user %s with %s ==> No change!",
             bridge_user, uw_bridge_user)
         uw_bridge_user.set_no_action()
-        return False
+        return False, uw_bridge_user

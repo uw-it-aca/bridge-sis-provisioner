@@ -1,0 +1,48 @@
+{
+    "meta":{},
+    "linked":{
+       "custom_fields": [
+       {
+        "id": "5",
+        "name": "REGID"
+      }
+      ],
+    "custom_field_values": [
+      {
+        "id": "3",
+        "value": "10000000000000000000000000000002",
+        "links": {
+          "custom_field": {
+            "id": "5",
+            "type": "custom_fields"
+          }
+        }
+      }
+    ]
+   },
+   "users":[
+       {"id":"197",
+       "uid":"seagrad@uw.edu",
+       "hris_id":null,
+       "first_name":"Seattle Graduate",
+       "last_name":"Student Employee",
+       "full_name":"Seattle Graduate Student Employee",
+       "sortable_name":"Student Employee, Seattle Graduate",
+       "email":"seagrad@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Seattle Graduate Student Employee",
+       "avatar_url":null,
+       "updated_at":"2016-07-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":null,
+       "next_due_date":null,
+       "completed_courses_count":0,
+       "links":{
+          "custom_field_values":["3"]
+       },
+       "meta":{"can_masquerade":true}
+    }
+]}

@@ -79,14 +79,13 @@ class TestBridgeWorker(TransactionTestCase):
         worker = BridgeWorker()
         uw_user, person = mock_uw_bridge_user('javerage')
         uw_user.prev_netid = 'changed'
-        uw_user.set_action_update()
         self.assertTrue(worker.update_uid(uw_user))
         self.assertFalse(uw_user.netid_changed())
         self.assertEqual(worker.get_netid_changed_count(), 1)
         self.assertEqual(worker.get_loaded_count(), 0)
 
         user = UwBridgeUser.objects.get(netid='javerage')
-        self.assertFalse(user.no_action())
+        self.assertTrue(user.no_action())
         self.assertIsNone(user.prev_netid)
         self.assertEqual(user.bridge_id, 195)
 
