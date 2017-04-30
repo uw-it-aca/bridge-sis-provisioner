@@ -4,7 +4,7 @@ from restclients.exceptions import DataFailureException
 from restclients.models.bridge import BridgeUser
 from restclients.bridge.custom_field import new_regid_custom_field
 from sis_provisioner.account_managers import get_validated_user,\
-    _user_left_uw, DISALLOWED, INVALID, LEFT_UW, VALID,\
+    _user_left_uw, DISALLOWED, INVALID, LEFT_UW, VALID, CHANGED,\
     fetch_users_from_gws
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override
 
@@ -59,13 +59,13 @@ class TestValidUser(TestCase):
             logger, "changed",
             uwregid="9136CCB8F66711D5BE060004AC494FFE",
             users_in_gws=users_in_gws)
-        self.assertEqual(validation_status, VALID)
+        self.assertEqual(validation_status, CHANGED)
 
         person, validation_status = get_validated_user(
             logger, 'leftuw',
             uwregid="56229F4D3B504559AF23956737A3CF9D",
             users_in_gws=users_in_gws)
-        self.assertEqual(validation_status, VALID)
+        self.assertEqual(validation_status, CHANGED)
 
         person, validation_status = get_validated_user(
             logger, 'leftuw',
@@ -102,4 +102,5 @@ class TestValidUser(TestCase):
                           get_validated_user,
                           logger,
                           'renamed',
+                          uwregid='10000000000000000000000000000000',
                           users_in_gws=users_in_gws)

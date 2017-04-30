@@ -7,6 +7,7 @@ accounts via the given worker.
 import logging
 import traceback
 from restclients.exceptions import DataFailureException
+from sis_provisioner.dao.bridge import is_active_user_exist
 from sis_provisioner.dao.user import save_user
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import fetch_users_from_db,\
@@ -27,7 +28,12 @@ class UserUpdater(GwsBridgeLoader):
         return fetch_users_from_db(logger)
 
     def process_users(self):
+        """
+        Process exsting users in DB, terminate those left UW and
+        update those changed.
+        """
         for uw_bri_user in self.get_users_to_process():
+            self.logger.debug("process DB user %s", uw_bri_user)
             try:
                 person, validation_status = get_validated_user(
                     self.logger,
@@ -39,7 +45,23 @@ class UserUpdater(GwsBridgeLoader):
                     "Validate user %s ==> %s" % (uw_bri_user, ex))
                 continue
 
-            if person is not None and validation_status == VALID:
+            if person is not None and validation_status >= VALID:
+
+                if uw_bri_user.netid != person.uwnetid:
+                    # check if both accounts exist in Bridge
+                    exists1, user = is_active_user_exist(uw_bri_user.netid)
+                    exists2, kp_user = is_active_user_exist(person.uwnetid)
+                    if exists2 and kp_user is not None:
+                        if user is None:
+                            self.logger.info(
+                                "Delete local %s another %s in Bridge",
+                                uw_bri_user, kp_user)
+                            uw_bri_user.delete()
+                            continue
+                        else:
+                            if user.bridge_id != kp_user.bridge_id:
+                                self.merge_users_in_bridge(user, kp_user)
+
                 self.take_action(person)
             else:
                 self.terminate(uw_bri_user, validation_status)

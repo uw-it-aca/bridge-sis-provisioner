@@ -160,6 +160,23 @@ def get_bridge_user(user):
     return get_user(user.netid)
 
 
+def is_active_user_exist(uwnetid):
+    """
+    fetch user by uid, return a boolean value and the BridgeUser object
+    """
+    try:
+        ret_users = get_user(uwnetid)
+        if len(ret_users) > 0:
+            return True, ret_users[0]
+
+        # exist a terminated account
+        return True, None
+    except DataFailureException as ex:
+        if ex.status == 404:
+            return False, None
+        raise
+
+
 def restore_bridge_user(uw_bridge_user):
     """
     :param uw_bridge_user: a valid UwBridgeUser object

@@ -9,8 +9,8 @@
       }],
     "custom_field_values": [
       {
-        "id": "104",
-        "value": "10000000000000000000000000000004",
+        "id": "1",
+        "value": "0136CCB8F66711D5BE060004AC494FFE",
         "links": {
           "custom_field": {
             "id": "5",
@@ -22,20 +22,20 @@
    },
    "users":[
      {
-       "id":"203",
-       "uid":"oldgrad@uw.edu",
+       "id":"194",
+       "uid":"javerage@uw.edu",
        "hris_id":null,
-       "first_name":"Tacoma Graduate",
+       "first_name":"James",
        "last_name":"Student",
-       "full_name":"Tacoma Graduate Student",
-       "sortable_name":"Student, Tacoma Graduate",
-       "email":"oldgrad@uw.edu",
+       "full_name":"James",
+       "sortable_name":"Student, James Average",
+       "email":"javerage@uw.edu",
        "locale":"en",
-       "roles":[],
-       "name":"Tacoma Graduate Student",
+       "roles":["account_admin"],
+       "name":"James Average Student",
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",
-       "deleted_at":"2016-09-02T15:27:01.827-07:00",
+       "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
        "loggedInAt":"2016-09-02T15:27:01.827-07:00",
@@ -44,7 +44,7 @@
        "next_due_date":null,
        "completed_courses_count":0,
        "links":{
-          "custom_field_values":["104"]
+          "custom_field_values":["1"]
        },
        "meta":{"can_masquerade":true}
      }

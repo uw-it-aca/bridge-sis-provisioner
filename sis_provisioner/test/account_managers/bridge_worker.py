@@ -79,14 +79,13 @@ class TestBridgeWorker(TransactionTestCase):
         worker = BridgeWorker()
         uw_user, person = mock_uw_bridge_user('javerage')
         uw_user.prev_netid = 'changed'
-        uw_user.set_action_update()
         self.assertTrue(worker.update_uid(uw_user))
         self.assertFalse(uw_user.netid_changed())
         self.assertEqual(worker.get_netid_changed_count(), 1)
         self.assertEqual(worker.get_loaded_count(), 0)
 
         user = UwBridgeUser.objects.get(netid='javerage')
-        self.assertFalse(user.no_action())
+        self.assertTrue(user.no_action())
         self.assertIsNone(user.prev_netid)
         self.assertEqual(user.bridge_id, 195)
 
@@ -119,6 +118,7 @@ class TestBridgeWorker(TransactionTestCase):
             pass
 
     def test_restore_user(self):
+        # normal case
         worker = BridgeWorker()
         uw_user, person = mock_uw_bridge_user('botgrad')
         uw_user.bridge_id = 203
@@ -130,27 +130,19 @@ class TestBridgeWorker(TransactionTestCase):
         user = UwBridgeUser.objects.get(netid='botgrad')
         self.assertFalse(user.disabled)
 
-        uw_user = UwBridgeUser(netid='changed',
+        # restored user netid and regid not match
+        uw_user = UwBridgeUser(netid='javerage',
+                               bridge_id=195,
                                regid="9136CCB8F66711D5BE060004AC494FFE",
                                last_visited_at=get_now(),
+                               disabled=True,
                                first_name="James",
                                last_name="Student",
                                email="changed@uw.edu")
-        uw_user.disabled = True
         uw_user.set_action_restore()
         worker.restore_user(uw_user)
         self.assertEqual(worker.get_restored_count(), 2)
 
-        user = UwBridgeUser.objects.get(netid='changed')
-        self.assertFalse(user.disabled)
-        self.assertTrue(user.regid_changed())
-
-        # with bridge_id
-        uw_user.netid = 'javerage'
-        uw_user.disabled = True
-        uw_user.set_action_restore()
-        worker.restore_user(uw_user)
-        self.assertEqual(worker.get_restored_count(), 3)
         user = UwBridgeUser.objects.get(netid='javerage')
         self.assertFalse(user.disabled)
         self.assertTrue(user.no_action())

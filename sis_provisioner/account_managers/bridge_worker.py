@@ -6,6 +6,7 @@ via the Bridge APIs.
 import logging
 import traceback
 from restclients.exceptions import DataFailureException
+from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.dao import is_using_file_dao
 from sis_provisioner.dao.bridge import add_bridge_user, change_uwnetid,\
     get_regid_from_bridge_user, delete_bridge_user, update_bridge_user,\
@@ -46,7 +47,7 @@ class BridgeWorker(Worker):
             ret_bridge_user, exist = add_bridge_user(uw_bridge_user)
             if not exist:
                 if self._uid_matched(uw_bridge_user, ret_bridge_user):
-                    logger.info("Created user %s in Bridge" % uw_bridge_user)
+                    logger.info("Created user %s in Bridge", uw_bridge_user)
                     self.total_new_users_count += 1
                     self._save_bridge_id(uw_bridge_user, ret_bridge_user)
                     self._save_verified(uw_bridge_user)
@@ -69,10 +70,11 @@ class BridgeWorker(Worker):
     def delete_user(self, user_to_del, is_merge=False):
         try:
             if delete_bridge_user(user_to_del, is_merge):
-                logger.info("Deleted %s from Bridge" % user_to_del)
-                user_to_del.disable()
-                logger.info("Disable user in DB %s", user_to_del)
+                logger.info("Deleted %s from Bridge", user_to_del)
                 self.total_deleted_count += 1
+                if type(user_to_del) == UwBridgeUser:
+                    user_to_del.disable()
+                    logger.info("Disable user in DB %s", user_to_del)
             else:
                 self.append_error("Failed to delete %s\n" %
                                   user_to_del)
@@ -80,7 +82,7 @@ class BridgeWorker(Worker):
             self._handle_exception("delete", user_to_del, ex, traceback)
 
     def mark_restored(self, uw_bridge_user, ret_bridge_user):
-        logger.info("Restored %s in Bridge" % uw_bridge_user)
+        logger.info("Restored %s in Bridge", uw_bridge_user)
         uw_bridge_user.set_restored()
         self._save_bridge_id(uw_bridge_user, ret_bridge_user)
         self.total_restored_count += 1
@@ -98,16 +100,14 @@ class BridgeWorker(Worker):
                     else:
                         uw_bridge_user.set_action_regid_changed()
 
-                elif (uw_bridge_user.netid_changed() and
-                      uw_bridge_user.prev_netid == ret_buser.netid):
-                    pass
-
-                elif regid is None or uw_bridge_user.regid == regid:
-                    uw_bridge_user.set_prev_netid(ret_buser.netid)
+                elif uw_bridge_user.regid == regid:
+                    # netid changed
+                    if not uw_bridge_user.has_prev_netid():
+                        uw_bridge_user.set_prev_netid(ret_buser.netid)
 
                 else:
-                    self.append_error("Failed to restore %s\n" %
-                                      uw_bridge_user)
+                    self.append_error("Retored user %s not match %s\n" %
+                                      ret_buser, uw_bridge_user)
                     return
 
                 self.mark_restored(uw_bridge_user, ret_buser)
@@ -121,12 +121,13 @@ class BridgeWorker(Worker):
             self._handle_exception("restore", uw_bridge_user, ex, traceback)
 
     def update_user(self, uw_bridge_user):
-        if not uw_bridge_user.netid_changed() or\
+        if (not uw_bridge_user.netid_changed()) or\
            self.update_uid(uw_bridge_user):
             self._update_user(uw_bridge_user)
 
     def update_uid(self, uw_bridge_user):
         try:
+            logger.debug("worker.update_uid %s", uw_bridge_user)
             ret_bridge_user = change_uwnetid(uw_bridge_user)
             if self._uid_matched(uw_bridge_user, ret_bridge_user):
                 logger.info("Changed UID for %s in Bridge",
@@ -161,22 +162,22 @@ class BridgeWorker(Worker):
         except Exception as ex:
             self._handle_exception("update", uw_bridge_user, ex, traceback)
 
-    def _handle_exception(self, action, uw_bridge_user,
+    def _handle_exception(self, action, user,
                           ex, traceback):
-        if self._not_exist(uw_bridge_user, ex):
+        if isinstance(user, UwBridgeUser) and self._not_exist(user, ex):
             return
         log_exception(logger,
-                      "Failed %s: %s ==>" % (action, uw_bridge_user),
+                      "Failed %s: %s ==>" % (action, user),
                       traceback.format_exc())
         self.append_error("Failed to %s: %s ==> %s\n" %
-                          (action, uw_bridge_user.netid, ex))
+                          (action, user.netid, ex))
 
-    def _not_exist(self, uw_bridge_user, ex):
+    def _not_exist(self, user, ex):
         if isinstance(ex, DataFailureException) and\
            ex.status == 404:
             logger.info("Not exist in Bridge, delete from local DB %s" %
-                        uw_bridge_user)
-            uw_bridge_user.delete()
+                        user)
+            user.delete()
             return True
         return False
 

@@ -62,13 +62,7 @@ def is_uw_member(uwnetid):
     """
     Return True if the user netid is an effective member of the uw_member group
     """
-    timer = Timer()
-    try:
-        return gws.is_effective_member(UW_GROUP, uwnetid)
-    finally:
-        log_resp_time(logger,
-                      '%s is_effective_member of %s ' % (uwnetid, UW_GROUP),
-                      timer)
+    return (uwnetid in get_uw_members())
 
 
 def is_affiliate_employee(uwnetid):
@@ -76,11 +70,4 @@ def is_affiliate_employee(uwnetid):
     Return True if the user netid is an effective member of
     the uw_affiliation_affiliate-employee group
     """
-    timer = Timer()
-    try:
-        return gws.is_effective_member(UW_AFFI_GROUP, uwnetid)
-    finally:
-        log_resp_time(logger,
-                      '%s is_effective_member of %s ' % (uwnetid,
-                                                         UW_AFFI_GROUP),
-                      timer)
+    return (uwnetid in get_affiliate_employees())
