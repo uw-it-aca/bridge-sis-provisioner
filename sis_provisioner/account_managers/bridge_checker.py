@@ -150,7 +150,7 @@ class BridgeChecker(UserUpdater):
             return True
 
         # exists another terminated account, unable to apply change now
-        self.add_error("Bridge user % not match local %s, check!" %
+        self.add_error("Bridge user %s not match local %s, check!" %
                        (bridge_user, uw_bridge_user))
         return False
 

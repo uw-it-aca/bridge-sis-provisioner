@@ -47,7 +47,7 @@ class BridgeWorker(Worker):
             ret_bridge_user, exist = add_bridge_user(uw_bridge_user)
             if not exist:
                 if self._uid_matched(uw_bridge_user, ret_bridge_user):
-                    logger.info("Created user %s in Bridge" % uw_bridge_user)
+                    logger.info("Created user %s in Bridge", uw_bridge_user)
                     self.total_new_users_count += 1
                     self._save_bridge_id(uw_bridge_user, ret_bridge_user)
                     self._save_verified(uw_bridge_user)
@@ -70,7 +70,7 @@ class BridgeWorker(Worker):
     def delete_user(self, user_to_del, is_merge=False):
         try:
             if delete_bridge_user(user_to_del, is_merge):
-                logger.info("Deleted %s from Bridge" % user_to_del)
+                logger.info("Deleted %s from Bridge", user_to_del)
                 self.total_deleted_count += 1
                 if type(user_to_del) == UwBridgeUser:
                     user_to_del.disable()
@@ -82,7 +82,7 @@ class BridgeWorker(Worker):
             self._handle_exception("delete", user_to_del, ex, traceback)
 
     def mark_restored(self, uw_bridge_user, ret_bridge_user):
-        logger.info("Restored %s in Bridge" % uw_bridge_user)
+        logger.info("Restored %s in Bridge", uw_bridge_user)
         uw_bridge_user.set_restored()
         self._save_bridge_id(uw_bridge_user, ret_bridge_user)
         self.total_restored_count += 1
