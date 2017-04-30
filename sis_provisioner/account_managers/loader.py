@@ -42,36 +42,35 @@ class Loader:
         pass
 
     def log_status(self):
-        self.logger.info(
-            "Checked %d users in %s," % (
-                self.get_total_count(), self.data_source))
+        self.logger.info("Checked %d users in %s,",
+                         self.get_total_count(), self.data_source)
         if self.get_loaded_count():
-            self.logger.info(
-                "total %d users loaded," % self.get_loaded_count())
+            self.logger.info("total %d users loaded,",
+                             self.get_loaded_count())
         if self.get_new_user_count():
-            self.logger.info(
-                "%d are new users." % self.get_new_user_count())
+            self.logger.info("%d are new users.",
+                             self.get_new_user_count())
         if self.get_netid_changed_count():
-            self.logger.info(
-                "%d changed their netids." % self.get_netid_changed_count())
+            self.logger.info("%d changed their netids.",
+                             self.get_netid_changed_count())
         if self.get_regid_changed_count():
-            self.logger.info(
-                "%d changed their regids." % self.get_regid_changed_count())
+            self.logger.info("%d changed their regids.",
+                             self.get_regid_changed_count())
         if self.get_deleted_count():
-            self.logger.info(
-                "%d users have been deleted." % self.get_deleted_count())
+            self.logger.info("%d users have been deleted.",
+                             self.get_deleted_count())
         if self.get_restored_count():
-            self.logger.info(
-                "%d users have been restored." % self.get_restored_count())
+            self.logger.info("%d users have been restored.",
+                             self.get_restored_count())
 
         if self.has_error():
-            self.logger.info(
-                "Errors: %s" % self.get_error_report())
+            self.logger.info("Errors: %s",
+                             self.get_error_report())
 
         if self.include_hrp():
             counts_dict = get_item_counts_dict(self.emp_app_totals)
-            self.logger.info(
-                "appointments counts: %s" % json.dumps(counts_dict))
+            self.logger.info("appointments counts: %s",
+                             json.dumps(counts_dict))
 
     def include_hrp(self):
         return self.include_hrp_data

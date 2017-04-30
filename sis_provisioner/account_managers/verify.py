@@ -35,12 +35,12 @@ def set_bridge_ids():
                         uw_bri_user.set_bridge_id(bridge_user.bridge_id)
                         set_bridge_id_total = set_bridge_id_total + 1
         except DataFailureException as ex:
-            logger.error("GET %s ==> %s" % (uw_bri_user, ex))
+            logger.error("GET %s ==> %s", uw_bri_user, ex)
             if ex.status == 404:
                 logger.info("Not in Bridge, remove local record %s" %
                             uw_bri_user)
                 uw_bri_user.delete()
 
-    logger.info("Set bridge ids for %d users" % set_bridge_id_total)
-    logger.info("Verified %d users" % total)
+    logger.info("Set bridge ids for %d users", set_bridge_id_total)
+    logger.info("Verified %d users", total)
     return set_bridge_id_total
