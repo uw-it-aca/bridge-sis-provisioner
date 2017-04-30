@@ -71,10 +71,10 @@ class BridgeWorker(Worker):
         try:
             if delete_bridge_user(user_to_del, is_merge):
                 logger.info("Deleted %s from Bridge" % user_to_del)
-                if isinstance(user_to_del, UwBridgeUser):
-                    user_to_del.disable()
-                logger.info("Disable user in DB %s", user_to_del)
                 self.total_deleted_count += 1
+                if type(user_to_del) == UwBridgeUser:
+                    user_to_del.disable()
+                    logger.info("Disable user in DB %s", user_to_del)
             else:
                 self.append_error("Failed to delete %s\n" %
                                   user_to_del)
@@ -121,12 +121,13 @@ class BridgeWorker(Worker):
             self._handle_exception("restore", uw_bridge_user, ex, traceback)
 
     def update_user(self, uw_bridge_user):
-        if not uw_bridge_user.netid_changed() or\
+        if (not uw_bridge_user.netid_changed()) or\
            self.update_uid(uw_bridge_user):
             self._update_user(uw_bridge_user)
 
     def update_uid(self, uw_bridge_user):
         try:
+            logger.debug("worker.update_uid %s", uw_bridge_user)
             ret_bridge_user = change_uwnetid(uw_bridge_user)
             if self._uid_matched(uw_bridge_user, ret_bridge_user):
                 logger.info("Changed UID for %s in Bridge",

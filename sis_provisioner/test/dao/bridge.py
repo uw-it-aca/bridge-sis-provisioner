@@ -104,8 +104,7 @@ class TestBridgeDao(TransactionTestCase):
         self.assertTrue(delete_bridge_user(uw_user, False))
 
         uw_user, person = mock_uw_bridge_user('javerage')
-        uw_user.bridge_id = 194
-        self.assertTrue(delete_bridge_user(uw_user, False))
+        uw_user.bridge_id = 195
         self.assertFalse(delete_bridge_user(uw_user, True))
 
         uw_user, person = mock_uw_bridge_user('staff')

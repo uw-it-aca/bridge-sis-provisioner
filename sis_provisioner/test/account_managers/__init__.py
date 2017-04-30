@@ -102,4 +102,5 @@ class TestValidUser(TestCase):
                           get_validated_user,
                           logger,
                           'renamed',
+                          uwregid='10000000000000000000000000000000',
                           users_in_gws=users_in_gws)
