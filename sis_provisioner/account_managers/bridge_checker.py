@@ -133,7 +133,7 @@ class BridgeChecker(UserUpdater):
         """
         regid = get_regid_from_bridge_user(bridge_user)
         if bridge_user.netid == uw_bridge_user.netid and\
-           regid == uw_bridge_user.regid:
+           regid is not None and regid == uw_bridge_user.regid:
             if bridge_user.bridge_id != uw_bridge_user.bridge_id:
                 uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
             return True
