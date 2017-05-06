@@ -131,15 +131,23 @@ class BridgeChecker(UserUpdater):
         """
         Check if the up-to-date account matches bridge_user
         """
+        regid = get_regid_from_bridge_user(bridge_user)
+        if bridge_user.netid == uw_bridge_user.netid and\
+           regid is not None and regid == uw_bridge_user.regid:
+            if bridge_user.bridge_id != uw_bridge_user.bridge_id:
+                uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
+            return True
+
         exists, buser = is_active_user_exist(uw_bridge_user.netid)
         if exists and buser is not None:
-            uw_bridge_user.set_bridge_id(buser.bridge_id)
+            if uw_bridge_user.bridge_id != buser.bridge_id:
+                uw_bridge_user.set_bridge_id(buser.bridge_id)
 
             if bridge_user.bridge_id != buser.bridge_id:
                 # this user has another account in Bridge
                 self.logger.info("Merge Bridge user %s to %s in Bridge",
                                  bridge_user, uw_bridge_user)
-                self.merge_user_accounts(bridge_user, uw_bridge_user)
+                self.merge_users_in_bridge(bridge_user, buser)
                 return False
             return True
 
