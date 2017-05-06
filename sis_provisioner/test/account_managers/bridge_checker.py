@@ -48,6 +48,20 @@ class TestBridgeUserChecker(TransactionTestCase):
         loader = BridgeChecker(BridgeWorker())
         self.assertFalse(loader.accounts_match(buser1, uw_bri_user1))
 
+        buser2 = mock_bridge_user(195,
+                                  uw_bri_user1.netid,
+                                  uw_bri_user1.regid,
+                                  uw_bri_user1.get_email(),
+                                  uw_bri_user1.get_display_name())
+        self.assertTrue(loader.accounts_match(buser2, uw_bri_user1))
+
+        buser3 = mock_bridge_user(195,
+                                  'changed',
+                                  uw_bri_user1.regid,
+                                  uw_bri_user1.get_email(),
+                                  uw_bri_user1.get_display_name())
+        self.assertTrue(loader.accounts_match(buser3, uw_bri_user1))
+
     def test_has_updates(self):
         uw_bri_user1, person = mock_uw_bridge_user('javerage')
         uw_bri_user1.action_priority = ACTION_NONE
