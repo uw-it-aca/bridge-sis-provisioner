@@ -1,4 +1,3 @@
-import json
 from django.test import TestCase
 from sis_provisioner.util.list_helper import get_item_counts_dict
 
@@ -15,5 +14,3 @@ class TestListHelper(TestCase):
         self.assertEqual(counts[6], 1)
         self.assertEqual(counts[7], 1)
         self.assertEqual(counts[12], 1)
-        self.assertEqual(json.dumps(counts),
-                         '{"0": 3, "1": 2, "2": 1, "6": 1, "7": 1, "12": 1}')
