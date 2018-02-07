@@ -34,13 +34,13 @@ class Command(BaseCommand):
             loader = BridgeChecker(CsvWorker(),
                                    include_hrp=include_hrp)
         else:
-            print "Invalid data source, abort!"
+            print("Invalid data source, abort!")
             return
 
         csv_maker = CsvFileMaker(loader, include_hrp=include_hrp)
         file_path = csv_maker.get_file_path()
         if file_path is None:
-            print "Load_user_csv: Can't create CSV dir, abort."
+            print("Load_user_csv: Can't create CSV dir, abort.")
             return
 
         load_user_total = csv_maker.make_load_user_files()
@@ -48,14 +48,14 @@ class Command(BaseCommand):
         regid_changed_user_total = csv_maker.make_regid_change_user_file()
         del_user_total = csv_maker.make_delete_user_file()
         restored_user_total = csv_maker.make_restore_user_file()
-        print datetime.now()
-        print "Checked all %d users in %s," % (loader.get_total_count(),
-                                               source)
-        print "%d users to load\n" % load_user_total
-        print "%d users changed netid\n" % netid_changed_user_total
-        print "%d users changed regid\n" % regid_changed_user_total
-        print "%d users to be deleted\n" % del_user_total
-        print "%d users to be restored\n" % restored_user_total
+        print(datetime.now())
+        print("Checked all %d users in %s," % (loader.get_total_count(),
+                                               source))
+        print("%d users to load\n" % load_user_total)
+        print("%d users changed netid\n" % netid_changed_user_total)
+        print("%d users changed regid\n" % regid_changed_user_total)
+        print("%d users to be deleted\n" % del_user_total)
+        print("%d users to be restored\n" % restored_user_total)
 
         if csv_maker.is_file_wrote():
-            print "The csv files are in directory: %s\n" % file_path
+            print("The csv files are in directory: %s\n" % file_path)

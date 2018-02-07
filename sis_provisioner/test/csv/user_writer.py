@@ -156,7 +156,7 @@ class TestUserWriter(TestCase):
         try:
             fo = open(fp)
             result = fo.read()
-            # print "%s====%s====%s" % (fp, has_hrp_attrs, result)
+            # print("%s====%s====%s" % (fp, has_hrp_attrs, result))
             self.assertEqual(result, expected)
         finally:
             os.remove(fp)

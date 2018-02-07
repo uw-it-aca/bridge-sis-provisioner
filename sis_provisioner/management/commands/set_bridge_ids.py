@@ -19,21 +19,21 @@ class Command(BaseCommand):
 
         if uwnetid == 'ALL':
             total = set_bridge_ids()
-            print datetime.now()
-            print "Set bridge ids for %d users in DB" % total
+            print(datetime.now())
+            print("Set bridge ids for %d users in DB" % total)
 
         else:
             try:
                 uw_bridge_user = get_user_by_netid(uwnetid)
             except UwBridgeUser.DoesNotExist:
-                print "%s is not in DB" % uwnetid
+                print("%s is not in DB" % uwnetid)
                 return
             try:
                 res = get_user(uw_bridge_user.netid)
                 if len(res) > 0:
                     bridge_user = res[0]
-                    print "Set bridge id for %s with %s" % (uw_bridge_user,
-                                                            bridge_user)
+                    print("Set bridge id for %s with %s" % (uw_bridge_user,
+                                                            bridge_user))
                     uw_bridge_user.set_bridge_id(bridge_user.bridge_id)
             except Exception as ex:
-                print ex
+                print(ex)

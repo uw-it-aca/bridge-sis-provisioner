@@ -1,4 +1,7 @@
-import StringIO
+try:
+    from io import StringIO
+except ImportError:
+    from StringIO import StringIO
 import csv
 import errno
 import os
@@ -22,7 +25,7 @@ def get_aline_csv(data):
     """
     Create a line of csv data from the passed list of data.
     """
-    s = StringIO.StringIO()
+    s = StringIO()
 
     csv.register_dialect("unix_newline", lineterminator="\n")
     writer = csv.writer(s, dialect="unix_newline")

@@ -21,19 +21,19 @@ class Command(BaseCommand):
         if regid:
             try:
                 user = get_user_by_regid(regid)
-                print "Find Bridge user by regid: %s" % user
+                print("Find Bridge user by regid: %s" % user)
                 if is_moved_regid(regid):
                     user.delete()
-                    print "Deleted it from DB!"
+                    print("Deleted it from DB!")
             except UwBridgeUser.DoesNotExist:
-                print "%s not found in DB" % regid
+                print("%s not found in DB" % regid)
 
         if netid:
             try:
                 user = get_user_by_netid(netid)
-                print "Find Bridge user by netid: %s" % user
+                print("Find Bridge user by netid: %s" % user)
                 if is_moved_netid(netid):
                     user.delete()
-                    print "Deleted it from DB!"
+                    print("Deleted it from DB!")
             except UwBridgeUser.DoesNotExist:
-                print "%s not found in DB" % netid
+                print("%s not found in DB" % netid)

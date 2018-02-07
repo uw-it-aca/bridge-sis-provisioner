@@ -24,11 +24,11 @@ class Command(BaseCommand):
             try:
                 user = get_user_by_bridgeid(bridge_id)
             except UwBridgeUser.DoesNotExist:
-                print "%s not found in DB" % bridge_id
+                print("%s not found in DB" % bridge_id)
                 return
-            print "Find Bridge user by bridge_id: %s" % user
+            print("Find Bridge user by bridge_id: %s" % user)
             if user.netid != netid:
-                print "Netid not match: %s %s" % (user.netid, netid)
+                print("Netid not match: %s %s" % (user.netid, netid))
                 return
             if user.has_prev_netid() and\
                user.prev_netid == old_netid:
@@ -37,9 +37,9 @@ class Command(BaseCommand):
                 user.set_prev_netid(old_netid)
 
             worker = BridgeWorker()
-            print "Work.update %s" % user
+            print("Work.update %s" % user)
             worker.update_uid(user)
 
-            print "Changed netid: %d" % worker.get_netid_changed_count()
+            print("Changed netid: %d" % worker.get_netid_changed_count())
             if worker.has_error():
-                print "Errors: %s" % worker.get_error_report()
+                print("Errors: %s" % worker.get_error_report())

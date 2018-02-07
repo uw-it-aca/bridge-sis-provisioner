@@ -56,17 +56,17 @@ class Command(BaseCommand):
                 except Exception as ex:
                     logger.error("Update %s ==>%s", uw_bridge_user, ex)
 
-        print "Total %d users to add" % total_new
-        print "Added %d users" % worker.get_new_user_count()
+        print("Total %d users to add" % total_new)
+        print("Added %d users" % worker.get_new_user_count())
 
-        print "Total %d users to delete" % total_del
-        print "Deleted %d users" % worker.get_deleted_count()
+        print("Total %d users to delete" % total_del)
+        print("Deleted %d users" % worker.get_deleted_count())
 
-        print "Total %d users to restore" % total_restore
-        print "Restored %d users" % worker.get_restored_count()
+        print("Total %d users to restore" % total_restore)
+        print("Restored %d users" % worker.get_restored_count())
 
-        print "Total %d changed netid" % total_change_netid
-        print "NetId changed: %d" % worker.get_netid_changed_count()
-        print "RegId changed: %d" % worker.get_regid_changed_count()
+        print("Total %d changed netid" % total_change_netid)
+        print("NetId changed: %d" % worker.get_netid_changed_count())
+        print("RegId changed: %d" % worker.get_regid_changed_count())
 
-        print "Loaded: %d" % worker.get_loaded_count()
+        print("Loaded: %d" % worker.get_loaded_count())

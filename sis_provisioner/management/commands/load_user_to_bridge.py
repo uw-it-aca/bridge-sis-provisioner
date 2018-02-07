@@ -38,19 +38,19 @@ class Command(BaseCommand):
             loader = Reloader(BridgeWorker(),
                               include_hrp=include_hrp)
         else:
-            print "Invalid data source, abort!"
+            print("Invalid data source, abort!")
             return
 
         loader.load()
-        print datetime.now()
-        print "Checked all %d users in %s\n" % (loader.get_total_count(),
-                                                source)
-        print "total %d users loaded\n" % loader.get_loaded_count()
-        print "%d new users added\n" % loader.get_new_user_count()
-        print "%d users changed netid\n" % loader.get_netid_changed_count()
-        print "%d users changed regid\n" % loader.get_regid_changed_count()
-        print "%d users deleted\n" % loader.get_deleted_count()
-        print "%d users restored\n" % loader.get_restored_count()
+        print(datetime.now())
+        print("Checked all %d users in %s\n" % (loader.get_total_count(),
+                                                source))
+        print("total %d users loaded\n" % loader.get_loaded_count())
+        print("%d new users added\n" % loader.get_new_user_count())
+        print("%d users changed netid\n" % loader.get_netid_changed_count())
+        print("%d users changed regid\n" % loader.get_regid_changed_count())
+        print("%d users deleted\n" % loader.get_deleted_count())
+        print("%d users restored\n" % loader.get_restored_count())
 
         if loader.has_error():
-            print "Errors: %s" % loader.get_error_report()
+            print("Errors: %s" % loader.get_error_report())
