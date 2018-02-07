@@ -1,7 +1,7 @@
 try:
-    from io import StringIO
-except ImportError:
     from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import csv
 import errno
 import os
