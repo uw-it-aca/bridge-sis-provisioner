@@ -4,8 +4,8 @@ This module interacts with hrpws restclient for employee appointments
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
-from restclients.hrpws.appointee import get_appointee_by_regid
+from restclients_core.exceptions import DataFailureException
+from uw_hrp.appointee import get_appointee_by_regid
 from sis_provisioner.models import EmployeeAppointment
 from sis_provisioner.util.log import log_exception
 

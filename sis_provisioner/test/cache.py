@@ -1,9 +1,9 @@
 from datetime import timedelta
 from django.test import TestCase
 from django.conf import settings
-from restclients.mock_http import MockHTTP
-from restclients.models import CacheEntryTimed
-from restclients.exceptions import DataFailureException
+from rc_django.models import CacheEntryTimed
+from restclients_core.models import MockHTTP
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.cache import BridgeAccountCache, get_cache_time
 from sis_provisioner.test import user_file_name_override, fdao_gws_override,\
     fdao_pws_override

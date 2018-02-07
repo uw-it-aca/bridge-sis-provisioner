@@ -4,7 +4,7 @@ in the last load, re-apply it.
 """
 
 import logging
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao.bridge import is_active_user_exist
 from sis_provisioner.account_managers import fetch_users_from_db
 

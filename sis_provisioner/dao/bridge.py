@@ -3,12 +3,12 @@ This module encapsulates the interactions with the restclients.bridge
 """
 import json
 import logging
-from restclients.models.bridge import BridgeCustomField, BridgeUser
-from restclients.bridge.custom_field import new_regid_custom_field
-from restclients.bridge.user import add_user, change_uid, replace_uid,\
+from uw_bridge.models import BridgeCustomField, BridgeUser
+from uw_bridge.custom_field import new_regid_custom_field
+from uw_bridge.user import add_user, change_uid, replace_uid,\
     delete_user, delete_user_by_id, get_user, get_user_by_id, get_all_users,\
     update_user, restore_user_by_id, restore_user
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao import is_using_file_dao
 from sis_provisioner.util.log import log_exception
 

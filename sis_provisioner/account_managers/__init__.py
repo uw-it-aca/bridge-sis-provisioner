@@ -1,6 +1,6 @@
 import logging
 import traceback
-from restclients.exceptions import DataFailureException,\
+from restclients_core.exceptions import DataFailureException,\
      InvalidNetID, InvalidRegID
 from sis_provisioner.dao.bridge import get_all_bridge_users
 from sis_provisioner.dao.gws import get_potential_users

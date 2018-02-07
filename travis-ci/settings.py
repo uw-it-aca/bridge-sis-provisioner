@@ -20,15 +20,14 @@ STATIC_ROOT = ''
 # Application definition
 
 INSTALLED_APPS = [
-    'rc_django',
-    'restclients',
-    'sis_provisioner.apps.BridgeProvisionerConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'sis_provisioner.apps.BridgeProvisionerConfig',
+    'rc_django',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -44,7 +43,6 @@ MIDDLEWARE_CLASSES = [
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.RemoteUserBackend',
-    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = 'travis-ci.urls'
@@ -79,7 +77,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-RESTCLIENTS_DAO_CACHE_CLASS='restclients.cache_implementation.NoCache'
 
 BRIDGE_IMPORT_CSV_ROOT='/tmp/fl_test'
 BRIDGE_IMPORT_USER_FILENAME='busers'

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.test import fdao_hrp_override, fdao_pws_override
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.hrp import get_appointee, get_appointments

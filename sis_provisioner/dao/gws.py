@@ -4,7 +4,7 @@ with the UW Group API resource
 """
 
 import logging
-from restclients.gws import GWS
+from uw_gws import GWS
 from sis_provisioner.util.log import log_resp_time, Timer
 
 
@@ -16,7 +16,7 @@ gws = GWS()
 
 def get_members_of_group(group_id):
     """
-    Returns a list of restclients.models.gws.GroupMember objects
+    Returns a list of uw_gws.models.GroupMember objects
     """
     action = 'get_members of group %s' % group_id
     timer = Timer()

@@ -7,7 +7,7 @@ accounts via the given worker.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao.user import get_users_from_db, save_user
 from sis_provisioner.dao.bridge import get_regid_from_bridge_user,\
     is_active_user_exist

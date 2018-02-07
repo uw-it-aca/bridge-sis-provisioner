@@ -9,9 +9,8 @@ import re
 from string import capwords
 import traceback
 from django.db.models import Q
-from django.core.exceptions import ObjectDoesNotExist
-from restclients.exceptions import DataFailureException
-from restclients.hrpws.appointee import get_appointee_by_eid
+from restclients_core.exceptions import DataFailureException
+from uw_hrp.appointee import get_appointee_by_eid
 from sis_provisioner.models import UwBridgeUser, get_now, ACTION_UPDATE,\
     ACTION_NEW, ACTION_CHANGE_REGID, ACTION_RESTORE
 from sis_provisioner.dao.hrp import get_appointments

@@ -6,8 +6,8 @@ accounts via the given worker.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
-from restclients.models.bridge import BridgeUser
+from restclients_core.exceptions import DataFailureException
+from uw_bridge.models import BridgeUser
 from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.account_managers import get_validated_user, VALID
 from sis_provisioner.account_managers.loader import Loader

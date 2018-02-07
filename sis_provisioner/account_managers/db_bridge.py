@@ -6,7 +6,7 @@ accounts via the given worker.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao.bridge import is_active_user_exist
 from sis_provisioner.dao.user import save_user
 from sis_provisioner.util.log import log_exception

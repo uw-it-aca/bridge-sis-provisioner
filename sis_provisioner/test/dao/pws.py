@@ -1,5 +1,5 @@
 from django.test import TestCase
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.test import fdao_pws_override
 from sis_provisioner.dao.pws import get_person, get_person_by_regid,\
     is_moved_netid, is_moved_regid

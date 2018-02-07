@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.test import TransactionTestCase
 from django.test.utils import override_settings
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.models import UwBridgeUser, get_now
 from sis_provisioner.test import fdao_pws_override, fdao_gws_override,\
     fdao_hrp_override

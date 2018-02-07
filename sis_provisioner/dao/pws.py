@@ -4,8 +4,8 @@ provides Person information of the current user
 """
 
 import logging
-from restclients.pws import PWS
-from restclients.exceptions import DataFailureException
+from uw_pws import PWS
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.util.log import log_resp_time, Timer
 
 

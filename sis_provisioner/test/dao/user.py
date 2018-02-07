@@ -1,7 +1,7 @@
 from django.test import TransactionTestCase
 from django.db.models import Q
 from datetime import timedelta
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.models import UwBridgeUser, get_now,\
     EmployeeAppointment
 from sis_provisioner.dao.pws import get_person, is_moved_netid, is_moved_regid
@@ -151,7 +151,7 @@ class TestUserDao(TransactionTestCase):
                          "James Faculty")
         self.assertTrue(user.is_new())
         self.assertFalse(user.is_update())
-        self.assertEqual(user.email, "")
+        self.assertEqual(user.email, None)
         self.assertEqual(user.get_email(), "faculty@uw.edu")
         self.assertTrue(user.has_display_name())
         self.assertEqual(user.get_display_name(), 'James Faculty')

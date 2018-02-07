@@ -5,7 +5,7 @@ via the Bridge APIs.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.dao import is_using_file_dao
 from sis_provisioner.dao.bridge import add_bridge_user, change_uwnetid,\

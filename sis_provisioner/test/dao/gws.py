@@ -1,5 +1,5 @@
 from django.test import TestCase
-from restclients.exceptions import DataFailureException
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.test import fdao_gws_override
 from sis_provisioner.dao.gws import get_uw_members, is_uw_member,\
     get_affiliate_employees, get_potential_users, is_qualified_user,\

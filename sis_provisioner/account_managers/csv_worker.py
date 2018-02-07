@@ -6,7 +6,7 @@ which can be imported on the Bridge UI.
 
 import logging
 import traceback
-from restclients.models.bridge import BridgeUser
+from uw_bridge.models import BridgeUser
 from sis_provisioner.models import UwBridgeUser
 from sis_provisioner.dao.bridge import get_regid_from_bridge_user
 from sis_provisioner.util.list_helper import get_item_counts_dict

@@ -3,7 +3,7 @@ from django.db import models
 from datetime import timedelta
 from django.utils import timezone
 from nameparser import HumanName
-# from restclients.models.hrp import Appointee
+from uw_hrp.models import Appointee
 
 
 def datetime_to_str(d_obj):
