@@ -78,7 +78,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-RESTCLIENTS_DAO_CACHE_CLASS='rc_django.cache_implementation.TimeSimpleCache'
+# RESTCLIENTS_DAO_CACHE_CLASS='rc_django.cache_implementation.TimeSimpleCache'
 
 BRIDGE_IMPORT_CSV_ROOT='/tmp/fl_test'
 BRIDGE_IMPORT_USER_FILENAME='busers'
