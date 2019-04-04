@@ -1,16 +1,18 @@
 {
-    "meta":{},
-    "linked":{
-       "custom_fields": [
-       {
+  "meta": { },
+  "linked":
+  {
+    "custom_fields": [
+      {
         "id": "5",
         "name": "REGID"
       }
-      ],
-    "custom_field_values": [
+    ],
+    "custom_field_values":
+    [
       {
         "id": "1",
-        "value": "9136CCB8F66711D5BE060004AC494FFE",
+        "value": "10000000000000000000000000000006",
         "links": {
           "custom_field": {
             "id": "5",
@@ -30,7 +32,7 @@
       },
       {
         "id": "3",
-        "value": "10000000000000000000000000000002",
+        "value": "9136CCB8F66711D5BE060004AC494FFE",
         "links": {
           "custom_field": {
             "id": "5",
@@ -40,7 +42,7 @@
       },
       {
         "id": "4",
-        "value": "10000000000000000000000000000011",
+        "value": "10000000000000000000000000000005",
         "links": {
           "custom_field": {
             "id": "5",
@@ -50,7 +52,7 @@
       },
       {
         "id": "5",
-        "value": "10000000000000000000000000000000",
+        "value": "10000000000000000000000000000016",
         "links": {
           "custom_field": {
             "id": "5",
@@ -60,7 +62,7 @@
       },
       {
         "id": "6",
-        "value": "B814EFBC6A7C11D5A4AE0004AC494FFE",
+        "value": "10000000000000000000000000000FFF",
         "links": {
           "custom_field": {
             "id": "5",
@@ -70,111 +72,103 @@
       },
       {
         "id": "7",
-        "value": "0136CCB8F66711D5BE060004AC494FFE",
+        "value": "10000000000000000000000000000066",
         "links": {
           "custom_field": {
             "id": "5",
             "type": "custom_fields"
           }
         }
-      },
-      {
-        "id": "103",
-        "value": "10000000000000000000000000000003",
-        "links": {
-          "custom_field": {
-            "id": "5",
-            "type": "custom_fields"
-          }
-        }
-      },
-     {
-        "id": "104",
-        "value": "10000000000000000000000000000004",
-        "links": {
-          "custom_field": {
-            "id": "5",
-            "type": "custom_fields"
-          }
-        }
-     }
+      }
     ]
    },
    "users":[
-      {   
-       "id":"194",
-       "uid":"javerage@uw.edu",
+     { "id":"194",
+       "uid":"ellen@uw.edu",
        "hris_id":null,
-       "first_name":"James",
+       "first_name":"Ellen",
        "last_name":"Student",
-       "full_name":"James Student",
-       "sortable_name":"Student, James Average",
-       "email":"javerage@uw.edu",
+       "full_name":"Ellen Student",
+       "sortable_name":"Student, Ellen",
+       "email":"ellen@uw.edu",
        "locale":"en",
-       "roles":["account_admin"],
-       "name":"James Average Student",
+       "roles":[],
+       "name":"Ellen Student",
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
        "loggedInAt":"2016-09-02T15:27:01.827-07:00",
-       "welcomeUrl":"https://uw.bridgeapp.com/user-setup/eyJ0eXA",
-       "passwordUrl":"https://uw.bridgeapp.com/reset-password/eyeXIjx",
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":1,
-       "links":{
-          "custom_field_values":["7"]
-       },
-       "meta":{"can_masquerade":true}
-      },
-      {
-       "id":"195",
-       "uid":"changed@uw.edu",
-       "hris_id":null,
-       "first_name":"James",
-       "last_name":"Student",
-       "full_name":"James Student",
-       "sortable_name":"Student, James Average",
-       "email":"javerage@uw.edu",
-       "locale":"en",
-       "roles":["account_admin"],
-       "name":"James Average Student",
-       "avatar_url":null,
-       "updated_at":"2016-07-25T16:24:42.131-07:00",
-       "deleted_at":null,
-       "unsubscribed":null,
-       "welcomedAt":null,
-       "loggedInAt":"2016-09-02T15:27:01.827-07:00",
-       "welcomeUrl":"https://uw.bridgeapp.com/user-setup/eyJ0eXA",
-       "passwordUrl":"https://uw.bridgeapp.com/reset-password/eyeXIjx",
-       "next_due_date":null,
-       "completed_courses_count":0,
        "links":{
           "custom_field_values":["1"]
        },
        "meta":{"can_masquerade":true}
        },
-       {"id":"196",
-       "id":"196",
-       "uid":"staff@uw.edu",
+     { "id":"195",
+       "uid":"javerage@uw.edu",
        "hris_id":null,
-       "first_name":"James Average",
-       "last_name":"Staff",
-       "full_name":"James Average Staff",
-       "sortable_name":"Staff, James Average",
-       "email":"staff@uw.edu",
+       "first_name":"Average",
+       "last_name":"Student",
+       "full_name":"Average Joseph Student",
+       "sortable_name":"Student, Average Joseph",
+       "email":"javerage@uw.edu",
        "locale":"en",
-       "roles":[],
-       "name":"James Average Staff",
+       "roles":["account_admin"],
+       "name":"Average Joseph Student",
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
        "loggedInAt":"2016-09-02T15:27:01.827-07:00",
-       "welcomeUrl":"https://uw.bridgeapp.com/user-setup/eyJ0eXA",
-       "passwordUrl":"https://uw.bridgeapp.com/reset-password/eyeXIjx",
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
+       "next_due_date":null,
+       "completed_courses_count":1,
+       "links":{
+          "custom_field_values":["3"]
+       },
+       "meta":{"can_masquerade":true}
+      },
+     { "id":"196",
+       "uid":"staff@uw.edu",
+       "hris_id":null,
+       "first_name":"Christopher",
+       "last_name":"Staff",
+       "full_name":"Chris Staff",
+       "sortable_name":"Staff, Christopher",
+       "email":"staff@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Chris Staff",
+       "avatar_url":null,
+       "updated_at":"2016-07-25T16:24:42.131-07:00",
+       "deleted_at":"2016-07-25T16:24:42.131-07:00",
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":"2016-09-02T15:27:01.827-07:00",
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
        "links":{
@@ -182,47 +176,30 @@
        },
        "meta":{"can_masquerade":true}
        },
-       {"id":"197",
-       "uid":"seagrad@uw.edu",
+     { "id":"198",
+       "uid":"tyler@uw.edu",
        "hris_id":null,
-       "first_name":"Seattle Graduate",
-       "last_name":"Student Employee",
-       "full_name":"Seattle Graduate Student Employee",
-       "sortable_name":"Student Employee, Seattle Graduate",
-       "email":"seagrad@uw.edu",
+       "first_name":"William",
+       "last_name":"Faculty",
+       "full_name":"William E Faculty",
+       "sortable_name":"Faculty, William",
+       "email":"tyler@uw.edu",
        "locale":"en",
        "roles":[],
-       "name":"Seattle Graduate Student Employee",
-       "avatar_url":null,
-       "updated_at":"2016-07-25T16:24:42.131-07:00",
-       "deleted_at":null,
-       "unsubscribed":null,
-       "welcomedAt":null,
-       "loggedInAt":null,
-       "next_due_date":null,
-       "completed_courses_count":0,
-       "links":{
-          "custom_field_values":["3"]
-       },
-       "meta":{"can_masquerade":true}
-       },
-       {"id":"198",
-       "uid":"affiemp@uw.edu",
-       "hris_id":null,
-       "first_name":"James",
-       "last_name":"Affiemp",
-       "full_name":"James Affiemp",
-       "sortable_name":"Affiemp, James",
-       "email":"affiemp@uw.edu",
-       "locale":"en",
-       "roles":[],
-       "name":"James Affiemp",
+       "name":"William E Faculty",
        "avatar_url":null,
        "updated_at":"2016-08-25T16:24:42.131-07:00",
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
        "loggedInAt":null,
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
        "links":{
@@ -230,23 +207,30 @@
        },
        "meta":{"can_masquerade":true}
        },
-       {"id":"199",
-       "uid":"unknown@uw.edu",
+     { "id":"199",
+       "uid":"alumni@uw.edu",
        "hris_id":null,
-       "first_name":"Unknown",
-       "last_name":"User",
-       "full_name":"Unknown User",
-       "sortable_name":"User, Unknown",
-       "email":"unknown@uw.edu",
+       "first_name":"User",
+       "last_name":"Alumnus",
+       "full_name":"User Alumnus",
+       "sortable_name":"Alumnus, User",
+       "email":"alumni@uw.edu",
        "locale":"en",
        "roles":[],
-       "name":"Unknown User",
+       "name":"Alumnus User",
        "avatar_url":null,
        "updated_at":"2016-09-25T16:24:42.131-07:00",
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
        "loggedInAt":null,
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
        "links":{
@@ -254,7 +238,7 @@
        },
        "meta":{"can_masquerade":true}
        },
-       {"id":"200",
+     { "id":"200",
        "uid":"leftuw@uw.edu",
        "hris_id":null,
        "first_name":"Leftuw",
@@ -271,6 +255,13 @@
        "unsubscribed":null,
        "welcomedAt":null,
        "loggedInAt":null,
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
        "links":{
@@ -278,58 +269,37 @@
        },
        "meta":{"can_masquerade":true}
        },
-       {
-       "id":"203",
-       "uid":"botgrad@uw.edu",
-       "hris_id":null,
-       "first_name":"Bothell Graduate",
-       "last_name":"Student",
-       "full_name":"Bothell Graduate Student",
-       "sortable_name":"Student, Bothell Graduate",
-       "email":"botgrad@uw.edu",
-       "locale":"en",
-       "roles":[],
-       "name":"Bothell Graduate Student",
-       "avatar_url":null,
-       "updated_at":"2016-07-25T16:24:42.131-07:00",
-       "deleted_at":"2016-07-25T16:24:42.131-07:00",
-       "unsubscribed":null,
-       "welcomedAt":null,
-       "loggedInAt":"2016-09-02T15:27:01.827-07:00",
-       "welcomeUrl":"https://uw.bridgeapp.com/user-setup/eyJ0eXA",
-       "passwordUrl":"https://uw.bridgeapp.com/reset-password/eyeXIjx",
-       "next_due_date":null,
-       "completed_courses_count":0,
-       "links":{
-          "custom_field_values":["103"]
-       },
-       "meta":{"can_masquerade":true}
-     },
      {
        "id":"204",
-       "uid":"oldgrad@uw.edu",
+       "uid":"retiree@uw.edu",
        "hris_id":null,
-       "first_name":"Tacoma Graduate",
-       "last_name":"Student",
-       "full_name":"Tacoma Graduate Student",
-       "sortable_name":"Student, Tacoma Graduate",
-       "email":"oldgrad@uw.edu",
+       "first_name":"Ellen Louise",
+       "last_name":"Retiree",
+       "full_name":"Ellen Louise Retiree",
+       "sortable_name":"Retiree, Ellen Louise",
+       "email":"retiree@uw.edu",
        "locale":"en",
        "roles":[],
-       "name":"Tacoma Graduate Student",
+       "name":"Ellen Louise Retiree",
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",
-       "deleted_at":"2016-07-25T16:24:42.131-07:00",
+       "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
        "loggedInAt":"2016-09-02T15:27:01.827-07:00",
-       "welcomeUrl":"https://uw.bridgeapp.com/user-setup/eyJ0eXA",
-       "passwordUrl":"https://uw.bridgeapp.com/reset-password/eyeXIjx",
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
        "links":{
-          "custom_field_values":["104"]
+          "custom_field_values":["1"]
        },
        "meta":{"can_masquerade":true}
-    }
-]}
+     }
+  ]
+}

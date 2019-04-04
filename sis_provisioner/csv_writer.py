@@ -1,7 +1,6 @@
 import logging
 import traceback
 from django.conf import settings
-from restclients.exceptions import DataFailureException
 from sis_provisioner.csv import get_filepath
 from sis_provisioner.csv.user_writer import make_import_user_csv_files,\
     make_regid_changed_user_csv_file, make_restore_user_csv_file,\

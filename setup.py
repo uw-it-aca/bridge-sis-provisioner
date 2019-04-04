@@ -13,13 +13,21 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 url='https://github.com/uw-it-aca/bridge-sis-provisioner'
 
 setup(
-    name='bridge-sis-provisioner',
+    name='Bridge-Acount-Provisioner',
     version=VERSION,
     packages=['sis_provisioner'],
     author="UW-IT AXDD",
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires = [
+        'Django>=2.0.10,<2.1',
+        'python-dateutil',
+        'ordereddict',
+        'UW-RestClients-Core<2.0',
+        'UW-RestClients-PWS<3.0',
+        'UW-RestClients-GWS<3.0',
+        'Uw-Restclients-Bridge<2.0',
+        'UW-RestClients-Django-Utils<3.0',
     ],
     license='Apache License, Version 2.0',
     description='An Django application that provisions UW users to Bridge',
@@ -30,6 +38,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
     ],
 )

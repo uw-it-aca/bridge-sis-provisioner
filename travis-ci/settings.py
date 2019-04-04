@@ -21,7 +21,6 @@ STATIC_ROOT = ''
 
 INSTALLED_APPS = [
     'rc_django',
-    'restclients',
     'sis_provisioner.apps.BridgeProvisionerConfig',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -7,12 +7,11 @@ def log_exception(logger, message, exc_info):
     exc_info is a string containing the full stack trace,
     including the exception type and value
     """
-    logger.error("%s => %s",
-                 message, exc_info.splitlines())
+    logger.error("{0} => {1}".format(message, exc_info.splitlines()))
 
 
 def log_resp_time(logger, message, timer):
-    logger.info("%s Time=%f sec", message, timer.get_elapsed())
+    logger.info("{0} Time={1} sec".format(message, timer.get_elapsed()))
 
 
 class Timer:

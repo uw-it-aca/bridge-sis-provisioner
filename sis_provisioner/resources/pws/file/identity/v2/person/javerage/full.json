@@ -1,0 +1,32 @@
+{
+"DisplayName":"Average Joseph Student",
+"EduPersonAffiliations":["member",
+                         "student"],
+"IsTestEntity":false,
+"PreferredFirstName":"Average",
+"PreferredMiddleName":"Joseph",
+"PreferredSurname":"Student",
+"PriorUWNetIDs":["changed"],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"Average Joseph",
+"RegisteredName":"Average Joseph Student",
+"RegisteredSurname":"Student",
+"RepositoryTimeStamp":"12/7/2018 1:45:33 AM",
+"UIDNumber":"35443",
+"UWNetID":"javerage",
+"UWRegID":"9136CCB8F66711D5BE060004AC494FFE",
+"WhitepagesPublish":false,
+"PersonAffiliations":{
+    "AlumPersonAffiliation":{
+        "DevelopmentID":"0000773877"},
+    "StudentPersonAffiliation":{
+        "StudentNumber":"1033334",
+        "StudentSystemKey":"000083856",
+        "StudentWhitePages":{
+            "Class":null,
+            "Departments":[],
+            "Email":null,
+            "Name":null,
+            "Phone":null,
+            "PublishInDirectory":false}
+}}}

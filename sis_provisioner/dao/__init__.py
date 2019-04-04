@@ -1,7 +1,6 @@
-from restclients.dao import PWS_DAO
+from restclients_core.exceptions import DataFailureException, InvalidNetID
+from uw_pws import DAO as PWS_DAO
 
 
 def is_using_file_dao():
-    dao = PWS_DAO()._getDAO()
-    class_name = dao.__class__.__name__
-    return class_name == "File"
+    return SWS_DAO.get_implementation().is_mock()

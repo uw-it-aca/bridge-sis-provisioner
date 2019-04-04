@@ -1,0 +1,57 @@
+{
+  "meta": {},
+  "linked":
+   {
+    "custom_fields": [
+       {
+        "id": "5",
+        "name": "REGID"
+      }],
+    "custom_field_values": [
+      {
+        "id": "2",
+        "value": "10000000000000000000000000000001",
+        "links": {
+          "custom_field": {
+            "id": "5",
+            "type": "custom_fields"
+          }
+        }
+      }
+    ]
+   },
+   "users":[
+     {
+       "id":"196",
+       "uid":"staff@uw.edu",
+       "hris_id":null,
+       "first_name":"Chris",
+       "last_name":"Staff",
+       "full_name":"Chris Staff",
+       "sortable_name":"Staff, Chris",
+       "email":"staff@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Chris Staff",
+       "avatar_url":null,
+       "updated_at":"2016-07-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":"2016-09-02T15:27:01.827-07:00",
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
+       "next_due_date":null,
+       "completed_courses_count":0,
+       "links":{
+          "custom_field_values":["2"]
+       },
+       "meta":{"can_masquerade":true}
+     }
+   ]
+}
