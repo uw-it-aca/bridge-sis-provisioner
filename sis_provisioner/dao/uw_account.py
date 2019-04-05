@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def delete_uw_account(uwnetid):
-    uw_acc = get_user_by_netid(uwnetid)
+    uw_acc = get_by_netid(uwnetid)
     if uw_acc is not None:
         uw_acc.delete()
 

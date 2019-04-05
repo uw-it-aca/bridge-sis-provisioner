@@ -17,6 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         total_count = 0
+        UwAccount.objects.all().delete()
         users = UwBridgeUser.objects.all()
         print("Start at {0} to migrate {1:d} records".format(
             datetime.now(), len(users)))

@@ -37,6 +37,9 @@ class TestUwAccountDao(TransactionTestCase):
         user1 = get_by_netid('staff')
         self.assertEqual(user, user1)
 
+        delete_uw_account('staff')
+        self.assertIsNone(get_by_netid('staff'))
+
         self.assertIsNone(get_by_bridgeid(0))
         self.assertEqual(len(get_by_bridgeid(12)), 0)
         self.assertIsNone(get_by_netid('none'))
