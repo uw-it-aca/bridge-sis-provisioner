@@ -14,8 +14,6 @@ def account_not_changed(uw_account, person, bridge_account):
     :return: True if the attributes have the same values
     """
     return (person.uwnetid == bridge_account.netid and
-            (uw_account.has_bridge_id() is False or
-             uw_account.bridge_id == bridge_account.bridge_id) and
             get_email(person) == bridge_account.email and
             get_full_name(person) == bridge_account.full_name and
             _normalize_name(person.surname) == bridge_account.last_name and

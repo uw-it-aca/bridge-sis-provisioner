@@ -41,7 +41,7 @@ class UserUpdater(GwsBridgeLoader):
             person = get_person(uwnetid)
             if person is None:
                 # not a valid netid
-                self.add_error("Not found in PWS {0}".format(uw_acc))
+                self.add_error("Not found in PWS, skip {0}".format(uw_acc))
                 # self.terminate_uw_account(uw_acc)
                 continue
 

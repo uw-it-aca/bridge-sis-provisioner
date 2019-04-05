@@ -93,8 +93,7 @@ class BridgeChecker(UserUpdater):
                 self.logger.info("Merged Bridge accounts {0} TO {1}".format(
                     bridge_acc, bridge_acc1))
 
-            if not uw_account.has_bridge_id():
-                uw_account.set_bridge_id(bridge_acc1.bridge_id)
+            uw_account.set_bridge_id(bridge_acc1.bridge_id)
 
             if not account_not_changed(uw_account, person, bridge_acc1):
                 self.logger.info("worker.update {0}".format(uw_account))

@@ -38,7 +38,8 @@ class GwsBridgeLoader(Loader):
         for uwnetid in self.get_users_to_process():
             person = get_person(uwnetid)
             if person is None:
-                self.add_error("UWNetID '{0}' NOT in PWS".format(uwnetid))
+                self.add_error(
+                    "UWNetID '{0}' NOT in PWS, skip!".format(uwnetid))
                 continue
             self.take_action(person)
 
@@ -74,6 +75,8 @@ class GwsBridgeLoader(Loader):
                 self.add_error("Failed to restore {0}\n".format(uw_account))
                 return
 
+        uw_account.set_bridge_id(bridge_acc.bridge_id)
+
         if not account_not_changed(uw_account, person, bridge_acc):
             # update the existing account with person data
             self.worker.update_user(bridge_acc, uw_account, person)
@@ -108,7 +111,6 @@ class GwsBridgeLoader(Loader):
                 return True, cur_bri_acc
 
             if self.del_bridge_account(cur_bri_acc):
-                uw_account.set_bridge_id(prev_bri_acc.bridge_id)
                 return True, prev_bri_acc
 
             self.add_error("Please manually merge: {0} TO {1}".format(
@@ -118,7 +120,6 @@ class GwsBridgeLoader(Loader):
         # one active account and one deleted account
         if prev_bri_acc is not None:
             # account of the current netid is deleted
-            uw_account.set_bridge_id(prev_bri_acc.bridge_id)
             return exi_prev, prev_bri_acc
 
         # account of the previous netid is deleted

@@ -14,15 +14,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('data-source',
                             choices=['gws', 'db', 'bridge'])
-        parser.add_argument('--include-hrp', nargs='?', default=None)
 
     def handle(self, *args, **options):
         source = options['data-source']
-        try:
-            include_hrp = options['--include-hrp'] is not None
-        except KeyError:
-            include_hrp = False
-
         if source == 'gws':
             loader = GwsBridgeLoader(BridgeWorker())
         elif source == 'db':
