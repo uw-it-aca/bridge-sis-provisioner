@@ -8,22 +8,6 @@ from sis_provisioner.tests import fdao_gws_override
 @fdao_gws_override
 class TestGwsDao(TestCase):
 
-    def test_get_uw_members(self):
-        users = get_members_of_group("uw_member")
-        self.assertIsNotNone(users)
-        self.assertEqual(len(users), 5)
-        self.assertEqual(users[0].name, "faculty")
-        self.assertEqual(users[1].name, "javerage")
-        self.assertEqual(users[2].name, "retiree")
-        self.assertEqual(users[3].name, "staff")
-        self.assertEqual(users[4].name, "not_in_pws")
-
-    def test_get_affiliate(self):
-        users = get_members_of_group("uw_affiliate")
-        self.assertIsNotNone(users)
-        self.assertEqual(len(users), 1)
-        self.assertEqual(users[0].name, "affiemp")
-
     def test_get_affiliate(self):
         self.assertRaises(DataFailureException, get_members_of_group, "uw")
 

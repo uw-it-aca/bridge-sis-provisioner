@@ -14,10 +14,6 @@ from sis_provisioner.tests.account_managers import set_uw_account
 @fdao_bridge_override
 class TestBridgeWorker(TransactionTestCase):
 
-    def get_javerage(self):
-        exists, bri_acc = get_user_by_uwnetid('javerage')
-        return javerage
-
     def test_add_new_user(self):
         worker = BridgeWorker()
         uw_acc = set_uw_account('affiemp')

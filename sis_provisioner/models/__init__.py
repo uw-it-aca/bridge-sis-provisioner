@@ -391,10 +391,7 @@ class UwAccount(models.Model):
             self.save()
 
     def has_prev_netid(self):
-        try:
-            return self.prev_netid is not None and len(self.prev_netid) > 0
-        except AttributeError:
-            return False
+        return self.prev_netid is not None and len(self.prev_netid) > 0
 
     def netid_changed(self):
         return self.has_prev_netid()
