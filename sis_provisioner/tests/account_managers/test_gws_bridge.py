@@ -1,4 +1,5 @@
 from django.test import TransactionTestCase
+from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao.bridge import get_user_by_uwnetid
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.models import UwAccount
@@ -27,12 +28,19 @@ class TestGwsBridgeLoader(TransactionTestCase):
     def test_fetch_users(self):
         loader = GwsBridgeLoader(BridgeWorker())
         user_list = loader.fetch_users()
-        self.assertEqual(len(user_list), 6)
+        self.assertEqual(len(user_list), 7)
         self.assertEqual(sorted(user_list),
-                         ['affiemp', 'faculty', 'javerage',
+                         ['affiemp', 'error500', 'faculty', 'javerage',
                           'not_in_pws', 'retiree', 'staff'])
 
     def test_match_bridge_account(self):
+        # 500 error
+        uw_acc = set_uw_account("error500")
+        loader = GwsBridgeLoader(BridgeWorker())
+        self.assertRaises(DataFailureException,
+                          loader.match_bridge_account,
+                          uw_acc)
+
         # account not exist
         uw_acc = set_uw_account("affiemp")
         loader = GwsBridgeLoader(BridgeWorker())
@@ -104,7 +112,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         set_db_records()
         loader = GwsBridgeLoader(BridgeWorker())
         loader.load()
-        self.assertEqual(loader.get_total_count(), 6)
+        self.assertEqual(loader.get_total_count(), 7)
         self.assertEqual(loader.get_new_user_count(), 1)
         self.assertEqual(loader.get_restored_count(), 1)
         self.assertEqual(loader.get_netid_changed_count(), 2)

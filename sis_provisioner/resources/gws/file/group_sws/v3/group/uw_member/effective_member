@@ -38,7 +38,7 @@
     }
     ,{
       "type": "uwnetid",
-      "id": "not_in_pws",
+      "id": "error500",
       "mtype": "direct",
       "source": ""
     }

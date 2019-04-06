@@ -27,7 +27,10 @@ class Command(BaseCommand):
             print("Invalid data source, abort!")
             return
 
-        loader.load()
+        try:
+            loader.load()
+        except Exception as ex:
+            print(str(ex))
 
         print(datetime.now())
         print("Checked all {0:d} users in {1}\n".format(

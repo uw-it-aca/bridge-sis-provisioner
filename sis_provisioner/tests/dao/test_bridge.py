@@ -1,4 +1,5 @@
 from django.test import TransactionTestCase
+from restclients_core.exceptions import DataFailureException
 from uw_bridge.custom_field import new_regid_custom_field
 from uw_bridge.models import BridgeUser
 from sis_provisioner.models import UwAccount, get_now
@@ -83,6 +84,10 @@ class TestBridgeDao(TransactionTestCase):
                                     last_updated=get_now()))
 
     def test_get_bridge_user(self):
+        self.assertRaises(DataFailureException,
+                          get_user_by_uwnetid,
+                          "error500")
+
         exists, buser = get_user_by_uwnetid("none")
         self.assertFalse(exists)
 

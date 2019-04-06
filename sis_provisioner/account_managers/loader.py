@@ -117,5 +117,5 @@ class Loader:
     def handle_exception(self, msg, ex, traceback):
         log_exception(self.logger, msg, traceback.format_exc())
         self.worker.append_error("Failed {0} ==> {1}\n".format(msg, str(ex)))
-        if isinstance(ex, DataFailureException) and ex.status == 500:
+        if isinstance(ex, DataFailureException) and ex.status == 401:
             raise

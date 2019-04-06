@@ -12,5 +12,11 @@
     "timestamp": 1554231855409
   },
   "data": [
+    {
+      "type": "uwnetid",
+      "id": "not_in_pws",
+      "mtype": "direct",
+      "source": ""
+    }
   ]
 }
