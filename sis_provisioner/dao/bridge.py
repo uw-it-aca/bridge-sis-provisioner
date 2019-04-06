@@ -73,11 +73,11 @@ def get_user_by_bridgeid(id, exclude_deleted=True):
             get_user_by_id(id, exclude_deleted=exclude_deleted))
         return True, bridge_user
     except DataFailureException as ex:
-        log_exception(logger, "get_user_by_bridgeid({0})".format(id),
-                      traceback.format_exc(chain=False))
         if ex.status == 404:
             # the user not exists in Bridge
             return False, None
+        log_exception(logger, "get_user_by_bridgeid({0})".format(id),
+                      traceback.format_exc(chain=False))
         raise
 
 
@@ -92,12 +92,12 @@ def get_user_by_uwnetid(netid):
             "get_user_by_uwnetid('{0}')".format(netid), get_user(netid))
         return True, bridge_user
     except DataFailureException as ex:
-        log_exception(logger,
-                      "get_user_by_uwnetid('{0}')".format(netid),
-                      traceback.format_exc(chain=False))
         if ex.status == 404:
             # the user not exists in Bridge
             return False, None
+        log_exception(logger,
+                      "get_user_by_uwnetid('{0}')".format(netid),
+                      traceback.format_exc(chain=False))
         raise
 
 
