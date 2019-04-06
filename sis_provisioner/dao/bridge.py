@@ -61,7 +61,7 @@ def get_all_bridge_users():
         log_resp_time(logger, action, timer)
 
 
-def get_user_by_bridgeid(id):
+def get_user_by_bridgeid(id, exclude_deleted=True):
     """
     if exists an active account: returns True, a valid BridgeUser object
     if exists a terminated account: True, None
@@ -69,7 +69,8 @@ def get_user_by_bridgeid(id):
     """
     try:
         bridge_user = _process_response(
-            "get_user_by_bridgeid({0})".format(id), get_user_by_id(id))
+            "get_user_by_bridgeid({0})".format(id),
+            get_user_by_id(id, exclude_deleted=exclude_deleted))
         return True, bridge_user
     except DataFailureException as ex:
         log_exception(logger, "get_user_by_bridgeid({0})".format(id),
@@ -80,7 +81,7 @@ def get_user_by_bridgeid(id):
         raise
 
 
-def get_user_by_uwnetid(netid, exclude_deleted=True):
+def get_user_by_uwnetid(netid):
     """
     if exists an active account: returns True, a valid BridgeUser object
     if exists a terminated account: True, None
