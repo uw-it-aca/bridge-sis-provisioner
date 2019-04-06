@@ -26,7 +26,7 @@ setup(
         'UW-RestClients-Core<2.0',
         'UW-RestClients-PWS<3.0',
         'UW-RestClients-GWS<3.0',
-        'Uw-Restclients-Bridge<2.0',
+        'Uw-Restclients-Bridge==1.1.1',
         'UW-RestClients-Django-Utils<3.0',
     ],
     license='Apache License, Version 2.0',
