@@ -109,12 +109,19 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertEqual(loader.get_updated_count(), 3)
 
     def test_load_gws(self):
-        set_db_records()
-        loader = GwsBridgeLoader(BridgeWorker())
-        loader.load()
-        self.assertEqual(loader.get_total_count(), 7)
-        self.assertEqual(loader.get_new_user_count(), 1)
-        self.assertEqual(loader.get_restored_count(), 1)
-        self.assertEqual(loader.get_netid_changed_count(), 2)
-        self.assertEqual(loader.get_updated_count(), 3)
-        self.assertTrue(loader.has_error())
+        with self.settings(ERRORS_TO_ABORT_LOADER=[]):
+            set_db_records()
+            loader = GwsBridgeLoader(BridgeWorker())
+            loader.load()
+            self.assertEqual(loader.get_total_count(), 7)
+            self.assertEqual(loader.get_new_user_count(), 1)
+            self.assertEqual(loader.get_restored_count(), 1)
+            self.assertEqual(loader.get_netid_changed_count(), 2)
+            self.assertEqual(loader.get_updated_count(), 3)
+            self.assertTrue(loader.has_error())
+
+    def test_load_abort(self):
+        with self.settings(ERRORS_TO_ABORT_LOADER=[500]):
+            set_db_records()
+            loader = GwsBridgeLoader(BridgeWorker())
+            self.assertRaises(DataFailureException, loader.load)

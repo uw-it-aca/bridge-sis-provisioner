@@ -9,6 +9,7 @@ from abc import ABCMeta, abstractmethod
 from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao.gws import get_potential_users
 from sis_provisioner.util.log import log_exception
+from sis_provisioner.util.settings import errors_to_abort_loader
 
 
 class Loader:
@@ -117,5 +118,6 @@ class Loader:
     def handle_exception(self, msg, ex, traceback):
         log_exception(self.logger, msg, traceback.format_exc())
         self.worker.append_error("Failed {0} ==> {1}\n".format(msg, str(ex)))
-        if isinstance(ex, DataFailureException) and ex.status == 401:
+        if (isinstance(ex, DataFailureException) and
+                ex.status in errors_to_abort_loader()):
             raise
