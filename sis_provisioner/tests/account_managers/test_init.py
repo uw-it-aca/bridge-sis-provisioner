@@ -14,6 +14,7 @@ class TestValidUser(TransactionTestCase):
 
     def test_account_not_changed(self):
         uw_account = set_uw_account('javerage')
+        save_bridge_id(uw_account, 195)
         person = get_person('javerage')
         bridge_account = get_mock_bridge_user(
             195,
@@ -25,10 +26,6 @@ class TestValidUser(TransactionTestCase):
             "9136CCB8F66711D5BE060004AC494FFE")
         self.assertTrue(_not_changed_regid("9136CCB8F66711D5BE060004AC494FFE",
                                            bridge_account))
-        self.assertTrue(
-            account_not_changed(uw_account, person, bridge_account))
-
-        save_bridge_id(uw_account, 195)
         self.assertTrue(
             account_not_changed(uw_account, person, bridge_account))
 
