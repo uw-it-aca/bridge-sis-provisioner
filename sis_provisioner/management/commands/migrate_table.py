@@ -3,6 +3,7 @@ from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.models import UwAccount, UwBridgeUser
+from sis_provisioner.util.log import log_resp_time, Timer
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
+        timer = Timer()
         total_count = 0
         UwAccount.objects.all().delete()
         users = UwBridgeUser.objects.all()
@@ -41,5 +43,8 @@ class Command(BaseCommand):
                     total_count += 1
             except Exception as ex:
                 print("Copy {0} ==> {1}".format(old_acc, str(ex)))
+
         print("Finished copy of {0:d} records at {1}\n".format(
             total_count, datetime.now()))
+
+        log_resp_time(logger, "Table migration", timer)

@@ -39,7 +39,8 @@ class BridgeWorker(Worker):
             if self._uid_matched(uw_account, bridge_account):
                 uw_account.set_bridge_id(bridge_account.bridge_id)
                 self.total_new_users_count += 1
-                logger.info("{0} ==> {1}".format(action, bridge_account))
+                logger.info("{0} ==> {1}".format(
+                    action, bridge_account.__str__(orig=False)))
                 return
             self.append_error("Failed to {0}\n".format(action))
 
@@ -65,7 +66,8 @@ class BridgeWorker(Worker):
             if bridge_account is not None:
                 uw_account.set_restored()
                 self.total_restored_count += 1
-                logger.info("{0} ==> {1}".format(action, bridge_account))
+                logger.info("{0} ==> {1}".format(
+                    action, bridge_account.__str__(orig=False)))
                 return bridge_account
         except Exception as ex:
             self._handle_exception(action, ex, traceback)
@@ -76,7 +78,8 @@ class BridgeWorker(Worker):
         bridge_account = change_uwnetid(uw_account)
         if self._uid_matched(uw_account, bridge_account):
             self.total_netid_changes_count += 1
-            logger.info("{0} ==> {1}".format(action, bridge_account))
+            logger.info("{0} ==> {1}".format(
+                action, bridge_account.__str__(orig=False)))
             return
         self.append_error("Failed to {0}\n".format(action))
 
@@ -92,7 +95,8 @@ class BridgeWorker(Worker):
             if self._uid_matched(uw_account, updated_bri_acc):
                 uw_account.set_updated()
                 self.total_updated_count += 1
-                logger.info("{0} ==> {1}".format(action, updated_bri_acc))
+                logger.info("{0} ==> {1}".format(
+                    action, bridge_account.__str__(orig=False)))
                 return
             self.append_error("Failed to {0}\n".format(action))
         except Exception as ex:

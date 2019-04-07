@@ -5,6 +5,10 @@ from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
+from sis_provisioner.util.log import log_resp_time, Timer
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -16,6 +20,9 @@ class Command(BaseCommand):
                             choices=['gws', 'db', 'bridge'])
 
     def handle(self, *args, **options):
+        timer = Timer()
+        print("Start at {0}".format(datetime.now()))
+
         source = options['data-source']
         if source == 'gws':
             loader = GwsBridgeLoader(BridgeWorker())
@@ -26,15 +33,16 @@ class Command(BaseCommand):
         else:
             print("Invalid data source, abort!")
             return
-
         try:
             loader.load()
         except Exception as ex:
             print(str(ex))
 
-        print(datetime.now())
-        print("Checked all {0:d} users in {1}\n".format(
+        log_resp_time(logger, "Load users", timer)
+
+        print("Checked {0:d} users, source: {1}\n".format(
             loader.get_total_count(), source))
+
         print("{0:d} new users added\n".format(loader.get_new_user_count()))
         print("{0:d} users changed netid\n".format(
             loader.get_netid_changed_count()))
