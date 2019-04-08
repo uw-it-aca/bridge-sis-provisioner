@@ -32,7 +32,7 @@ class BridgeWorker(Worker):
                 ret_bridge_user.netid == uw_account.netid)
 
     def add_new_user(self, uw_account, person):
-        action = "CREATE in Bridge {0}".format(uw_account)
+        action = "CREATE in Bridge: {0}".format(uw_account.netid)
         try:
             bridge_account = add_bridge_user(get_bridge_user_to_add(person))
 
@@ -74,7 +74,8 @@ class BridgeWorker(Worker):
         return None
 
     def update_uid(self, uw_account):
-        action = "CHANGE UID for {0}".format(uw_account)
+        action = "CHANGE UID from {0} to {1}".format(
+            uw_account.prev_netid, uw_account.netid)
         bridge_account = change_uwnetid(uw_account)
         if self._uid_matched(uw_account, bridge_account):
             self.total_netid_changes_count += 1
@@ -85,7 +86,7 @@ class BridgeWorker(Worker):
 
     def update_user(self, bridge_account, uw_account, person):
         user_data = get_bridge_user_to_upd(person, bridge_account)
-        action = "UPDATE in Bridge {0}".format(bridge_account)
+        action = "UPDATE in Bridge: {0}".format(bridge_account.netid)
         try:
             if (uw_account.netid_changed() and
                     bridge_account.netid == uw_account.prev_netid):

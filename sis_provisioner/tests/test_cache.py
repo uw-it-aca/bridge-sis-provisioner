@@ -10,9 +10,10 @@ from sis_provisioner.tests import (
 
 
 CACHE = 'sis_provisioner.cache.BridgeAccountCache'
+FIVE_SECONDS = 5
 FIVE_MINS = 60 * 5
 ONE_HOUR = 60 * 60
-FOUR_HOURS = 60 * 60 * 4
+EIGHT_HOURS = 60 * 60 * 8
 
 
 @fdao_pws_override
@@ -22,14 +23,14 @@ class TestCachePolicy(TestCase):
 
     def test_get_cache_time(self):
         self.assertEquals(get_cache_time("gws", "/group_sws/v3/group/"),
-                          FOUR_HOURS)
+                          EIGHT_HOURS)
         self.assertEquals(get_cache_time("pws", "/identity/v2/person/"),
                           ONE_HOUR)
         self.assertEquals(get_cache_time("bridge", "/api/author/users/"),
-                          FIVE_MINS)
+                          FIVE_SECONDS)
         self.assertEquals(get_cache_time("bridge",
                                          "/api/author/custom_fields"),
-                          ONE_HOUR)
+                          FIVE_MINS)
 
     def test_cache_expiration(self):
         with self.settings(RESTCLIENTS_DAO_CACHE_CLASS=CACHE):
@@ -49,13 +50,13 @@ class TestCachePolicy(TestCase):
             cache_entry = CacheEntryTimed.objects.get(service='gws', url=url)
             orig_time_saved = cache_entry.time_saved
             cache_entry.time_saved = (orig_time_saved -
-                                      timedelta(minutes=(60 * 4) - 2))
+                                      timedelta(minutes=(60 * 8) - 2))
             cache_entry.save()
             response = cache.getCache("gws", url, {})
             self.assertNotEquals(response, None)
 
             cache_entry.time_saved = (orig_time_saved -
-                                      timedelta(minutes=(60 * 4) + 1))
+                                      timedelta(minutes=(60 * 8) + 1))
             cache_entry.save()
             response = cache.getCache("gws", url, {})
             self.assertEquals(response, None)

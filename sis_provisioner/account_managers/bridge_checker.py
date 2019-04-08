@@ -37,8 +37,8 @@ class BridgeChecker(UserUpdater):
 
             person = get_person(uwnetid)
             if person is None:
-                self.add_error("Not in PWS, skip {0}".format(bridge_acc))
-                # let's see what these are
+                self.logger.error(
+                    "Invalid UWNetID, skip {0}".format(bridge_acc))
                 continue
 
             if is_prior_netid(uwnetid, person):
@@ -59,7 +59,7 @@ class BridgeChecker(UserUpdater):
                         # the current netid has another account in DB
                         # this account will be merged then.
                         self.logger.info(
-                            "LEFT prior acc {0} UNTIL {1}".format(
+                            "HOLD prior acc {0} UNTIL {1}".format(
                                 bridge_acc, cur_bri_acc))
                         continue
 
@@ -96,7 +96,8 @@ class BridgeChecker(UserUpdater):
             uw_account.set_bridge_id(bridge_acc1.bridge_id)
 
             if not account_not_changed(uw_account, person, bridge_acc1):
-                self.logger.info("worker.update {0}".format(uw_account))
+                self.logger.debug("To update {0}, {1}".format(
+                    uw_account, bridge_acc1))
                 self.worker.update_user(bridge_acc1, uw_account, person)
 
         except Exception as ex:

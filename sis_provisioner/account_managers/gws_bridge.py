@@ -38,7 +38,7 @@ class GwsBridgeLoader(Loader):
         for uwnetid in self.get_users_to_process():
             person = get_person(uwnetid)
             if person is None:
-                self.add_error(
+                self.logger.error(
                     "UWNetID '{0}' NOT in PWS, skip!".format(uwnetid))
                 continue
             self.take_action(person)

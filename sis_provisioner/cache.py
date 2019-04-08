@@ -7,17 +7,21 @@ FIVE_SECONDS = 5
 FIVE_MINS = 60 * 5
 HALF_HOUR = 60 * 30
 ONE_HOUR = 60 * 60
-FOUR_HOURS = 60 * 60 * 4
+EIGHT_HOURS = 60 * 60 * 8
 
 
 def get_cache_time(service, url):
 
-    if ("bridge" == service and
-            re.match(r"^/api/author/users/", url) is not None):
+    if "bridge" == service:
+        if re.match(r"^/api/author/users/", url) is not None:
+            return FIVE_SECONDS
         return FIVE_MINS
 
     if "gws" == service:
-        return FOUR_HOURS
+        return EIGHT_HOURS
+
+    if "pws" == service:
+        return ONE_HOUR
 
     return ONE_HOUR
 
