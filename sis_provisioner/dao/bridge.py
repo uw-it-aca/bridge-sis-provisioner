@@ -48,12 +48,13 @@ def delete_bridge_user(bridge_user):
 
 def get_all_bridge_users():
     """
-    Return a list of active BridgeUser objects with custom fields
+    Return a list of active BridgeUser objects with minimum data
     """
     timer = Timer()
     action = "get_all_bridge_users"
     try:
-        return get_all_users()
+        return get_all_users(include_course_summary=False,
+                             no_custom_fields=True)
     except Exception:
         log_exception(logger, action, traceback.format_exc(chain=False))
         raise

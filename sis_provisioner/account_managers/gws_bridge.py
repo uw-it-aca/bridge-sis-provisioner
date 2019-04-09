@@ -77,7 +77,7 @@ class GwsBridgeLoader(Loader):
             # exists a deleted/terminated bridge account
             bridge_acc = self.worker.restore_user(uw_account)
             if bridge_acc is None:
-                self.add_error("Failed to restore {0}\n".format(uw_account))
+                self.add_error("Failed to restore {0}".format(uw_account))
                 return
 
         uw_account.set_bridge_id(bridge_acc.bridge_id)

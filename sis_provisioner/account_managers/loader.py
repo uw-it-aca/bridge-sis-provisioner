@@ -113,7 +113,7 @@ class Loader:
 
     def add_error(self, err_msg):
         self.logger.error(err_msg)
-        self.worker.append_error(err_msg)
+        self.worker.append_error("{0}\n".format(err_msg))
 
     def handle_exception(self, msg, ex, traceback):
         log_exception(self.logger, msg, traceback.format_exc())
