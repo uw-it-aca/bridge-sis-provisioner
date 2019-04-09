@@ -1,105 +1,93 @@
-import logging
-import traceback
-from restclients.exceptions import DataFailureException,\
-     InvalidNetID, InvalidRegID
-from sis_provisioner.dao.bridge import get_all_bridge_users
-from sis_provisioner.dao.gws import get_potential_users
-from sis_provisioner.dao.pws import get_person, get_person_by_regid
-from sis_provisioner.dao.user import get_all_users
-from sis_provisioner.util.log import log_exception
+import re
+from string import capwords
+from nameparser import HumanName
+from uw_bridge.custom_field import new_regid_custom_field
+from uw_bridge.models import BridgeUser
+from sis_provisioner.dao.bridge import get_regid_from_bridge_user
 
 
-INVALID = -2  # netid or regid itself is invalid
-DISALLOWED = -1  # not a personal netid or regid
-LEFT_UW = 0   # netid and regid are up-to-date and no longer with UW
-VALID = 1     # netid and regid are up-to-date (match with Person)
-CHANGED = 2   # netid or regid or both changed
-
-
-def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
+def account_not_changed(uw_account, person, bridge_account):
     """
-    Validate an existing user.
-    return the corresponding Person object and a status
-    raise DataFailureException if failed to access GWS or PWS
+    :param uw_account: a valid UwBridgeUser object
+    :param person: a valid Person object
+    :param bridge_account: a valid BridgeUser object
+    :return: True if the attributes have the same values
     """
-    try:
-        if uwregid is None:
-            person = get_person(uwnetid)
-        else:
-            person = get_person_by_regid(uwregid)
-
-        # changed takes priority over left UW
-        if person.uwnetid != uwnetid:
-            return person, CHANGED
-
-        if uwregid is not None and person.uwregid != uwregid:
-            return person, CHANGED
-
-        if _user_left_uw(users_in_gws, uwnetid):
-            logger.info("validate '%s' has left uw!", uwnetid)
-            return person, LEFT_UW
-
-        return person, VALID
-
-    except InvalidNetID:
-        logger.error("validate_by_netid: '%s' invalid!",
-                     uwnetid)
-        return None, INVALID
-    except InvalidRegID:
-        logger.error("validate_by_regid: '%s' invalid!",
-                     uwregid)
-        return None, INVALID
-    except DataFailureException as ex:
-        if ex.status == 404:
-            # shared or system netids
-            logger.info("validate ('%s', %s) not personal netid/regid",
-                        uwnetid, uwregid)
-            return None, DISALLOWED
-        log_exception(logger,
-                      "validate ('%s', %s) failed, skip!" % (uwnetid,
-                                                             uwregid),
-                      traceback.format_exc())
-        raise
+    return (person.uwnetid == bridge_account.netid and
+            get_email(person) == bridge_account.email and
+            get_full_name(person) == bridge_account.full_name and
+            _normalize_name(person.surname) == bridge_account.last_name and
+            _not_changed_regid(person.uwregid, bridge_account))
 
 
-def fetch_users_from_gws(logger):
-    try:
-        return get_potential_users()
-    except Exception:
-        log_exception(logger,
-                      "Failed to fetch_users_from_gws:",
-                      traceback.format_exc())
-    return []
+def get_full_name(person):
+    if (len(person.display_name) > 0 and
+            not person.display_name.isdigit() and
+            not person.display_name.isupper()):
+        return person.display_name
+
+    name = HumanName(person.full_name)
+    name.capitalize()
+    name.string_format = "{first} {last}"
+    return str(name)
 
 
-def fetch_users_from_db(logger):
+def get_email(person):
+    if len(person.email_addresses) == 0:
+        return "{0}@uw.edu".format(person.uwnetid)
+
+    email_str = person.email_addresses[0]
+    email_s1 = re.sub(" ", "", email_str)
+    return re.sub(r"\.$", "", email_s1, flags=re.IGNORECASE)
+
+
+def _not_changed_regid(uwregid, bridge_account):
+    regid = get_regid_from_bridge_user(bridge_account)
+    return (regid is not None and uwregid == regid)
+
+
+def _normalize_name(name):
     """
-    Return a list of UwBridgeUser objects of
-    all the existing users in the DB
+    Return a title faced name if the name is not empty
     """
-    try:
-        return get_all_users()
-    except Exception:
-        log_exception(logger,
-                      "Failed to fetch_users_from_db:",
-                      traceback.format_exc())
-    return []
+    if name is not None and len(name) > 0:
+        return capwords(name)
+    return ""
 
 
-def fetch_users_from_bridge(logger):
+def get_bridge_user_to_add(person):
     """
-    Return a list of BridgeUser objects of
-    all the existing active users in Bridge
+    :param person: a valid Person object
+    :return: a BridgeUser object
     """
-    try:
-        return get_all_bridge_users()
-    except Exception:
-        log_exception(logger,
-                      "Failed to fetch_users_from_bridge:",
-                      traceback.format_exc())
-    return []
+    user = BridgeUser(netid=person.uwnetid,
+                      email=get_email(person),
+                      full_name=get_full_name(person),
+                      first_name=_normalize_name(person.first_name),
+                      last_name=_normalize_name(person.surname))
+    user.custom_fields.append(new_regid_custom_field(person.uwregid))
+    return user
 
 
-def _user_left_uw(users_in_gws, uwnetid):
-    return (uwnetid is not None and
-            len(users_in_gws) > 0 and uwnetid not in users_in_gws)
+def get_bridge_user_to_upd(person, existing_bridge_account):
+    """
+    :param person: a valid Person object
+    :param existing_bridge_account: a valid BridgeUser object
+    :return: a BridgeUser object
+    """
+    user = BridgeUser(bridge_id=existing_bridge_account.bridge_id,
+                      netid=person.uwnetid,
+                      email=get_email(person),
+                      full_name=get_full_name(person),
+                      first_name=_normalize_name(person.first_name),
+                      last_name=_normalize_name(person.surname))
+
+    if _not_changed_regid(person.uwregid, existing_bridge_account) is False:
+        cus_field = new_regid_custom_field(person.uwregid)
+        user.custom_fields.append(cus_field)
+    return user
+
+
+def save_bridge_id(uw_account, bridge_id):
+    if uw_account.has_bridge_id() is False:
+        uw_account.set_bridge_id(bridge_id)

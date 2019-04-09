@@ -1,30 +1,29 @@
 import re
 from django.conf import settings
-from restclients.cache_implementation import MemcachedCache, TimedCache
-from restclients.exceptions import DataFailureException
+from rc_django.cache_implementation import TimedCache
 
 
 FIVE_SECONDS = 5
-FIFTEEN_MINS = 60 * 15
+FIVE_MINS = 60 * 5
 HALF_HOUR = 60 * 30
 ONE_HOUR = 60 * 60
-FOUR_HOURS = 60 * 60 * 4
 EIGHT_HOURS = 60 * 60 * 8
-ONE_DAY = 60 * 60 * 24
-ONE_WEEK = 60 * 60 * 24 * 7
 
 
 def get_cache_time(service, url):
-    if "pws" == service or "gws" == service:
-        return FOUR_HOURS
 
     if "bridge" == service:
-        if re.match('^/api/author/custom_fields', url):
-            return ONE_DAY
-        else:
-            return ONE_HOUR
+        if re.match(r"^/api/author/users/", url) is not None:
+            return FIVE_SECONDS
+        return FIVE_MINS
 
-    return FOUR_HOURS
+    if "gws" == service:
+        return EIGHT_HOURS
+
+    if "pws" == service:
+        return ONE_HOUR
+
+    return ONE_HOUR
 
 
 class BridgeAccountCache(TimedCache):

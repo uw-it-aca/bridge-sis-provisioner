@@ -143,10 +143,11 @@ def make_key_changed_user_csv_files(users,
         except Exception:
             log_exception(
                 logger,
-                "Failed to write \"%s\" to the file %s, skip it." % (
+                "Failed to write \"{0}\" to the file {1}, skip it.".format(
                     (aline, filename)),
                 traceback.format_exc())
             continue
     f.close()
-    logger.info("Finish writing %d entries to %s." % (user_number, filename))
+    logger.info("Finish writing {0:d} entries to {1}.".format(
+        user_number, filename))
     return user_number

@@ -1,0 +1,25 @@
+{"DisplayName":"Uw Alumnus",
+"EduPersonAffiliations":["alum"],
+"IsTestEntity":false,
+"PriorUWNetIDs":[],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"Uw",
+"RegisteredName":"Uw Alumnus",
+"RegisteredSurname":"Alumnus",
+"UIDNumber":"187525",
+"UWNetID":"alumni",
+"UWRegID":"10000000000000000000000000000016",
+"WhitepagesPublish":false,
+"PersonAffiliations":{
+    "AlumPersonAffiliation":{"DevelopmentID":"0000000016"},
+    "StudentPersonAffiliation":{
+        "StudentNumber":"1000016",
+        "StudentSystemKey":"000000016",
+        "StudentWhitePages":{
+            "Class":null,
+            "Departments":[],
+            "Email":null,
+            "Name": null,
+            "Phone": null,
+            "PublishInDirectory":false}
+}}}

@@ -1,0 +1,40 @@
+{
+"DisplayName":"Chris Staff",
+"EduPersonAffiliations":["member",
+                         "staff",
+                         "employee"],
+"IsTestEntity":false,
+"PreferredFirstName":"Chris",
+"PreferredMiddleName":null,
+"PreferredSurname":"Staff",
+"PriorUWNetIDs":[],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"Christopher James",
+"RegisteredName":"Christopher James Staff",
+"RegisteredSurname":"Staff",
+"RepositoryTimeStamp":"2/12/2019 1:06:11 AM",
+"UIDNumber":"100001",
+"UWNetID":"staff",
+"UWRegID":"10000000000000000000000000000001",
+"WhitepagesPublish":true,
+"PersonAffiliations":{
+    "EmployeePersonAffiliation":{
+        "EmployeeID":"100000001",
+        "EmployeeWhitePages":{
+            "Addresses":[],
+            "EmailAddresses":["staff@uw.edu"],
+            "Faxes":["+1 206 543-1234"],
+            "Mobiles":[],
+            "Name":"Staff, Chris",
+            "Pagers":[],
+            "Phones":["+1 206 616-0001"],
+            "Positions":[
+                {"EWPDept":"SOM: Anesthesiology and Pain Medicine: IT",
+                 "EWPTitle":"Web Computing Specialist (E S 8)",
+                 "Primary":true}],
+            "PublishInDirectory":true,
+            "TouchDials":[],
+            "VoiceMails":[]},
+        "HomeDepartment":"SOM: Anesthesiology and Pain Medicine: IT",
+        "MailStop":"356540"}
+}}
