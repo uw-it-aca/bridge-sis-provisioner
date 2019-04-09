@@ -371,7 +371,7 @@ class UwAccount(models.Model):
     prev_netid = models.SlugField(max_length=50, null=True, default=None)
     disabled = models.BooleanField(default=False)
     # last updated time stamp
-    last_updated = models.DateTimeField()
+    last_updated = models.DateTimeField(null=True, default=None)
     # scheduled terminate date
     terminate_at = models.DateTimeField(null=True, default=None)
 
@@ -480,11 +480,9 @@ class UwAccount(models.Model):
                 user = UwAccount.get(prior_netid)
                 user.prev_netid = prior_netid
                 user.netid = cur_uwnetid
-                last_updated = get_now()
                 user.save()
                 return user
 
         # no existing entry
         if create is True:
-            return UwAccount.objects.create(netid=cur_uwnetid,
-                                            last_updated=get_now())
+            return UwAccount.objects.create(netid=cur_uwnetid)
