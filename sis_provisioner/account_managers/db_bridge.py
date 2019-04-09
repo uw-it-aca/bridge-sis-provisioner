@@ -57,7 +57,7 @@ class UserUpdater(GwsBridgeLoader):
                         # this account will be merged then.
                         continue
 
-                self.take_action(person)
+                self.take_action(person, priority_changes_only=False)
 
     def in_uw_groups(self, uwnetid):
         return uwnetid in self.gws_user_set

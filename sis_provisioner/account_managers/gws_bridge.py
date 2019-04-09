@@ -42,20 +42,22 @@ class GwsBridgeLoader(Loader):
                 continue
             self.take_action(person)
 
-    def take_action(self, person):
+    def take_action(self, person, priority_changes_only=True):
         """
         @param: person is a valid Person object
         """
         try:
             uw_account = save_uw_account(person)
-            if (uw_account.last_updated is None or
+            if (priority_changes_only and not (
+                    uw_account.last_updated is None or
                     uw_account.has_prev_netid or
                     uw_account.disabled or
-                    uw_account.has_terminate_date()):
-                self.apply_change_to_bridge(uw_account, person)
+                    uw_account.has_terminate_date())):
+                return
+            self.apply_change_to_bridge(uw_account, person)
 
         except Exception as ex:
-            self.handle_exception("Save user {0} ".format(person.uwnetid),
+            self.handle_exception("Save user: {0} ".format(person.uwnetid),
                                   ex, traceback)
 
     def apply_change_to_bridge(self, uw_account, person):
