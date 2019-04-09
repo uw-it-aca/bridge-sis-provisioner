@@ -1,10 +1,9 @@
 """
-This class will load all the users in gws uw_member, uw_aafiliate groups.
-Check against PWS Person.
-1. Add new user account in Db (and to Bridge)
-2. Update existing account for netid, name, email, regid  changes.
-3. Restore disabled/terminated account
-4. Terminate Bridge account with a prior netid
+This class will load all the users in gws uw_member, uw_afiliate groups.
+Check against PWS Person, apply high priority changes.
+1. Add new user account (to DB and Bridge)
+2. Restore and update disabled/terminated account
+3. Update account if uwnetid has changed
 """
 
 import logging
@@ -49,7 +48,11 @@ class GwsBridgeLoader(Loader):
         """
         try:
             uw_account = save_uw_account(person)
-            self.apply_change_to_bridge(uw_account, person)
+            if (uw_account.last_updated is None or
+                    uw_account.has_prev_netid or
+                    uw_account.disabled or
+                    uw_account.has_terminate_date()):
+                self.apply_change_to_bridge(uw_account, person)
 
         except Exception as ex:
             self.handle_exception("Save user {0} ".format(person.uwnetid),
