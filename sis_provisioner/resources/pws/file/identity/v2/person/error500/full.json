@@ -1,0 +1,28 @@
+{
+"DisplayName":"Andrew Error",
+"EduPersonAffiliations":["member",
+                         "student"],
+"IsTestEntity":false,
+"PriorUWNetIDs":[],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"ANDREW",
+"RegisteredName":"ANDREW ERROR",
+"RegisteredSurname":"ERROR",
+"UIDNumber":"900000",
+"UWNetID":"error500",
+"UWRegID": "00000000000000000000000000000001",
+"WhitepagesPublish":true,
+"PersonAffiliations":{
+"AlumPersonAffiliation":{"DevelopmentID":"0000000001"},
+"StudentPersonAffiliation":{
+    "StudentNumber":"1000000",
+    "StudentSystemKey":"000000005",
+    "StudentWhitePages":{
+        "Class":"Graduate",
+        "Department1":"Intercol Athletics Leadership: Coaching",
+        "Department2":null,
+        "Department3":null,
+        "Email":"error500@uw.edu",
+        "Name":"Error, Andrew",
+        "Phone":"+1 808 200-1000",
+        "PublishInDirectory":true}}}}

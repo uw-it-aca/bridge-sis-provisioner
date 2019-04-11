@@ -1,0 +1,22 @@
+{
+  "schemas": [
+    "urn:mace:washington.edu:schemas:groups:1.0"
+  ],
+  "meta": {
+    "resourceType": "members",
+    "version": "v3.0",
+    "regid": "74D153B9E9478CB5636E1A1E98BDB575",
+    "id": "uw_affiliate",
+    "type": "effective",
+    "selfRef": "https://groups.uw.edu/group_sws/v3/group/uw_affiliate/effective_member",
+    "timestamp": 1552943224786
+  },
+  "data": [
+    {
+      "type": "uwnetid",
+      "id": "affiemp",
+      "mtype": "direct",
+      "source": ""
+    }
+  ]
+}

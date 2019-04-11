@@ -9,8 +9,8 @@
       }],
     "custom_field_values": [
       {
-        "id": "1",
-        "value": "0136CCB8F66711D5BE060004AC494FFE",
+        "id": "3",
+        "value": "9136CCB8F66711D5BE060004AC494FFE",
         "links": {
           "custom_field": {
             "id": "5",
@@ -21,32 +21,36 @@
     ]
    },
    "users":[
-     {
-       "id":"195",
+   { "id":"195",
        "uid":"javerage@uw.edu",
        "hris_id":null,
-       "first_name":"James",
-       "last_name":"Old Student",
-       "full_name":"James Old Student",
-       "sortable_name":"Student, James Average",
+       "first_name":"Average",
+       "last_name":"Student",
+       "full_name":"Average Joseph Student",
+       "sortable_name":"Student, Average Joseph",
        "email":"javerage@uw.edu",
        "locale":"en",
        "roles":["account_admin"],
-       "name":"James Average Student",
+       "name":"Average Joseph Student",
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
        "loggedInAt":"2016-09-02T15:27:01.827-07:00",
-       "welcomeUrl":"https://uw.bridgeapp.com/user-setup/eyJ0eXA",
-       "passwordUrl":"https://uw.bridgeapp.com/reset-password/eyeXIjx",
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
        "next_due_date":null,
-       "completed_courses_count":3,
+       "completed_courses_count":1,
        "links":{
-          "custom_field_values":["1"]
+          "custom_field_values":["3"]
        },
        "meta":{"can_masquerade":true}
-     }
+      }
    ]
 }

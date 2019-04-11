@@ -1,17 +1,18 @@
 """
 This class will validate all the user accounts in the database
-against gws uw_member group and pws person, and update the
-accounts via the given worker.
+against GWS groups and PWS person.
+1. If the user is no longer in the specified GWS groups, schedule terminate.
+2. If uw account passed the grace period for termination, disable it.
+3. Update active accounts.
 """
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
-from sis_provisioner.dao.bridge import is_active_user_exist
-from sis_provisioner.dao.user import save_user
-from sis_provisioner.util.log import log_exception
-from sis_provisioner.account_managers import fetch_users_from_db,\
-    get_validated_user, LEFT_UW, DISALLOWED, INVALID, VALID
+from sis_provisioner.dao.pws import get_person, is_prior_netid
+from sis_provisioner.dao.uw_account import (
+    get_all_uw_accounts, get_by_netid)
+from sis_provisioner.dao.bridge import (
+    get_user_by_bridgeid, get_user_by_uwnetid)
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 
@@ -20,85 +21,82 @@ logger = logging.getLogger(__name__)
 
 class UserUpdater(GwsBridgeLoader):
 
-    def __init__(self, worker, clogger=logger, include_hrp=False):
-        super(UserUpdater, self).__init__(worker, clogger, include_hrp)
+    def __init__(self, worker, clogger=logger):
+        super(UserUpdater, self).__init__(worker, clogger)
 
     def fetch_users(self):
         self.data_source = "DB"
-        return fetch_users_from_db(logger)
+        return get_all_uw_accounts()
 
     def process_users(self):
         """
         Process exsting users in DB, terminate those left UW and
         update those changed.
         """
-        for uw_bri_user in self.get_users_to_process():
-            self.logger.debug("process DB user %s", uw_bri_user)
-            try:
-                person, validation_status = get_validated_user(
-                    self.logger,
-                    uw_bri_user.netid,
-                    uwregid=uw_bri_user.regid,
-                    users_in_gws=self.get_users_in_gws())
-            except DataFailureException as ex:
-                self.worker.append_error(
-                    "Validate user %s ==> %s" % (uw_bri_user, ex))
+        for uw_acc in self.get_users_to_process():
+
+            self.logger.debug("Validate DB record {0}".format(uw_acc))
+            uwnetid = uw_acc.netid
+
+            person = get_person(uwnetid)
+            if person is None:
+                self.add_error(
+                    "UWNetID NOT in PWS, skip {0}".format(uw_acc))
                 continue
 
-            if person is not None and validation_status >= VALID:
+            if not uw_acc.disabled:
+                if uwnetid == person.uwnetid:
+                    if self.in_uw_groups(person.uwnetid) is False:
+                        self.process_termination(uw_acc)
+                        continue
 
-                if uw_bri_user.netid != person.uwnetid:
-                    # check if both accounts exist in Bridge
-                    exists1, user = is_active_user_exist(uw_bri_user.netid)
-                    exists2, kp_user = is_active_user_exist(person.uwnetid)
-                    if exists2 and kp_user is not None:
-                        if user is None:
-                            self.logger.info(
-                                "Delete local %s another %s in Bridge",
-                                uw_bri_user, kp_user)
-                            uw_bri_user.delete()
-                            continue
-                        else:
-                            if user.bridge_id != kp_user.bridge_id:
-                                self.merge_users_in_bridge(user, kp_user)
+                if is_prior_netid(uwnetid, person):
+                    cur_uw_acc = get_by_netid(person.uwnetid)
+                    if (cur_uw_acc is not None and
+                            cur_uw_acc.bridge_id != uw_acc.bridge_id):
+                        # the current netid has another account in DB,
+                        # this account will be merged then.
+                        continue
 
-                self.take_action(person)
-            else:
-                self.terminate(uw_bri_user, validation_status)
+                self.take_action(person, priority_changes_only=False)
 
-    def terminate(self, uw_bri_user, validation_status):
+    def in_uw_groups(self, uwnetid):
+        return uwnetid in self.gws_user_set
+
+    def process_termination(self, uw_acc):
         """
-        @param uw_bri_user the UwBridgeUser object of an existing account
+        @param uw_acc the UwBridgeUser object of an existing account
         Check the existing users for termination.
         If the user's termination date has been reached, disable user.
         """
-        if validation_status == LEFT_UW:
-            if uw_bri_user.disabled:
-                self.logger.info("%s left, already disabled!", uw_bri_user)
+        if uw_acc.has_terminate_date() is False:
+            self.logger.info(
+                "{0} has left UW, schedule terminate".format(uw_acc))
+            uw_acc.set_terminate_date(graceful=True)
+        else:
+            if uw_acc.passed_terminate_date() and not uw_acc.disabled:
+                self.logger.info(
+                    "Passed terminate date, delete {0}".format(uw_acc))
+                self.terminate_uw_account(uw_acc)
+
+    def terminate_uw_account(self, uw_acc):
+        exists1, bridge_acc1 = get_user_by_uwnetid(uw_acc.netid)
+
+        if uw_acc.has_bridge_id():
+            exists2, bridge_acc2 = get_user_by_bridgeid(uw_acc.bridge_id)
+            if (bridge_acc1 is not None and bridge_acc2 is not None and
+                    (bridge_acc1.bridge_id != bridge_acc2.bridge_id or
+                     bridge_acc1.netid != bridge_acc2.netid)):
+                self.add_error(
+                    "{0} has 2 Bridge accounts {1} {2} <== {3}!".format(
+                        uw_acc, bridge_acc1, bridge_acc2, "Abort deletion"))
                 return
 
-            if not uw_bri_user.has_terminate_date():
-                self.logger.info("%s: has left UW, set terminate date",
-                                 uw_bri_user)
-                uw_bri_user.save_terminate_date(graceful=True)
-
-        elif validation_status <= DISALLOWED:
-            # rare case
-            self.logger.info(
-                "Not valid personal netid, worker.delete %s" % uw_bri_user)
-            self.worker.delete_user(uw_bri_user)
-
-        else:
-            self.logger.error("Invalid %s (status: %s), check in DB!",
-                              uw_bri_user, validation_status)
+        if exists1 is False:
+            self.add_error("{0} never existed in Bridge!".format(uw_acc))
             return
 
-        if uw_bri_user.is_stalled():
-            self.logger.info("Stalled user %s, delete!" % uw_bri_user)
-            uw_bri_user.save_terminate_date(graceful=False)
-
-        if uw_bri_user.passed_terminate_date() and\
-                not uw_bri_user.disabled:
-            self.logger.info(
-                "Passed terminate date, worker.delete %s" % uw_bri_user)
-            self.worker.delete_user(uw_bri_user)
+        if (bridge_acc1 is not None and
+                self.del_bridge_account(bridge_acc1, conditional_del=False)):
+            uw_acc.set_disable()
+            self.logger.info("Disabled in DB: {0}".format(uw_acc))

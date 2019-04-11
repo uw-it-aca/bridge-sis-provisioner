@@ -1,0 +1,30 @@
+{
+"DisplayName":"Alena Affi",
+"EduPersonAffiliations":["affiliate"],
+"IsTestEntity":false,
+"PreferredFirstName":"Alena",
+"PreferredMiddleName":"Marie",
+"PreferredSurname":"Affi",
+"PriorUWNetIDs":[],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"Alena Marie",
+"RegisteredName":"Alena Marie Affi",
+"RegisteredSurname":"Affi",
+"RepositoryTimeStamp":"10/23/2018 6:36:43 PM",
+"UIDNumber":"910286",
+"UWNetID":"affiemp",
+"UWRegID":"10000000000000000000000000000011",
+"WhitepagesPublish":false,
+"PersonAffiliations":{
+    "AlumPersonAffiliation":{
+        "DevelopmentID":"0001500476"},
+"StudentPersonAffiliation":{
+    "StudentNumber":"1000011",
+    "StudentSystemKey":"100000011",
+    "StudentWhitePages":{"Class":null,
+                         "Departments":[],
+                         "Email":null,
+                         "Name":null,
+                         "Phone":null,
+                         "PublishInDirectory":false}
+ }}}
