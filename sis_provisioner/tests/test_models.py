@@ -31,18 +31,14 @@ class TestModels(TransactionTestCase):
         dtime = user.terminate_at
         self.assertTrue(get_now() < (dtime + timedelta(seconds=3)))
 
-        user.clear_terminate_date()
-        self.assertFalse(user.has_terminate_date())
-
         user.prev_netid = 'staff0'
         self.assertTrue(user.has_prev_netid())
         self.assertTrue(user.netid_changed())
-        user.clear_prev_netid()
+        user.prev_netid = None
         self.assertFalse(user.has_prev_netid())
 
         user.set_disable()
         self.assertTrue(user.disabled)
-
         user.set_restored()
         self.assertFalse(user.disabled)
 
