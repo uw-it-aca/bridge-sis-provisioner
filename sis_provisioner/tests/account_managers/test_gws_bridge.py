@@ -2,7 +2,7 @@ from django.test import TransactionTestCase
 from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao.bridge import get_user_by_uwnetid
 from sis_provisioner.dao.pws import get_person
-from sis_provisioner.models import UwAccount
+from sis_provisioner.models import UwAccount, get_now
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.tests import (
@@ -32,6 +32,23 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertEqual(sorted(user_list),
                          ['affiemp', 'error500', 'faculty', 'javerage',
                           'not_in_pws', 'retiree', 'staff'])
+
+    def test_is_priority_change(self):
+        loader = GwsBridgeLoader(BridgeWorker())
+        uw_acc = UwAccount.objects.create(netid="affiemp")
+        self.assertTrue(loader.is_priority_change(uw_acc))
+
+        uw_acc = set_uw_account("faculty")
+        uw_acc.prev_netid = "tyler"
+        self.assertTrue(loader.is_priority_change(uw_acc))
+
+        uw_acc = set_uw_account("leftuw")
+        uw_acc.terminate_at = get_now()
+        self.assertTrue(loader.is_priority_change(uw_acc))
+
+        uw_acc = set_uw_account("staff")
+        uw_acc.disabled = True
+        self.assertTrue(loader.is_priority_change(uw_acc))
 
     def test_match_bridge_account(self):
         # 500 error

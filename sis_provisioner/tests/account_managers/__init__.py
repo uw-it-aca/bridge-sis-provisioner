@@ -14,8 +14,8 @@ def set_db_records():
     ellen.set_bridge_id(194)
 
     staff = set_uw_account("staff")
-    staff.set_bridge_id(196)
     staff.disabled = True
+    staff.set_bridge_id(196)
 
     retiree = set_uw_account("retiree")
     retiree.set_bridge_id(204)
