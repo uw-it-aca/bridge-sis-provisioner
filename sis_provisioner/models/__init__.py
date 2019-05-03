@@ -82,6 +82,7 @@ class UwAccount(models.Model):
     def json_data(self):
         return {
             "netid": self.netid,
+            "bridge_id": self.bridge_id,
             "prev_netid": self.prev_netid,
             "disabled": self.disabled,
             "last_updated": datetime_to_str(self.last_updated),
