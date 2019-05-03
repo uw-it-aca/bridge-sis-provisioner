@@ -38,7 +38,7 @@ class GwsBridgeLoader(Loader):
             person = get_person(uwnetid)
             if person is None:
                 self.logger.error(
-                    "UWNetID '{0}' NOT in PWS, skip!".format(uwnetid))
+                    "{0} NOT in PWS, skip!".format(uwnetid))
                 continue
             self.take_action(person)
 
@@ -54,8 +54,9 @@ class GwsBridgeLoader(Loader):
             self.apply_change_to_bridge(uw_account, person)
 
         except Exception as ex:
-            self.handle_exception("Save user: {0} ".format(person.uwnetid),
-                                  ex, traceback)
+            self.handle_exception(
+                "Failed priority change on {0} ".format(person.uwnetid),
+                ex, traceback)
 
     def is_priority_change(self, uw_account):
         """

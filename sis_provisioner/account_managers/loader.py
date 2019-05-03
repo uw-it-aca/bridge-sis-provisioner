@@ -116,8 +116,10 @@ class Loader:
         self.worker.append_error("{0}\n".format(err_msg))
 
     def handle_exception(self, msg, ex, traceback):
-        log_exception(self.logger, msg, traceback.format_exc())
-        self.worker.append_error("Failed {0} ==> {1}\n".format(msg, str(ex)))
+        log_exception(self.logger, msg, traceback.format_exc(chain=False))
+
+        self.worker.append_error("{0} ==> {1}\n".format(msg, str(ex)))
+
         if (isinstance(ex, DataFailureException) and
                 ex.status in errors_to_abort_loader()):
             raise

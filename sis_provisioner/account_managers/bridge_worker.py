@@ -8,7 +8,6 @@ import traceback
 from sis_provisioner.dao.bridge import (
     add_bridge_user, change_uwnetid, delete_bridge_user,
     restore_bridge_user, update_bridge_user)
-from sis_provisioner.util.log import log_exception
 from sis_provisioner.account_managers import (
     get_bridge_user_to_add, get_bridge_user_to_upd)
 from sis_provisioner.account_managers.worker import Worker
@@ -20,7 +19,7 @@ logger = logging.getLogger(__name__)
 class BridgeWorker(Worker):
 
     def __init__(self):
-        super(BridgeWorker, self).__init__()
+        super(BridgeWorker, self).__init__(logger)
         self.total_deleted_count = 0
         self.total_netid_changes_count = 0
         self.total_new_users_count = 0
@@ -42,10 +41,9 @@ class BridgeWorker(Worker):
                 logger.info("{0} ==> {1}".format(
                     action, bridge_account.__str__(orig=False)))
                 return
-            self.append_error("Failed to {0}\n".format(action))
-
+            self.append_error("Unmatched UID {0}\n".format(action))
         except Exception as ex:
-            self._handle_exception(action, ex, traceback)
+            self.handle_exception(action, ex, traceback)
 
     def delete_user(self, bridge_acc):
         action = "DELETE from Bridge {0}".format(bridge_acc)
@@ -54,9 +52,9 @@ class BridgeWorker(Worker):
                 self.total_deleted_count += 1
                 logger.info(action)
                 return True
-            self.append_error("Failed to {0}\n".format(action))
+            self.append_error("Error {0}\n".format(action))
         except Exception as ex:
-            self._handle_exception(action, ex, traceback)
+            self.handle_exception(action, ex, traceback)
         return False
 
     def restore_user(self, uw_account):
@@ -70,7 +68,7 @@ class BridgeWorker(Worker):
                     action, bridge_account.__str__(orig=False)))
                 return bridge_account
         except Exception as ex:
-            self._handle_exception(action, ex, traceback)
+            self.handle_exception(action, ex, traceback)
         return None
 
     def update_uid(self, uw_account):
@@ -82,7 +80,7 @@ class BridgeWorker(Worker):
             logger.info("{0} ==> {1}".format(
                 action, bridge_account.__str__(orig=False)))
             return
-        self.append_error("Failed to {0}\n".format(action))
+        self.append_error("Unmatched UID {0}\n".format(action))
 
     def update_user(self, bridge_account, uw_account, person):
         user_data = get_bridge_user_to_upd(person, bridge_account)
@@ -99,13 +97,9 @@ class BridgeWorker(Worker):
                 logger.info("{0} ==> {1}".format(
                     action, bridge_account.__str__(orig=False)))
                 return
-            self.append_error("Failed to {0}\n".format(action))
+            self.append_error("Unmatched UID {0}\n".format(action))
         except Exception as ex:
-            self._handle_exception(action, ex, traceback)
-
-    def _handle_exception(self, msg, ex, traceback):
-        log_exception(logger, msg, traceback.format_exc())
-        self.append_error("Failed {0} ==> {1}\n".format(msg, str(ex)))
+            self.handle_exception(action, ex, traceback)
 
     def get_new_user_count(self):
         return self.total_new_users_count

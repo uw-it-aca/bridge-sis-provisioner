@@ -21,10 +21,10 @@ def get_person(uwnetid):
     try:
         return pws.get_person_by_netid(uwnetid)
     except InvalidNetID:
-        logger.error("Invalid uwnetid: {}".format(uwnetid))
+        logger.error("Invalid uwnetid: {0}".format(uwnetid))
     except DataFailureException as ex:
         if ex.status == 404:
-            logger.warning("{} is not in PWS, skip!".format(uwnetid))
+            logger.warning("{0} is not in PWS, skip!".format(uwnetid))
         else:
             log_exception(logger,
                           "get_person_by_netid({0}) ".format(uwnetid),

@@ -3,14 +3,15 @@ The Worker is an abstract class for applying actions
 on the user account in Bridge.
 """
 
-import traceback
 from abc import ABCMeta, abstractmethod
+from sis_provisioner.util.log import log_exception
 
 
 class Worker:
     __metaclass__ = ABCMeta
 
-    def __init__(self):
+    def __init__(self, logger):
+        self.logger = logger
         self.errors = []
 
     def append_error(self, message):
@@ -18,6 +19,10 @@ class Worker:
 
     def get_error_report(self):
         return ',\n'.join(self.errors)
+
+    def handle_exception(self, msg, ex, traceback):
+        log_exception(self.logger, msg, traceback.format_exc(chain=False))
+        self.append_error("{0} ==> {1}\n".format(msg, str(ex)))
 
     def has_err(self):
         return len(self.errors) > 0
