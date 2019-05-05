@@ -75,18 +75,17 @@ class GwsBridgeLoader(Loader):
         self.logger.debug("MATCH UW account {0} ==> Bridge account {1}".format(
             uw_account, bridge_acc))
 
-        if exists is False:
-            # account not exist in Bridge
-            self.worker.add_new_user(uw_account, person)
-            return
-
         if bridge_acc is None:
-            # exists a deleted/terminated bridge account
-            bridge_acc = self.worker.restore_user(uw_account)
-            if bridge_acc is None:
-                self.add_error("Failed to restore {0}".format(uw_account))
+            if uw_account.disabled:
+                # exists a deleted bridge account
+                bridge_acc = self.worker.restore_user(uw_account)
+                if bridge_acc is None:
+                    self.add_error("Failed to restore {0}".format(uw_account))
+                    return
+            else:
+                # account not exist in Bridge
+                self.worker.add_new_user(uw_account, person)
                 return
-
         uw_account.set_bridge_id(bridge_acc.bridge_id)
 
         if not account_not_changed(uw_account, person, bridge_acc):

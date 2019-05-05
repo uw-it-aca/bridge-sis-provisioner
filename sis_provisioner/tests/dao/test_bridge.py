@@ -93,7 +93,7 @@ class TestBridgeDao(TransactionTestCase):
 
         # terminated
         exists, buser = get_user_by_uwnetid("staff")
-        self.assertTrue(exists)
+        self.assertFalse(exists)
         self.assertIsNone(buser)
 
         exists, buser = get_user_by_uwnetid("javerage")
