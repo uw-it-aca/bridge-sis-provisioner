@@ -68,7 +68,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         # account is deleted
         uw_acc = set_uw_account("staff")
         exi, bri_acc = loader.match_bridge_account(uw_acc)
-        self.assertTrue(exi)
+        self.assertFalse(exi)
         self.assertIsNone(bri_acc)
 
         # exists an account with a prior netid
@@ -102,8 +102,9 @@ class TestGwsBridgeLoader(TransactionTestCase):
         # restore
         uw_acc = set_uw_account("staff")
         uw_acc.set_bridge_id(196)
+        uw_acc.set_disable()
         staff = get_person("staff")
-        loader.apply_change_to_bridge(uw_acc, affiemp)
+        loader.apply_change_to_bridge(uw_acc, staff)
         self.assertEqual(loader.get_restored_count(), 1)
         self.assertEqual(loader.get_updated_count(), 1)
 
