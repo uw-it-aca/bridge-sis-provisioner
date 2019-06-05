@@ -1,5 +1,4 @@
 from django.test import TransactionTestCase
-from sis_provisioner.dao.bridge import get_user_by_uwnetid
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import get_by_netid
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker
@@ -22,8 +21,7 @@ class TestBridgeUserChecker(TransactionTestCase):
 
     def test_take_action(self):
         loader = BridgeChecker(BridgeWorker())
-
-        exi, bri_acc = get_user_by_uwnetid('alumni')
+        bri_acc = loader.get_bridge().get_user_by_uwnetid('alumni')
         alumni = get_person('alumni')
         self.assertFalse(loader.in_uw_groups('alumni'))
         loader.take_action(alumni, bri_acc)
@@ -35,7 +33,7 @@ class TestBridgeUserChecker(TransactionTestCase):
 
         uw_acc = set_uw_account('javerage')
         uw_acc.set_bridge_id(195)
-        exi, bri_acc = get_user_by_uwnetid('javerage')
+        bri_acc = loader.get_bridge().get_user_by_uwnetid('javerage')
         javerage = get_person('javerage')
         loader.take_action(javerage, bri_acc)
         self.assertEqual(loader.get_netid_changed_count(), 0)
@@ -47,7 +45,7 @@ class TestBridgeUserChecker(TransactionTestCase):
 
         uw_acc = set_uw_account('tyler')
         uw_acc.set_bridge_id(198)
-        exi, bri_acc = get_user_by_uwnetid('tyler')
+        bri_acc = loader.get_bridge().get_user_by_uwnetid('tyler')
         tyler = get_person('tyler')
         loader.take_action(tyler, bri_acc)
         self.assertEqual(loader.get_netid_changed_count(), 1)

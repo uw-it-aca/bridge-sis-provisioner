@@ -1,6 +1,5 @@
 from datetime import timedelta
 from django.test import TransactionTestCase
-from sis_provisioner.dao.bridge import get_user_by_uwnetid
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.models import UwAccount, GRACE_PERIOD, get_now
 from sis_provisioner.account_managers.db_bridge import UserUpdater
@@ -31,6 +30,18 @@ class TestUserUpdater(TransactionTestCase):
         self.assertEqual(loader.get_deleted_count(), 1)
         uw_acc1 = UwAccount.get("leftuw")
         self.assertTrue(uw_acc.disabled)
+
+        uw_acc = set_uw_account("alumni")
+        uw_acc.set_bridge_id(199)
+        loader.terminate_uw_account(uw_acc)
+        self.assertEqual(loader.get_deleted_count(), 1)
+        self.assertFalse(UwAccount.get("alumni").disabled)
+
+        uw_acc = set_uw_account("staff")
+        uw_acc.set_bridge_id(196)
+        loader.terminate_uw_account(uw_acc)
+        self.assertEqual(loader.get_deleted_count(), 1)
+        self.assertTrue(UwAccount.get("staff").disabled)
 
     def test_update(self):
         set_db_records()

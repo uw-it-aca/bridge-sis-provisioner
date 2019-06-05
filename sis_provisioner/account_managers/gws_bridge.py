@@ -9,11 +9,10 @@ Check against PWS Person, apply high priority changes.
 import logging
 import traceback
 from uw_bridge.models import BridgeUser
-from sis_provisioner.dao.bridge import (
-    get_user_by_bridgeid, get_user_by_uwnetid)
 from sis_provisioner.dao.uw_account import save_uw_account, set_bridge_id
 from sis_provisioner.dao.pws import get_person
-from sis_provisioner.account_managers import account_not_changed
+from sis_provisioner.account_managers import (
+    get_full_name, get_email, normalize_name, get_regid)
 from sis_provisioner.account_managers.loader import Loader
 
 
@@ -24,6 +23,9 @@ class GwsBridgeLoader(Loader):
 
     def __init__(self, worker, clogger=logger):
         super(GwsBridgeLoader, self).__init__(worker, clogger)
+
+    def get_bridge(self):
+        return self.worker.bridge
 
     def fetch_users(self):
         self.data_source = "GWS uw_members group"
@@ -71,7 +73,7 @@ class GwsBridgeLoader(Loader):
         """
         @param: uw_account a valid UwAccount object to take action upon
         """
-        exists, bridge_acc = self.match_bridge_account(uw_account)
+        bridge_acc = self.match_bridge_account(uw_account)
         self.logger.debug("MATCH UW account {0} ==> Bridge account {1}".format(
             uw_account, bridge_acc))
 
@@ -88,53 +90,39 @@ class GwsBridgeLoader(Loader):
                 return
         uw_account.set_bridge_id(bridge_acc.bridge_id)
 
-        if not account_not_changed(uw_account, person, bridge_acc):
+        if not self.account_not_changed(uw_account, person, bridge_acc):
             # update the existing account with person data
             self.worker.update_user(bridge_acc, uw_account, person)
 
     def match_bridge_account(self, uw_account):
         """
-        :return: a boolean value and an active BridgeUser object
-        If exists an active account: True, a valid BridgeUser object
-        If exist a terminated account: True, None
-        If not exists: False, None
+        :return: a BridgeUser object or None
         """
-        exi_prev = False
         prev_bri_acc = None
         if uw_account.has_prev_netid():
-            exi_prev, prev_bri_acc = get_user_by_uwnetid(uw_account.prev_netid)
+            prev_bri_acc = self.get_bridge().get_user_by_uwnetid(
+                uw_account.prev_netid)
 
-        exi_cur, cur_bri_acc = get_user_by_uwnetid(uw_account.netid)
+        cur_bri_acc = self.get_bridge().get_user_by_uwnetid(uw_account.netid)
 
-        if exi_cur is False:
-            # account of the current netid never existed
-            return exi_prev, prev_bri_acc
+        if cur_bri_acc is None:
+            return prev_bri_acc
 
-        if exi_prev is False:
-            # account of the previous netid never existed
-            return exi_cur, cur_bri_acc
+        if prev_bri_acc is None:
+            return cur_bri_acc
 
-        if (prev_bri_acc is not None and cur_bri_acc is not None and
-                prev_bri_acc.bridge_id != cur_bri_acc.bridge_id):
+        if prev_bri_acc.bridge_id != cur_bri_acc.bridge_id:
             # Found two active accounts, choose one to keep
 
             if self.del_bridge_account(prev_bri_acc):
-                return True, cur_bri_acc
+                return cur_bri_acc
 
             if self.del_bridge_account(cur_bri_acc):
-                return True, prev_bri_acc
+                return prev_bri_acc
 
             self.add_error("Please manually merge: {0} TO {1}".format(
                 prev_bri_acc, cur_bri_acc))
-            return True, cur_bri_acc
-
-        # one active account and one deleted account
-        if prev_bri_acc is not None:
-            # account of the current netid is deleted
-            return exi_prev, prev_bri_acc
-
-        # account of the previous netid is deleted
-        return exi_cur, cur_bri_acc
+            return cur_bri_acc
 
     def del_bridge_account(self, bridge_acc, conditional_del=True):
         """
@@ -143,3 +131,17 @@ class GwsBridgeLoader(Loader):
         if conditional_del is False or bridge_acc.no_learning_history():
             return self.worker.delete_user(bridge_acc)
         return False
+
+    def account_not_changed(self, uw_account, person, bridge_account):
+        """
+        :param uw_account: a valid UwBridgeUser object
+        :param person: a valid Person object
+        :param bridge_account: a valid BridgeUser object
+        :return: True if the attributes have the same values
+        """
+        return (
+            person.uwnetid == bridge_account.netid and
+            get_email(person) == bridge_account.email and
+            get_full_name(person) == bridge_account.full_name and
+            normalize_name(person.surname) == bridge_account.last_name and
+            self.worker.not_changed_regid(person.uwregid, bridge_account))

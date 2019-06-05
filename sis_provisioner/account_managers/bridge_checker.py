@@ -8,12 +8,8 @@ for those having a validate pws person, make sure it has a record in DB.
 
 import logging
 import traceback
-from sis_provisioner.dao.bridge import (
-    get_all_bridge_users, get_user_by_uwnetid)
 from sis_provisioner.dao.pws import get_person, is_prior_netid
-from sis_provisioner.dao.uw_account import (
-    get_by_netid, save_uw_account)
-from sis_provisioner.account_managers import account_not_changed
+from sis_provisioner.dao.uw_account import get_by_netid, save_uw_account
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 
 
@@ -27,7 +23,7 @@ class BridgeChecker(UserUpdater):
 
     def fetch_users(self):
         self.data_source = "Bridge"
-        return get_all_bridge_users()
+        return self.get_bridge().get_all_bridge_users()
 
     def process_users(self):
         for bridge_acc in self.get_users_to_process():
@@ -43,7 +39,8 @@ class BridgeChecker(UserUpdater):
 
             if is_prior_netid(uwnetid, person):
 
-                exi_cur, cur_bri_acc = get_user_by_uwnetid(person.uwnetid)
+                cur_bri_acc = self.get_bridge().get_user_by_uwnetid(
+                    person.uwnetid)
                 if (cur_bri_acc is not None and
                         bridge_id != cur_bri_acc.bridge_id):
 
@@ -83,7 +80,7 @@ class BridgeChecker(UserUpdater):
                         bridge_acc, uw_account))
                 return
 
-            exists, bridge_acc1 = self.match_bridge_account(uw_account)
+            bridge_acc1 = self.match_bridge_account(uw_account)
             self.logger.debug(
                 "Match UW account {0} ==> Bridge account {1}".format(
                     uw_account, bridge_acc1))
@@ -95,7 +92,7 @@ class BridgeChecker(UserUpdater):
 
             uw_account.set_bridge_id(bridge_acc1.bridge_id)
 
-            if not account_not_changed(uw_account, person, bridge_acc1):
+            if not self.account_not_changed(uw_account, person, bridge_acc1):
                 self.logger.debug("To update {0}, {1}".format(
                     uw_account, bridge_acc1))
                 self.worker.update_user(bridge_acc1, uw_account, person)

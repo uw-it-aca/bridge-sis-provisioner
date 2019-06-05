@@ -1,6 +1,5 @@
 from django.test import TransactionTestCase
 from restclients_core.exceptions import DataFailureException
-from sis_provisioner.dao.bridge import get_user_by_uwnetid
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.models import UwAccount, get_now
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
@@ -17,11 +16,11 @@ from sis_provisioner.tests.account_managers import (
 class TestGwsBridgeLoader(TransactionTestCase):
 
     def test_del_bridge_account(self):
-        exi, ellen = get_user_by_uwnetid('ellen')
         loader = GwsBridgeLoader(BridgeWorker())
+        ellen = loader.get_bridge().get_user_by_uwnetid('ellen')
         self.assertFalse(loader.del_bridge_account(ellen))
 
-        exi, retiree = get_user_by_uwnetid('retiree')
+        retiree = loader.get_bridge().get_user_by_uwnetid('retiree')
         self.assertTrue(loader.del_bridge_account(retiree))
         self.assertEqual(loader.get_deleted_count(), 1)
 
@@ -61,21 +60,18 @@ class TestGwsBridgeLoader(TransactionTestCase):
         # account not exist
         uw_acc = set_uw_account("affiemp")
         loader = GwsBridgeLoader(BridgeWorker())
-        exi, bri_acc = loader.match_bridge_account(uw_acc)
-        self.assertFalse(exi)
+        bri_acc = loader.match_bridge_account(uw_acc)
         self.assertIsNone(bri_acc)
 
         # account is deleted
         uw_acc = set_uw_account("staff")
-        exi, bri_acc = loader.match_bridge_account(uw_acc)
-        self.assertFalse(exi)
+        bri_acc = loader.match_bridge_account(uw_acc)
         self.assertIsNone(bri_acc)
 
         # exists an account with a prior netid
         uw_acc = set_uw_account("faculty")
         uw_acc.prev_netid = 'tyler'
-        exi, bri_acc = loader.match_bridge_account(uw_acc)
-        self.assertTrue(exi)
+        bri_acc = loader.match_bridge_account(uw_acc)
         self.assertEqual(bri_acc.netid, 'tyler')
 
         # exists two accounts (one with Lreaning History one without),
@@ -84,8 +80,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         uw_acc.bridge_id = 204
         uw_acc.prev_netid = "ellen"
         uw_acc1 = set_uw_account("ellen")
-        exi, bri_acc = loader.match_bridge_account(uw_acc)
-        self.assertTrue(exi)
+        bri_acc = loader.match_bridge_account(uw_acc)
         self.assertEqual(bri_acc.netid, 'ellen')
         self.assertEqual(bri_acc.bridge_id, 194)
 
@@ -143,3 +138,19 @@ class TestGwsBridgeLoader(TransactionTestCase):
             set_db_records()
             loader = GwsBridgeLoader(BridgeWorker())
             self.assertRaises(DataFailureException, loader.load)
+
+    def test_account_not_changed(self):
+        loader = GwsBridgeLoader(BridgeWorker())
+        uw_account = set_uw_account('javerage')
+        save_bridge_id(uw_account, 195)
+        person = get_person('javerage')
+        bridge_account = get_mock_bridge_user(
+            195,
+            "javerage",
+            "javerage@uw.edu",
+            "Average Joseph Student",
+            "Average Joseph",
+            "Student",
+            "9136CCB8F66711D5BE060004AC494FFE")
+        self.assertTrue(
+            loader.account_not_changed(uw_account, person, bridge_account))
