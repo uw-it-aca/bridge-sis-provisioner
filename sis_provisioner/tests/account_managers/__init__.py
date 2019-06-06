@@ -25,3 +25,9 @@ def set_db_records():
 
     leftuw = set_uw_account("leftuw")
     leftuw.set_bridge_id(200)
+
+def set_db_err_records():
+    error500 = set_uw_account("error500")
+    error500.set_bridge_id(250)
+
+    none = set_uw_account("not_in_pws")
