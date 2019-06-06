@@ -73,8 +73,8 @@ class BridgeChecker(UserUpdater):
             uw_account = save_uw_account(person)
 
             if (uw_account.netid != bridge_acc.netid and
-                    uw_account.has_prev_netid() and
-                    uw_account.prev_netid != bridge_acc.netid):
+                    (uw_account.has_prev_netid() is False or
+                     uw_account.prev_netid != bridge_acc.netid)):
                 self.add_error(
                     "Mis-matched accounts {0} {1}, abort update!".format(
                         bridge_acc, uw_account))
