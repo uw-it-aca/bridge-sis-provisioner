@@ -18,23 +18,26 @@ class TestBridge(TransactionTestCase):
 
     def test_get_all_bridge_users(self):
         busers = TestBridge.bridge.get_all_bridge_users()
-        self.assertEqual(len(busers), 6)
+        self.assertEqual(len(busers), 7)
         buser = busers[0]
+        self.assertEqual(buser.bridge_id, 100)
+        self.assertEqual(buser.netid, 'not_in_pws')
+        buser = busers[1]
         self.assertEqual(buser.bridge_id, 194)
         self.assertEqual(buser.netid, 'ellen')
-        buser = busers[1]
+        buser = busers[2]
         self.assertEqual(buser.bridge_id, 195)
         self.assertEqual(buser.netid, 'javerage')
-        buser = busers[2]
+        buser = busers[3]
         self.assertEqual(buser.bridge_id, 198)
         self.assertEqual(buser.netid, 'tyler')
-        buser = busers[3]
+        buser = busers[4]
         self.assertEqual(buser.bridge_id, 199)
         self.assertEqual(buser.netid, 'alumni')
-        buser = busers[4]
+        buser = busers[5]
         self.assertEqual(buser.bridge_id, 200)
         self.assertEqual(buser.netid, 'leftuw')
-        buser = busers[5]
+        buser = busers[6]
         self.assertEqual(buser.bridge_id, 204)
         self.assertEqual(buser.netid, 'retiree')
 
