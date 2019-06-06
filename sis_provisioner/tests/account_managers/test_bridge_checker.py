@@ -56,8 +56,6 @@ class TestBridgeUserChecker(TransactionTestCase):
         # mis-matched accounts
         loader = BridgeChecker(BridgeWorker())
         uw_acc = get_by_netid('javerage')
-        uw_acc.prev_netid = 'javerage0'
-        uw_acc.save()
         bri_acc = get_mock_bridge_user(
             195,
             "javge",
@@ -66,6 +64,12 @@ class TestBridgeUserChecker(TransactionTestCase):
             "Average Joseph",
             "Student",
             "9136CCB8F66711D5BE060004AC494FFE")
+        loader.take_action(javerage, bri_acc)
+        self.assertTrue(loader.has_error())
+
+        loader = BridgeChecker(BridgeWorker())
+        uw_acc.prev_netid = 'javerage0'
+        uw_acc.save()
         loader.take_action(javerage, bri_acc)
         self.assertTrue(loader.has_error())
 
