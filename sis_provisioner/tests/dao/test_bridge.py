@@ -90,12 +90,21 @@ class TestBridge(TransactionTestCase):
         self.assertEqual(get_regid(buser),
                          "10000000000000000000000000000066")
 
+        self.assertRaises(DataFailureException,
+                          TestBridge.bridge.get_user_by_bridgeid,
+                          250)
+
     def test_restore_bridge_user(self):
         uw_acc = UwAccount(netid='staff',
                            bridge_id=196,
                            last_updated=get_now())
         buser = TestBridge.bridge.restore_bridge_user(uw_acc)
         self.assertEqual(buser.netid, 'staff')
+
+        uw_acc = UwAccount(netid='staff',
+                           last_updated=get_now())
+        buser = TestBridge.bridge.restore_bridge_user(uw_acc)
+        self.assertEqual(buser.bridge_id, 196)
 
         self.assertRaises(DataFailureException,
                           TestBridge.bridge.restore_bridge_user,

@@ -99,6 +99,7 @@ class BridgeUsers(Users):
             buser = self.restore_user_by_id(uw_account.bridge_id)
             if buser is not None:
                 return buser
+
         bridge_user = self.restore_user(uw_account.netid)
         if bridge_user is not None:
             uw_account.set_bridge_id(bridge_user.bridge_id)

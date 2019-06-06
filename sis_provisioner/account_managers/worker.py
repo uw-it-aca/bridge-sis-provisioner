@@ -33,7 +33,6 @@ class Worker:
         Add a new user into Bridge
         :param uw_account: a valid UwAccount object.
         """
-        pass
 
     @abstractmethod
     def delete_user(self, bridge_account):
@@ -42,7 +41,6 @@ class Worker:
         :param bridge_account: a valid BridgeUser object.
         :return True if successful.
         """
-        pass
 
     @abstractmethod
     def restore_user(self, uw_account):
@@ -51,7 +49,6 @@ class Worker:
         :param uw_account: a valid UwAccount object.
         :return: a valid BridgeUser object.
         """
-        pass
 
     @abstractmethod
     def update_uid(self, uw_account):
@@ -60,7 +57,6 @@ class Worker:
         :param uw_account: a valid UwAccount object.
         :return True if successful.
         """
-        pass
 
     @abstractmethod
     def update_user(self, bridge_account, uw_account, person):
@@ -70,39 +66,33 @@ class Worker:
         :param uw_account: a valid UwAccount object.
         :param person: a valid PWS Person object
         """
-        pass
 
     @abstractmethod
     def get_new_user_count(self):
         """
         :return: total number of new users added successfully
         """
-        pass
 
     @abstractmethod
     def get_netid_changed_count(self):
         """
         :return: total number of users whose netid being changed successfully
         """
-        pass
 
     @abstractmethod
     def get_deleted_count(self):
         """
         :return: total number of users being deleted successfully
         """
-        return self.total_deleted_count
 
     @abstractmethod
     def get_restored_count(self):
         """
         :return: total number of users being restored successfully
         """
-        pass
 
     @abstractmethod
     def get_updated_count(self):
         """
         :return: total number of users being updated successfully
         """
-        pass
