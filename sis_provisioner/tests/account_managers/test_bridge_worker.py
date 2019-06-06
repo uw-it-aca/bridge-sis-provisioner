@@ -7,6 +7,7 @@ from sis_provisioner.dao.pws import get_person
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.tests import (
     fdao_pws_override, fdao_bridge_override)
+from sis_provisioner.tests.dao import get_mock_bridge_user
 from sis_provisioner.tests.account_managers import set_uw_account
 
 ALUM_BUSER_JSON = {'uid': 'alumni@uw.edu',
@@ -122,3 +123,17 @@ class TestBridgeWorker(TransactionTestCase):
         worker.update_user(bri_acc, uw_acc, person)
         self.assertEqual(worker.get_netid_changed_count(), 0)
         self.assertEqual(worker.get_updated_count(), 1)
+
+        worker = BridgeWorker()
+        bridge_account = get_mock_bridge_user(195,
+                                              "javerage",
+                                              "javerage@uw.edu",
+                                              "Average Student",
+                                              "Average",
+                                              "Student",
+                                              "")
+        worker.update_user(bridge_account,
+                           set_uw_account('javerage'),
+                           get_person('javerage'))
+        self.assertEqual(worker.get_updated_count(), 0)
+        self.assertTrue(worker.has_err())
