@@ -8,7 +8,7 @@ from sis_provisioner.tests import (
     fdao_pws_override, fdao_gws_override, fdao_bridge_override)
 from sis_provisioner.tests.dao import get_mock_bridge_user
 from sis_provisioner.tests.account_managers import (
-    set_uw_account, set_db_records)
+    set_uw_account, set_db_records, set_db_err_records)
 
 
 @fdao_bridge_override
@@ -136,7 +136,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
 
     def test_load_abort(self):
         with self.settings(ERRORS_TO_ABORT_LOADER=[500]):
-            set_db_records()
+            set_db_err_records()
             loader = GwsBridgeLoader(BridgeWorker())
             self.assertRaises(DataFailureException, loader.load)
 
