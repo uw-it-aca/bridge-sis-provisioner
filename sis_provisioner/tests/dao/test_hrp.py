@@ -28,3 +28,6 @@ class TestHrpDao(TestCase):
 
         person = get_person('bill')
         self.assertIsNone(get_worker(person))
+
+        person = get_person('error500')
+        self.assertIsNone(get_worker(person))

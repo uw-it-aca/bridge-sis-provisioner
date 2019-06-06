@@ -6,6 +6,7 @@ from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.tests import (
     fdao_pws_override, fdao_gws_override, fdao_bridge_override)
+from sis_provisioner.tests.dao import get_mock_bridge_user
 from sis_provisioner.tests.account_managers import (
     set_uw_account, set_db_records)
 
@@ -142,7 +143,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
     def test_account_not_changed(self):
         loader = GwsBridgeLoader(BridgeWorker())
         uw_account = set_uw_account('javerage')
-        save_bridge_id(uw_account, 195)
+        uw_account.set_bridge_id(195)
         person = get_person('javerage')
         bridge_account = get_mock_bridge_user(
             195,
