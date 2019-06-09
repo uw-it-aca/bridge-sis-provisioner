@@ -1,5 +1,6 @@
 from django.test import TransactionTestCase
 from restclients_core.exceptions import DataFailureException
+from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.models import UwAccount, get_now
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
@@ -145,13 +146,13 @@ class TestGwsBridgeLoader(TransactionTestCase):
         uw_account = set_uw_account('javerage')
         uw_account.set_bridge_id(195)
         person = get_person('javerage')
-        bridge_account = get_mock_bridge_user(
-            195,
-            "javerage",
-            "javerage@uw.edu",
-            "Average Joseph Student",
-            "Average Joseph",
-            "Student",
-            "9136CCB8F66711D5BE060004AC494FFE")
+        hrp_wkr = get_worker(person)
+        bridge_account = loader.worker.get_bridge_user_to_add(person,
+                                                              hrp_wkr)
         self.assertTrue(
-            loader.account_not_changed(uw_account, person, bridge_account))
+            loader.account_not_changed(bridge_account, person, hrp_wkr))
+
+        bridge_account = loader.get_bridge().get_user_by_uwnetid(
+            person.uwnetid)
+        self.assertTrue(
+            loader.account_not_changed(bridge_account, person, hrp_wkr))

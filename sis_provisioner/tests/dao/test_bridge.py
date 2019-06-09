@@ -5,8 +5,7 @@ from sis_provisioner.models import UwAccount, get_now
 from sis_provisioner.dao import DataFailureException
 from sis_provisioner.dao.bridge import BridgeUsers
 from sis_provisioner.tests import fdao_bridge_override
-from sis_provisioner.tests.dao import (
-    get_regid, get_mock_bridge_user, new_regid_custom_field)
+from sis_provisioner.tests.dao import get_mock_bridge_user
 
 
 @fdao_bridge_override
@@ -81,17 +80,13 @@ class TestBridge(TransactionTestCase):
         self.assertIsNotNone(buser)
         self.assertEqual(buser.bridge_id, 195)
         self.assertEqual(buser.netid, "javerage")
-        self.assertEqual(len(buser.custom_fields), 1)
-        self.assertEqual(get_regid(buser),
-                         "9136CCB8F66711D5BE060004AC494FFE")
+        self.assertEqual(len(buser.custom_fields), 8)
 
         buser = TestBridge.bridge.get_user_by_bridgeid(204)
         self.assertIsNotNone(buser)
         self.assertEqual(buser.bridge_id, 204)
         self.assertEqual(buser.netid, 'retiree')
-        self.assertEqual(buser.email, 'retiree@uw.edu')
-        self.assertEqual(get_regid(buser),
-                         "10000000000000000000000000000066")
+        self.assertEqual(len(buser.custom_fields), 1)
 
         self.assertRaises(DataFailureException,
                           TestBridge.bridge.get_user_by_bridgeid,

@@ -4,7 +4,7 @@ from sis_provisioner.dao import DataFailureException
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import (
     delete_uw_account, get_all_uw_accounts, get_by_bridgeid,
-    get_by_netid, save_uw_account, set_bridge_id)
+    get_by_employee_id, get_by_netid, save_uw_account, set_bridge_id)
 from sis_provisioner.tests import fdao_pws_override
 
 
@@ -26,13 +26,17 @@ class TestUwAccountDao(TransactionTestCase):
 
     def test_get_by_ids(self):
         user = self.mock_uw_account('staff')
-        user.bridge_id = 100
         user.save()
+        self.assertIsNone(get_by_bridgeid(100))
 
-        result_set = get_by_bridgeid(100)
-        self.assertEqual(len(result_set), 1)
-        self.assertEqual(result_set[0].bridge_id, 100)
-        self.assertEqual(result_set[0].netid, 'staff')
+        user.set_bridge_id(100)
+        result = get_by_bridgeid(100)
+        self.assertEqual(result.netid, 'staff')
+
+        self.assertIsNone(get_by_employee_id("123456789"))
+        user.set_employee_id("123456789")
+        result = get_by_employee_id("123456789")
+        self.assertEqual(result.netid, 'staff')
 
         user1 = get_by_netid('staff')
         self.assertEqual(user, user1)
@@ -41,7 +45,7 @@ class TestUwAccountDao(TransactionTestCase):
         self.assertIsNone(get_by_netid('staff'))
 
         self.assertIsNone(get_by_bridgeid(0))
-        self.assertEqual(len(get_by_bridgeid(12)), 0)
+        self.assertIsNone(get_by_employee_id(None))
         self.assertIsNone(get_by_netid('none'))
 
     def test_save_new_uw_account(self):

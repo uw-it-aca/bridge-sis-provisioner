@@ -9,10 +9,13 @@ Check against PWS Person, apply high priority changes.
 import logging
 import traceback
 from uw_bridge.models import BridgeUser
+from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.uw_account import save_uw_account, set_bridge_id
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.account_managers import (
-    get_full_name, get_email, normalize_name, get_regid)
+    get_full_name, get_email, get_job_title, normalize_name,
+    get_pos1_budget_code, get_pos1_job_code, get_job_title,
+    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name)
 from sis_provisioner.account_managers.loader import Loader
 
 
@@ -24,12 +27,15 @@ class GwsBridgeLoader(Loader):
     def __init__(self, worker, clogger=logger):
         super(GwsBridgeLoader, self).__init__(worker, clogger)
 
-    def get_bridge(self):
-        return self.worker.bridge
-
     def fetch_users(self):
         self.data_source = "GWS uw_members group"
         return list(self.gws_user_set)
+
+    def get_bridge(self):
+        return self.worker.bridge
+
+    def get_hrp_worker(self, person):
+        return get_worker(person)
 
     def process_users(self):
         """
@@ -73,6 +79,8 @@ class GwsBridgeLoader(Loader):
         """
         @param: uw_account a valid UwAccount object to take action upon
         """
+        hrp_wkr = self.get_hrp_worker(person)
+
         bridge_acc = self.match_bridge_account(uw_account)
         self.logger.debug("MATCH UW account {0} ==> Bridge account {1}".format(
             uw_account, bridge_acc))
@@ -86,13 +94,14 @@ class GwsBridgeLoader(Loader):
                     return
             else:
                 # account not exist in Bridge
-                self.worker.add_new_user(uw_account, person)
+                self.worker.add_new_user(uw_account, person, hrp_wkr)
                 return
-        uw_account.set_bridge_id(bridge_acc.bridge_id)
 
-        if not self.account_not_changed(uw_account, person, bridge_acc):
+        uw_account.set_bridge_id(bridge_acc.bridge_id)
+        if not self.account_not_changed(bridge_acc, person, hrp_wkr):
             # update the existing account with person data
-            self.worker.update_user(bridge_acc, uw_account, person)
+            self.worker.update_user(bridge_acc, uw_account,
+                                    person, hrp_wkr)
 
     def match_bridge_account(self, uw_account):
         """
@@ -132,16 +141,24 @@ class GwsBridgeLoader(Loader):
             return self.worker.delete_user(bridge_acc)
         return False
 
-    def account_not_changed(self, uw_account, person, bridge_account):
+    def account_not_changed(self, bridge_acc, person, hrp_wkr):
         """
-        :param uw_account: a valid UwBridgeUser object
+        :param bridge_acc: a valid BridgeUser object
         :param person: a valid Person object
-        :param bridge_account: a valid BridgeUser object
+        :param hrp_wkr: a valid Worker object
         :return: True if the attributes have the same values
         """
         return (
-            person.uwnetid == bridge_account.netid and
-            get_email(person) == bridge_account.email and
-            get_full_name(person) == bridge_account.full_name and
-            normalize_name(person.surname) == bridge_account.last_name and
-            self.worker.not_changed_regid(person.uwregid, bridge_account))
+            person.uwnetid == bridge_acc.netid and
+            get_email(person) == bridge_acc.email and
+            get_full_name(person) == bridge_acc.full_name and
+            normalize_name(person.surname) == bridge_acc.last_name and
+            get_job_title(hrp_wkr) == bridge_acc.job_title and
+            self.worker.regid_not_changed(bridge_acc, person) and
+            self.worker.eid_not_changed(bridge_acc, person) and
+            self.worker.sid_not_changed(bridge_acc, person) and
+            self.worker.pos1_budget_code_not_changed(bridge_acc, hrp_wkr) and
+            self.worker.pos1_job_code_not_changed(bridge_acc, hrp_wkr) and
+            self.worker.pos1_job_class_not_changed(bridge_acc, hrp_wkr) and
+            self.worker.pos1_org_code_not_changed(bridge_acc, hrp_wkr) and
+            self.worker.pos1_org_name_not_changed(bridge_acc, hrp_wkr))

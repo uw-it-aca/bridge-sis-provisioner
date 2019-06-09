@@ -31,11 +31,33 @@ def get_all_uw_accounts():
 
 def get_by_bridgeid(bridge_id):
     """
-    @return a UwAccount object
+    @return a UwAccount objects
     @exception: UwAccount.DoesNotExist
     """
     if bridge_id > 0:
-        return UwAccount.objects.filter(bridge_id=bridge_id)
+        qs = UwAccount.objects.filter(bridge_id=bridge_id)
+        if len(qs) == 1:
+            return qs[0]
+        if len(qs) > 1:
+            logger.error(
+                "Multiple accounts in DB with the same bridge_id {0}".format(
+                    bridge_id))
+    return None
+
+
+def get_by_employee_id(employee_id):
+    """
+    @return a UwAccount object
+    @exception: UwAccount.DoesNotExist
+    """
+    if employee_id is not None:
+        qs = UwAccount.objects.filter(employee_id=employee_id)
+        if len(qs) == 1:
+            return qs[0]
+        if len(qs) > 1:
+            logger.error(
+                "Multiple accounts in DB with the same employee_id {0}".format(
+                    employee_id))
     return None
 
 

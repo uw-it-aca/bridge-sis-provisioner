@@ -1,4 +1,5 @@
 from sis_provisioner.models import UwAccount, get_now
+from sis_provisioner.tests.dao import new_custom_field
 
 
 def set_uw_account(uwnetid):

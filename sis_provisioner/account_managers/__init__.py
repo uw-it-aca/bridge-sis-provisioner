@@ -34,8 +34,54 @@ def normalize_name(name):
     return ""
 
 
-def get_regid(bridge_account):
-    cf = bridge_account.get_custom_field(BridgeCustomField.REGID_NAME)
+def get_custom_field_value(bridge_account, field_name):
+    cf = bridge_account.get_custom_field(field_name)
     if cf is not None:
         return cf.value
+    return None
+
+
+def get_job_title(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None):
+        return hrp_wkr.primary_position.title
+    return None
+
+
+def get_pos1_job_class(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None):
+        return hrp_wkr.primary_position.ecs_job_cla_code_desc
+    return None
+
+
+def get_pos1_job_code(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None and
+            hrp_wkr.primary_position.job_profile is not None):
+        return hrp_wkr.primary_position.job_profile.job_code
+    return None
+
+
+def get_pos1_budget_code(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None and
+            hrp_wkr.primary_position.supervisory_org is not None):
+        return hrp_wkr.primary_position.supervisory_org.budget_code
+    return None
+
+
+def get_pos1_org_code(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None and
+            hrp_wkr.primary_position.supervisory_org is not None):
+        return hrp_wkr.primary_position.supervisory_org.org_code
+    return None
+
+
+def get_pos1_org_name(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None and
+            hrp_wkr.primary_position.supervisory_org is not None):
+        return hrp_wkr.primary_position.supervisory_org.org_name
     return None

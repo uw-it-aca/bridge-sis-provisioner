@@ -1,8 +1,13 @@
 from django.test import TransactionTestCase
+from uw_bridge.models import BridgeCustomField, BridgeUser
 from sis_provisioner.dao.pws import get_person
+from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.account_managers import (
-    get_full_name, get_email, normalize_name, get_regid)
-from sis_provisioner.tests.dao import get_mock_bridge_user
+    get_full_name, get_email, normalize_name, get_job_title,
+    get_pos1_budget_code, get_pos1_job_code, get_job_title,
+    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
+    get_custom_field_value)
+from sis_provisioner.tests.account_managers import new_custom_field
 
 
 class TestValidUser(TransactionTestCase):
@@ -26,17 +31,67 @@ class TestValidUser(TransactionTestCase):
                          "Xxxxxxxxx Y Aaaaaaaaa")
         self.assertEqual(normalize_name(None), "")
 
-    def test_get_regid(self):
-        bridge_acc = get_mock_bridge_user(
-            198,
-            "tyler",
-            "tyler@uw.edu",
-            "Tyler Faculty",
-            "Tyler",
-            "Faculty",
-            "10000000000000000000000000000005")
-        self.assertEqual(get_regid(bridge_acc),
-                         "10000000000000000000000000000005")
+    def test_get_custom_field_value(self):
+        bridge_acc = BridgeUser(netid='javerage')
+        self.assertIsNone(get_custom_field_value(
+            bridge_acc, BridgeCustomField.REGID_NAME))
+        bridge_acc.custom_fields[BridgeCustomField.REGID_NAME] = \
+            new_custom_field(BridgeCustomField.REGID_NAME, "1")
+        self.assertIsNone(get_custom_field_value(
+            bridge_acc, BridgeCustomField.STUDENT_ID_NAME))
+        self.assertEqual(get_custom_field_value(
+            bridge_acc, BridgeCustomField.REGID_NAME), "1")
 
-        bridge_acc.custom_fields = {}
-        self.assertIsNone(get_regid(bridge_acc))
+    def test_get_job_title(self):
+        self.assertIsNone(get_job_title(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_job_title(hrp_wkr),
+                         "Student Reference Specialist - GMM")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_job_title(hrp_wkr))
+
+    def test_get_pos1_job_class(self):
+        self.assertIsNone(get_pos1_job_class(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_job_class(hrp_wkr),
+                         "Undergraduate Student")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_job_class(hrp_wkr))
+
+    def test_get_pos1_job_code(self):
+        self.assertIsNone(get_pos1_job_code(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_job_code(hrp_wkr),
+                         "10875")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_job_code(hrp_wkr))
+
+    def test_get_pos1_budget_code(self):
+        self.assertIsNone(get_pos1_budget_code(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_budget_code(hrp_wkr),
+                         "2070001000")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_budget_code(hrp_wkr))
+
+    def test_get_pos1_org_code(self):
+        self.assertIsNone(get_pos1_org_code(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_org_code(hrp_wkr),
+                         "LIB:")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_org_code(hrp_wkr))
+
+    def test_get_pos1_org_name(self):
+        self.assertIsNone(get_pos1_org_name(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_org_name(hrp_wkr),
+                         "GMMN: Public Services JM Student")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_org_name(hrp_wkr))

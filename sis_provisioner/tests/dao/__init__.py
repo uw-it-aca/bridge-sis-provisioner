@@ -2,6 +2,10 @@ from uw_bridge.custom_fields import CustomFields
 from uw_bridge.models import BridgeCustomField, BridgeUser
 
 
+def new_custom_field(name, value):
+    return CustomFields().new_custom_field(name, value)
+
+
 def get_mock_bridge_user(bridge_id,
                          uwnetid, email,
                          display_name,
@@ -15,17 +19,5 @@ def get_mock_bridge_user(bridge_id,
                       first_name=first_name,
                       last_name=surname)
     user.custom_fields[BridgeCustomField.REGID_NAME] = \
-        new_regid_custom_field(uwregid)
+        new_custom_field(BridgeCustomField.REGID_NAME, uwregid)
     return user
-
-
-def new_regid_custom_field(uwregid):
-    return CustomFields().new_custom_field(BridgeCustomField.REGID_NAME,
-                                           uwregid)
-
-
-def get_regid(bridge_account):
-    cf = bridge_account.get_custom_field(BridgeCustomField.REGID_NAME)
-    if cf is not None:
-        return cf.value
-    return None

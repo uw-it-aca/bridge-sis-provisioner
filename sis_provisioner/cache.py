@@ -7,7 +7,7 @@ FIVE_SECONDS = 5
 FIVE_MINS = 60 * 5
 HALF_HOUR = 60 * 30
 ONE_HOUR = 60 * 60
-EIGHT_HOURS = 60 * 60 * 8
+FOUR_HOURS = 60 * 60 * 4
 
 
 def get_cache_time(service, url):
@@ -17,11 +17,8 @@ def get_cache_time(service, url):
             return FIVE_SECONDS
         return FIVE_MINS
 
-    if "gws" == service:
-        return EIGHT_HOURS
-
-    if "pws" == service:
-        return ONE_HOUR
+    if "pws" == service or "hrpws" == service:
+        return FOUR_HOURS
 
     return ONE_HOUR
 

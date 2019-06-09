@@ -92,10 +92,13 @@ class BridgeChecker(UserUpdater):
 
             uw_account.set_bridge_id(bridge_acc1.bridge_id)
 
-            if not self.account_not_changed(uw_account, person, bridge_acc1):
+            hrp_wkr = self.get_hrp_worker(person)
+
+            if not self.account_not_changed(bridge_acc1, person, hrp_wkr):
                 self.logger.debug("To update {0}, {1}".format(
                     uw_account, bridge_acc1))
-                self.worker.update_user(bridge_acc1, uw_account, person)
+                self.worker.update_user(bridge_acc1, uw_account,
+                                        person, hrp_wkr)
 
         except Exception as ex:
             self.handle_exception(

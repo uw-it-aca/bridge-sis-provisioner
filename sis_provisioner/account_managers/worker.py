@@ -28,7 +28,7 @@ class Worker:
         return len(self.errors) > 0
 
     @abstractmethod
-    def add_new_user(self, uw_account, person):
+    def add_new_user(self, uw_account, person, hrp_wkr):
         """
         Add a new user into Bridge
         :param uw_account: a valid UwAccount object.
@@ -59,7 +59,7 @@ class Worker:
         """
 
     @abstractmethod
-    def update_user(self, bridge_account, uw_account, person):
+    def update_user(self, bridge_account, uw_account, person, hrp_wkr):
         """
         Update the existing BridgeUser data (including change uid and regid)
         :param bridge_account: a validBridgeUser object.

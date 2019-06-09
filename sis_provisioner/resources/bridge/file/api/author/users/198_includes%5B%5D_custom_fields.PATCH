@@ -2,22 +2,40 @@
     "meta":{},
     "linked":{
        "custom_fields": [
-       {
-        "id": "5",
-        "name": "REGID"
-      }
+       {"id": "5", "name": "REGID"},
+       {"id": "6", "name":"employee_id"},
+       {"id": "7", "name":"student_id"},
+       {"id": "11", "name":"pos1_budget_code"},
+       {"id": "12", "name":"pos1_job_code"},
+       {"id": "13", "name":"pos1_job_class"},
+       {"id": "14", "name":"pos1_org_code"},
+       {"id": "15", "name":"pos1_org_name"}
       ],
     "custom_field_values": [
-      {
-        "id": "4",
-        "value": "10000000000000000000000000000005",
-        "links": {
-          "custom_field": {
-            "id": "5",
-            "type": "custom_fields"
-          }
-        }
-      }
+      {"id": "1",
+       "value": "10000000000000000000000000000005",
+       "links": {"custom_field": {"id": "5", "type": "custom_fields"}}},
+       {"id": "2",
+        "value": "000000005",
+        "links": {"custom_field": {"id": "6", "type": "custom_fields"}}},
+        {"id": "3",
+        "value": "0000005",
+        "links": {"custom_field": {"id": "7", "type": "custom_fields"}}},
+        {"id": "4",
+        "value": "3040111000",
+        "links": {"custom_field": {"id": "11", "type": "custom_fields"}}},
+        {"id": "5",
+        "value": "21184",
+        "links": {"custom_field": {"id": "12", "type": "custom_fields"}}},
+        {"id": "6",
+        "value": "Academic Personnel",
+        "links": {"custom_field": {"id": "13", "type": "custom_fields"}}},
+        {"id": "7",
+        "value": "SOM:",
+        "links": {"custom_field": {"id": "14", "type": "custom_fields"}}},
+        {"id": "8",
+        "value": "Family Medicine: Volunteer JM Academic",
+        "links": {"custom_field": {"id": "15", "type": "custom_fields"}}}
     ]
   },
    "users":[
@@ -49,7 +67,7 @@
        "next_due_date":null,
        "completed_courses_count":1,
        "links":{
-          "custom_field_values":["4"]
+          "custom_field_values":["1","2","3","4","5","6","7","8"]
        },
        "meta":{"can_masquerade":true}
     }

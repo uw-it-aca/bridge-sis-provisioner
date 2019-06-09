@@ -29,7 +29,7 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_deleted_count(), 0)
         self.assertEqual(loader.get_restored_count(), 0)
-        self.assertEqual(loader.get_updated_count(), 0)
+        self.assertEqual(loader.get_updated_count(), 1)
         self.assertFalse(loader.has_error())
 
         uw_acc = set_uw_account('javerage')
@@ -40,7 +40,7 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_netid_changed_count(), 0)
         self.assertEqual(loader.get_deleted_count(), 0)
         self.assertEqual(loader.get_restored_count(), 0)
-        self.assertEqual(loader.get_updated_count(), 0)
+        self.assertEqual(loader.get_updated_count(), 1)
         self.assertFalse(loader.has_error())
         self.assertEqual(len(loader.get_error_report()), 0)
 
@@ -50,7 +50,7 @@ class TestBridgeUserChecker(TransactionTestCase):
         tyler = get_person('tyler')
         loader.take_action(tyler, bri_acc)
         self.assertEqual(loader.get_netid_changed_count(), 1)
-        self.assertEqual(loader.get_updated_count(), 1)
+        self.assertEqual(loader.get_updated_count(), 2)
         self.assertFalse(loader.has_error())
 
         # mis-matched accounts
@@ -99,6 +99,6 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_netid_changed_count(), 2)
         self.assertEqual(loader.get_deleted_count(), 1)
         self.assertEqual(loader.get_restored_count(), 0)
-        self.assertEqual(loader.get_updated_count(), 3)
+        self.assertEqual(loader.get_updated_count(), 4)
         self.assertEqual(loader.get_error_report(), "")
         self.assertFalse(loader.has_error())

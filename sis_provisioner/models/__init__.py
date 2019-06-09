@@ -28,6 +28,8 @@ class UwAccount(models.Model):
     last_updated = models.DateTimeField(null=True, default=None)
     # scheduled terminate date
     terminate_at = models.DateTimeField(null=True, default=None)
+    employee_id = models.SlugField(max_length=10, null=True,
+                                   default=None, db_index=True)
 
     def has_bridge_id(self):
         return self.bridge_id > 0
@@ -36,6 +38,11 @@ class UwAccount(models.Model):
         if bridge_id > 0 and bridge_id != self.bridge_id:
             self.bridge_id = bridge_id
             self.last_updated = get_now()
+            self.save()
+
+    def set_employee_id(self, employee_id):
+        if self.employee_id is None or employee_id != self.employee_id:
+            self.employee_id = employee_id
             self.save()
 
     def has_prev_netid(self):
