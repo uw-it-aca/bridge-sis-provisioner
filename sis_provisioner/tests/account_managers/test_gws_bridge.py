@@ -142,9 +142,8 @@ class TestGwsBridgeLoader(TransactionTestCase):
             self.assertRaises(DataFailureException, loader.load)
 
     def test_account_not_changed(self):
+        set_db_records()
         loader = GwsBridgeLoader(BridgeWorker())
-        uw_account = set_uw_account('javerage')
-        uw_account.set_bridge_id(195)
         person = get_person('javerage')
         hrp_wkr = get_worker(person)
         bridge_account = loader.worker.get_bridge_user_to_add(person,

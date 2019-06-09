@@ -25,4 +25,4 @@ class Command(BaseCommand):
         finally:
             log_resp_time(logger, "Load user EIDs", timer)
 
-        logger.info("Total user synced eid: {0:d}\n".format(total_count))
+        print("Total user synced eid: {0:d}\n".format(total_count))

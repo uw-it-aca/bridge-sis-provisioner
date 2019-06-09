@@ -10,7 +10,8 @@ from sis_provisioner.dao.bridge import BridgeUsers
 from sis_provisioner.account_managers import (
     get_email, get_full_name, normalize_name, get_custom_field_value,
     get_pos1_budget_code, get_pos1_job_code, get_job_title,
-    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name)
+    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
+    get_supervisor_bridge_id)
 from sis_provisioner.account_managers.worker import Worker
 
 
@@ -39,7 +40,8 @@ class BridgeWorker(Worker):
                 self.get_bridge_user_to_add(person, hrp_wkr))
 
             if self._uid_matched(uw_account, bridge_account):
-                uw_account.set_bridge_id(bridge_account.bridge_id)
+                uw_account.set_ids(bridge_account.bridge_id,
+                                   person.employee_id)
                 self.total_new_users_count += 1
                 logger.info("{0} ==> {1}".format(
                     action, bridge_account.__str__(orig=False)))
@@ -130,7 +132,8 @@ class BridgeWorker(Worker):
                           full_name=get_full_name(person),
                           first_name=normalize_name(person.first_name),
                           last_name=normalize_name(person.surname),
-                          job_title=get_job_title(hrp_wkr))
+                          job_title=get_job_title(hrp_wkr),
+                          manager_id=get_supervisor_bridge_id(hrp_wkr))
         self.add_custom_field(user,
                               BridgeCustomField.REGID_NAME,
                               person.uwregid)
@@ -175,7 +178,8 @@ class BridgeWorker(Worker):
             full_name=get_full_name(person),
             first_name=normalize_name(person.first_name),
             last_name=normalize_name(person.surname),
-            job_title=get_job_title(hrp_wkr))
+            job_title=get_job_title(hrp_wkr),
+            manager_id=get_supervisor_bridge_id(hrp_wkr))
 
         if not self.regid_not_changed(bridge_account, person):
             self.add_custom_field(user,

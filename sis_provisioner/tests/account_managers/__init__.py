@@ -9,27 +9,27 @@ def set_uw_account(uwnetid):
 
 def set_db_records():
     javerage = set_uw_account("javerage")
-    javerage.set_bridge_id(195)
+    javerage.set_ids(195, "123456789")
 
     ellen = set_uw_account("ellen")
-    ellen.set_bridge_id(194)
+    ellen.set_ids(194, "000000006")
 
     staff = set_uw_account("staff")
     staff.set_disable()
-    staff.set_bridge_id(196)
+    staff.set_ids(196, "100000001")
 
     retiree = set_uw_account("retiree")
-    retiree.set_bridge_id(204)
+    retiree.set_ids(204, "000000006")
 
     tyler = set_uw_account("tyler")
-    tyler.set_bridge_id(198)
+    tyler.set_ids(198, "000000005")
 
     leftuw = set_uw_account("leftuw")
-    leftuw.set_bridge_id(200)
+    leftuw.set_ids(200, None)
 
 
 def set_db_err_records():
     error500 = set_uw_account("error500")
-    error500.set_bridge_id(250)
+    error500.set_ids(250, None)
 
     none = set_uw_account("not_in_pws")

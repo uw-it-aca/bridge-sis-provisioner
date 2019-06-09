@@ -21,22 +21,40 @@ def get_now():
 
 
 class UwAccount(models.Model):
-    bridge_id = models.IntegerField(default=0, db_index=True)
     netid = models.SlugField(max_length=50, db_index=True, unique=True)
     prev_netid = models.SlugField(max_length=50, null=True, default=None)
+    bridge_id = models.IntegerField(default=0, db_index=True)
+    employee_id = models.SlugField(max_length=10, null=True,
+                                   default=None, db_index=True)
     disabled = models.BooleanField(default=False)
     last_updated = models.DateTimeField(null=True, default=None)
     # scheduled terminate date
     terminate_at = models.DateTimeField(null=True, default=None)
-    employee_id = models.SlugField(max_length=10, null=True,
-                                   default=None, db_index=True)
 
     def has_bridge_id(self):
         return self.bridge_id > 0
 
     def set_bridge_id(self, bridge_id):
+        self.bridge_id = bridge_id
+
+    def has_employee_id(self):
+        return self.employee_id is not None
+
+    def set_employee_id(self, employee_id):
+        self.employee_id = employee_id
+
+    def set_ids(self, bridge_id, employee_id):
+        upded = False
         if bridge_id > 0 and bridge_id != self.bridge_id:
-            self.bridge_id = bridge_id
+            self.set_bridge_id(bridge_id)
+            upded = True
+
+        if (employee_id is not None and
+                self.employee_id is None or employee_id != self.employee_id):
+            self.set_employee_id(employee_id)
+            upded = True
+
+        if upded:
             self.last_updated = get_now()
             self.save()
 

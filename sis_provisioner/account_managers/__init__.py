@@ -2,6 +2,7 @@ import re
 from string import capwords
 from nameparser import HumanName
 from uw_bridge.models import BridgeCustomField
+from sis_provisioner.dao.uw_account import get_by_employee_id
 
 
 def get_email(person):
@@ -85,3 +86,12 @@ def get_pos1_org_name(hrp_wkr):
             hrp_wkr.primary_position.supervisory_org is not None):
         return hrp_wkr.primary_position.supervisory_org.org_name
     return None
+
+
+def get_supervisor_bridge_id(hrp_wkr):
+    if hrp_wkr is not None:
+        employee_id = hrp_wkr.primary_manager_id
+        uw_acc = get_by_employee_id(employee_id)
+        if uw_acc is not None:
+            return uw_acc.bridge_id
+    return 0

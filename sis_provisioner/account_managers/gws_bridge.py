@@ -10,12 +10,13 @@ import logging
 import traceback
 from uw_bridge.models import BridgeUser
 from sis_provisioner.dao.hrp import get_worker
-from sis_provisioner.dao.uw_account import save_uw_account, set_bridge_id
+from sis_provisioner.dao.uw_account import save_uw_account
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.account_managers import (
     get_full_name, get_email, get_job_title, normalize_name,
     get_pos1_budget_code, get_pos1_job_code, get_job_title,
-    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name)
+    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
+    get_supervisor_bridge_id)
 from sis_provisioner.account_managers.loader import Loader
 
 
@@ -97,7 +98,7 @@ class GwsBridgeLoader(Loader):
                 self.worker.add_new_user(uw_account, person, hrp_wkr)
                 return
 
-        uw_account.set_bridge_id(bridge_acc.bridge_id)
+        uw_account.set_ids(bridge_acc.bridge_id, person.employee_id)
         if not self.account_not_changed(bridge_acc, person, hrp_wkr):
             # update the existing account with person data
             self.worker.update_user(bridge_acc, uw_account,
@@ -154,6 +155,7 @@ class GwsBridgeLoader(Loader):
             get_full_name(person) == bridge_acc.full_name and
             normalize_name(person.surname) == bridge_acc.last_name and
             get_job_title(hrp_wkr) == bridge_acc.job_title and
+            get_supervisor_bridge_id(hrp_wkr) == bridge_acc.manager_id and
             self.worker.regid_not_changed(bridge_acc, person) and
             self.worker.eid_not_changed(bridge_acc, person) and
             self.worker.sid_not_changed(bridge_acc, person) and

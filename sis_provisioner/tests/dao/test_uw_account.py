@@ -4,8 +4,9 @@ from sis_provisioner.dao import DataFailureException
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import (
     delete_uw_account, get_all_uw_accounts, get_by_bridgeid,
-    get_by_employee_id, get_by_netid, save_uw_account, set_bridge_id)
+    get_by_employee_id, get_by_netid, save_uw_account)
 from sis_provisioner.tests import fdao_pws_override
+from sis_provisioner.tests.account_managers import set_db_records
 
 
 @fdao_pws_override
@@ -25,25 +26,18 @@ class TestUwAccountDao(TransactionTestCase):
         self.assertEqual(len(users), 2)
 
     def test_get_by_ids(self):
-        user = self.mock_uw_account('staff')
-        user.save()
-        self.assertIsNone(get_by_bridgeid(100))
+        set_db_records()
+        self.assertIsNone(get_by_bridgeid(201))
+        self.assertEqual(get_by_bridgeid(196).netid, 'staff')
+        self.assertEqual(get_by_employee_id("123456789").netid, "javerage")
 
-        user.set_bridge_id(100)
-        result = get_by_bridgeid(100)
-        self.assertEqual(result.netid, 'staff')
+        # multiple records
+        self.assertIsNone(get_by_employee_id("000000006"))
 
-        self.assertIsNone(get_by_employee_id("123456789"))
-        user.set_employee_id("123456789")
-        result = get_by_employee_id("123456789")
-        self.assertEqual(result.netid, 'staff')
-
-        user1 = get_by_netid('staff')
-        self.assertEqual(user, user1)
+        self.assertEqual(get_by_netid('staff').bridge_id, 196)
 
         delete_uw_account('staff')
         self.assertIsNone(get_by_netid('staff'))
-
         self.assertIsNone(get_by_bridgeid(0))
         self.assertIsNone(get_by_employee_id(None))
         self.assertIsNone(get_by_netid('none'))
@@ -65,9 +59,6 @@ class TestUwAccountDao(TransactionTestCase):
         self.assertTrue(acc.has_prev_netid())
         self.assertEqual(acc.prev_netid, 'tyler')
         self.assertEqual(len(get_all_uw_accounts()), 1)
-
-        self.assertTrue(set_bridge_id('faculty', 100))
-        self.assertFalse(set_bridge_id('none', 100))
 
     def test_save_uw_accounts(self):
         # test a user with multiple accounts

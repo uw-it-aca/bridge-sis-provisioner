@@ -95,14 +95,3 @@ def save_uw_account(person):
                         person.uwnetid, uw_account, prior_acc))
                 break
     return uw_account
-
-
-def set_bridge_id(uwnetid, bridge_id):
-    """
-    return True if found the user and set bridge_id
-    """
-    uw_acc = get_by_netid(uwnetid)
-    if uw_acc is not None:
-        uw_acc.set_bridge_id(bridge_id)
-        return True
-    return False

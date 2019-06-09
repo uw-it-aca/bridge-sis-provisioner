@@ -85,12 +85,12 @@ class BridgeChecker(UserUpdater):
                 "Match UW account {0} ==> Bridge account {1}".format(
                     uw_account, bridge_acc1))
 
-            # bridge_acc and bridge_acc1
+            # bridge_acc and bridge_acc1 both exist
             if bridge_acc.bridge_id != bridge_acc1.bridge_id:
                 self.logger.info("Merged Bridge accounts {0} TO {1}".format(
                     bridge_acc, bridge_acc1))
 
-            uw_account.set_bridge_id(bridge_acc1.bridge_id)
+            uw_account.set_ids(bridge_acc1.bridge_id, person.employee_id)
 
             hrp_wkr = self.get_hrp_worker(person)
 

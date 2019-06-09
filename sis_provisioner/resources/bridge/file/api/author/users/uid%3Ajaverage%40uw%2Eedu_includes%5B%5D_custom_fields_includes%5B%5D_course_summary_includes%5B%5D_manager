@@ -54,7 +54,7 @@
        "hire_date":null,
        "job_title":"Student Reference Specialist - GMM",
        "locale":"en",
-       "manager_id": null,
+       "manager_id": 196,
        "roles":["account_admin"],
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",

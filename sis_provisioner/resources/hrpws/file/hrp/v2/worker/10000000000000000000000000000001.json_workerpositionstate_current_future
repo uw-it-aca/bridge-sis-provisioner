@@ -117,8 +117,8 @@
      "PositionID":"PN-0060531",
      "PositionStartDate":"2017-10-12T00:00:00.000Z",
      "PositionSupervisor":{
-         "EmployeeID":"100000005",
-         "Href":"\/hrp\/v2\/worker\/100000005.json"},
+         "EmployeeID":"000000005",
+         "Href":"\/hrp\/v2\/worker\/000000005.json"},
      "PositionTimeTypeID":"Full_time",
      "PositionTitle":"Organization Development and Training Specialist",
      "PositionType":"Regular",

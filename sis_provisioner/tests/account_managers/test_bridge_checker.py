@@ -21,6 +21,7 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(len(bridge_users), 7)
 
     def test_take_action(self):
+        set_db_records()
         loader = BridgeChecker(BridgeWorker())
         bri_acc = loader.get_bridge().get_user_by_uwnetid('alumni')
         alumni = get_person('alumni')
@@ -32,8 +33,6 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_updated_count(), 1)
         self.assertFalse(loader.has_error())
 
-        uw_acc = set_uw_account('javerage')
-        uw_acc.set_bridge_id(195)
         bri_acc = loader.get_bridge().get_user_by_uwnetid('javerage')
         javerage = get_person('javerage')
         loader.take_action(javerage, bri_acc)
@@ -44,8 +43,6 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertFalse(loader.has_error())
         self.assertEqual(len(loader.get_error_report()), 0)
 
-        uw_acc = set_uw_account('tyler')
-        uw_acc.set_bridge_id(198)
         bri_acc = loader.get_bridge().get_user_by_uwnetid('tyler')
         tyler = get_person('tyler')
         loader.take_action(tyler, bri_acc)

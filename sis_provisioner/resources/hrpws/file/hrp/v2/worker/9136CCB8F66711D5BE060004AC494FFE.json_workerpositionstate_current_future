@@ -160,8 +160,8 @@
          "PositionID":"PN-0086428",
          "PositionStartDate":"2017-09-16T00:00:00.000Z",
          "PositionSupervisor":
-             {"EmployeeID":"100000005",
-              "Href":"/hrp/v2/worker/100000005.json"},
+             {"EmployeeID":"000000005",
+              "Href":"/hrp/v2/worker/000000005.json"},
          "PositionTimeTypeID":"Part_time",
          "PositionTitle":"Reader/Grader",
          "PositionType":"Temporary",
