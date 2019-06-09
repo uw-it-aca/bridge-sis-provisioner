@@ -16,9 +16,7 @@ def load():
     for uw_acc in get_all_uw_accounts():
         uwnetid = uw_acc.netid
         person = get_person(uwnetid)
-        if person is None:
-            continue
-        if person.is_employee:
+        if person is not None and person.is_employee:
             uw_acc.set_employee_id(person.employee_id)
             total += 1
     logger.info("Validated employee_ids of {0} users".format(total))
