@@ -100,15 +100,14 @@ class BridgeWorker(Worker):
         self.append_error("Unmatched UID {0}\n".format(action))
 
     def update_user(self, bridge_account, uw_account, person, hrp_wkr):
-        user_data = self.get_bridge_user_to_upd(person, hrp_wkr,
-                                                bridge_account)
+        self.set_bridge_user_to_update(person, hrp_wkr, bridge_account)
         action = "UPDATE in Bridge: {0}".format(bridge_account.netid)
         try:
             if uw_account.netid_changed():
                 self.update_uid(uw_account)
 
-            updated_bri_acc = self.bridge.update_user(user_data)
-            if self._uid_matched(uw_account, updated_bri_acc):
+            ret_bri_acc = self.bridge.update_user(bridge_account)
+            if self._uid_matched(uw_account, ret_bri_acc):
                 uw_account.set_updated()
                 self.total_updated_count += 1
                 logger.info("{0} ==> {1}".format(
@@ -165,7 +164,7 @@ class BridgeWorker(Worker):
         bridge_account.custom_fields[field_name] = \
             self.bridge.custom_fields.new_custom_field(field_name, value)
 
-    def get_bridge_user_to_upd(self, person, hrp_wkr, bridge_account):
+    def set_bridge_user_to_update(self, person, hrp_wkr, bridge_account):
         """
         :param person: a valid Person object
         :param hrp_wkr: a valid Worker object
