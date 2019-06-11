@@ -111,7 +111,8 @@ class BridgeWorker(Worker):
             if self._uid_matched(uw_account, updated_bri_acc):
                 uw_account.set_updated()
                 self.total_updated_count += 1
-                logger.info("{0} ==> {1}".format(action, bridge_account))
+                logger.info("{0} ==> {1}".format(
+                    action, bridge_account.to_json_patch()))
                 return
             self.append_error("Unmatched UID {0}\n".format(action))
         except Exception as ex:
@@ -160,8 +161,8 @@ class BridgeWorker(Worker):
                                   get_pos1_org_name(hrp_wkr))
         return user
 
-    def add_custom_field(self, user, field_name, value):
-        user.custom_fields[field_name] = \
+    def add_custom_field(self, bridge_account, field_name, value):
+        bridge_account.custom_fields[field_name] = \
             self.bridge.custom_fields.new_custom_field(field_name, value)
 
     def get_bridge_user_to_upd(self, person, hrp_wkr, bridge_account):
