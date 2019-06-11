@@ -6,7 +6,7 @@ import logging
 import traceback
 from uw_bridge.users import Users
 from sis_provisioner.dao import DataFailureException
-from sis_provisioner.util.log import log_exception, log_resp_time, Timer
+from sis_provisioner.util.log import log_exception
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +16,7 @@ class BridgeUsers(Users):
     """
     These two methods are defined in super class:
     add_user(self, bridge_user)
+    get_all_users()
     update_user(self, bridge_user)
     """
 
@@ -40,18 +41,6 @@ class BridgeUsers(Users):
         if bridge_user.has_bridge_id():
             return self.delete_user_by_id(bridge_user.bridge_id)
         return self.delete_user(bridge_user.netid)
-
-    def get_all_bridge_users(self):
-        """
-        Return a list of active BridgeUser objects with minimum data
-        """
-        timer = Timer()
-        action = "get_all_bridge_users"
-        try:
-            return self.get_all_users(include_course_summary=False,
-                                      no_custom_fields=True)
-        finally:
-            log_resp_time(logger, action, timer)
 
     def get_user_by_bridgeid(self, id):
         """

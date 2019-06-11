@@ -1,25 +1,6 @@
 {
   "meta": {},
-  "linked":
-   {
-    "custom_fields": [
-       {
-        "id": "5",
-        "name": "REGID"
-      }],
-    "custom_field_values": [
-       {
-        "id": "5",
-        "value": "10000000000000000000000000000016",
-        "links": {
-          "custom_field": {
-            "id": "5",
-            "type": "custom_fields"
-          }
-        }
-      }
-    ]
-   },
+  "linked": {},
    "users":[
      {
        "id":"199",
@@ -41,9 +22,7 @@
        "loggedInAt":null,
        "next_due_date":null,
        "completed_courses_count": 1,
-       "links":{
-          "custom_field_values":["5"]
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
      }
    ]

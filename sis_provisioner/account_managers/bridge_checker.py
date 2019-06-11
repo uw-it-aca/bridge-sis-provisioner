@@ -10,6 +10,7 @@ import logging
 import traceback
 from sis_provisioner.dao.pws import get_person, is_prior_netid
 from sis_provisioner.dao.uw_account import get_by_netid, save_uw_account
+from sis_provisioner.util.log import log_resp_time, Timer
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 
 
@@ -23,7 +24,11 @@ class BridgeChecker(UserUpdater):
 
     def fetch_users(self):
         self.data_source = "Bridge"
-        return self.get_bridge().get_all_bridge_users()
+        timer = Timer()
+        try:
+            return self.get_bridge().get_all_users()
+        finally:
+            log_resp_time(logger, "Get all users from Bridge", timer)
 
     def process_users(self):
         for bridge_acc in self.get_users_to_process():

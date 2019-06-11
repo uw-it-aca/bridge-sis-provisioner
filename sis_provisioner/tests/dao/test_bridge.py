@@ -16,7 +16,7 @@ class TestBridge(TransactionTestCase):
         TestBridge.bridge = BridgeUsers()
 
     def test_get_all_bridge_users(self):
-        busers = TestBridge.bridge.get_all_bridge_users()
+        busers = TestBridge.bridge.get_all_users()
         self.assertEqual(len(busers), 7)
         buser = busers[0]
         self.assertEqual(buser.bridge_id, 100)

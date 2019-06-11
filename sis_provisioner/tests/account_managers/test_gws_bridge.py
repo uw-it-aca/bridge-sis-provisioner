@@ -155,3 +155,40 @@ class TestGwsBridgeLoader(TransactionTestCase):
             person.uwnetid)
         self.assertTrue(
             loader.account_not_changed(bridge_account, person, hrp_wkr))
+
+    def test_not_changed(self):
+        loader = GwsBridgeLoader(BridgeWorker())
+
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        bridge_account = loader.get_bridge().get_user_by_uwnetid('javerage')
+        self.assertTrue(loader.regid_not_changed(bridge_account, person))
+        self.assertTrue(loader.eid_not_changed(bridge_account, person))
+        self.assertTrue(loader.sid_not_changed(bridge_account, person))
+        self.assertTrue(loader.pos1_budget_code_not_changed(
+            bridge_account, hrp_wkr))
+        self.assertTrue(loader.pos1_job_code_not_changed(
+            bridge_account, hrp_wkr))
+        self.assertTrue(loader.pos1_job_class_not_changed(
+            bridge_account, hrp_wkr))
+        self.assertTrue(loader.pos1_org_code_not_changed(
+            bridge_account, hrp_wkr))
+        self.assertTrue(loader.pos1_org_name_not_changed(
+            bridge_account, hrp_wkr))
+
+        person = get_person('faculty')
+        hrp_wkr = get_worker(person)
+        bridge_account = loader.get_bridge().get_user_by_uwnetid('tyler')
+        self.assertFalse(loader.regid_not_changed(bridge_account, person))
+        self.assertFalse(loader.eid_not_changed(bridge_account, person))
+        self.assertFalse(loader.sid_not_changed(bridge_account, person))
+        self.assertFalse(loader.pos1_budget_code_not_changed(
+            bridge_account, hrp_wkr))
+        self.assertTrue(loader.pos1_job_code_not_changed(
+            bridge_account, hrp_wkr))
+        self.assertTrue(loader.pos1_job_class_not_changed(
+            bridge_account, hrp_wkr))
+        self.assertFalse(loader.pos1_org_code_not_changed(
+            bridge_account, hrp_wkr))
+        self.assertFalse(loader.pos1_org_name_not_changed(
+            bridge_account, hrp_wkr))

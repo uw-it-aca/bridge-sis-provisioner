@@ -8,7 +8,7 @@ Check against PWS Person, apply high priority changes.
 
 import logging
 import traceback
-from uw_bridge.models import BridgeUser
+from uw_bridge.models import BridgeUser, BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.uw_account import save_uw_account
 from sis_provisioner.dao.pws import get_person
@@ -16,7 +16,7 @@ from sis_provisioner.account_managers import (
     get_full_name, get_email, get_job_title, normalize_name,
     get_pos1_budget_code, get_pos1_job_code, get_job_title,
     get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
-    get_supervisor_bridge_id)
+    get_supervisor_bridge_id, get_custom_field_value)
 from sis_provisioner.account_managers.loader import Loader
 
 
@@ -156,11 +156,64 @@ class GwsBridgeLoader(Loader):
             normalize_name(person.surname) == bridge_acc.last_name and
             get_job_title(hrp_wkr) == bridge_acc.job_title and
             get_supervisor_bridge_id(hrp_wkr) == bridge_acc.manager_id and
-            self.worker.regid_not_changed(bridge_acc, person) and
-            self.worker.eid_not_changed(bridge_acc, person) and
-            self.worker.sid_not_changed(bridge_acc, person) and
-            self.worker.pos1_budget_code_not_changed(bridge_acc, hrp_wkr) and
-            self.worker.pos1_job_code_not_changed(bridge_acc, hrp_wkr) and
-            self.worker.pos1_job_class_not_changed(bridge_acc, hrp_wkr) and
-            self.worker.pos1_org_code_not_changed(bridge_acc, hrp_wkr) and
-            self.worker.pos1_org_name_not_changed(bridge_acc, hrp_wkr))
+            self.regid_not_changed(bridge_acc, person) and
+            self.eid_not_changed(bridge_acc, person) and
+            self.sid_not_changed(bridge_acc, person) and
+            self.pos1_budget_code_not_changed(bridge_acc, hrp_wkr) and
+            self.pos1_job_code_not_changed(bridge_acc, hrp_wkr) and
+            self.pos1_job_class_not_changed(bridge_acc, hrp_wkr) and
+            self.pos1_org_code_not_changed(bridge_acc, hrp_wkr) and
+            self.pos1_org_name_not_changed(bridge_acc, hrp_wkr))
+
+    def regid_not_changed(self, bridge_account, person):
+        regid = get_custom_field_value(bridge_account,
+                                       BridgeCustomField.REGID_NAME)
+        return regid is not None and regid == person.uwregid
+
+    def eid_not_changed(self, bridge_account, person):
+        eid = get_custom_field_value(bridge_account,
+                                     BridgeCustomField.EMPLOYEE_ID_NAME)
+        return (person.employee_id is None and eid is None or
+                eid == person.employee_id)
+
+    def sid_not_changed(self, bridge_account, person):
+        sid = get_custom_field_value(bridge_account,
+                                     BridgeCustomField.STUDENT_ID_NAME)
+        return (person.student_number is None and sid is None or
+                sid == person.student_number)
+
+    def pos1_budget_code_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_budget_code = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_BUDGET_CODE)
+        hrp_pos1_budget_code = get_pos1_budget_code(hrp_wkr)
+        return (cur_pos1_budget_code is None and
+                hrp_pos1_budget_code is None or
+                cur_pos1_budget_code == hrp_pos1_budget_code)
+
+    def pos1_job_code_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_job_code = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_JOB_CODE)
+        hrp_pos1_job_code = get_pos1_job_code(hrp_wkr)
+        return (cur_pos1_job_code is None and hrp_pos1_job_code is None or
+                cur_pos1_job_code == hrp_pos1_job_code)
+
+    def pos1_job_class_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_job_class = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_JOB_CLAS)
+        hrp_pos1_job_class = get_pos1_job_class(hrp_wkr)
+        return (cur_pos1_job_class is None and hrp_pos1_job_class is None or
+                cur_pos1_job_class == hrp_pos1_job_class)
+
+    def pos1_org_code_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_org_code = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_ORG_CODE)
+        hrp_pos1_org_code = get_pos1_org_code(hrp_wkr)
+        return (cur_pos1_org_code is None and hrp_pos1_org_code is None or
+                cur_pos1_org_code == hrp_pos1_org_code)
+
+    def pos1_org_name_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_org_name = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_ORG_NAME)
+        hrp_pos1_org_name = get_pos1_org_name(hrp_wkr)
+        return (cur_pos1_org_name is None and hrp_pos1_org_name is None or
+                cur_pos1_org_name == hrp_pos1_org_name)
