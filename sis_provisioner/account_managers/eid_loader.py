@@ -13,11 +13,18 @@ logger = logging.getLogger(__name__)
 
 def load():
     total = 0
+    updated = 0
     for uw_acc in get_all_uw_accounts():
         uwnetid = uw_acc.netid
         person = get_person(uwnetid)
         if person is not None and person.is_employee:
-            uw_acc.set_employee_id(person.employee_id)
             total += 1
-    logger.info("Validated employee_ids of {0} users".format(total))
-    return total
+            if (uw_acc.employee_id is None or
+                    uw_acc.employee_id != person.employee_id):
+                uw_acc.set_employee_id(person.employee_id)
+                uw_acc.save()
+                updated += 1
+    msg = "Updated employee_ids for {0} out of {1} users".format(
+        updated, total)
+    logger.info(msg)
+    return msg

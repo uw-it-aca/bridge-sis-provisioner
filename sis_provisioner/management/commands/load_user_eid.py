@@ -19,10 +19,8 @@ class Command(BaseCommand):
         timer = Timer()
         print("Start at {0}".format(datetime.now()))
         try:
-            total_count = load()
+            print(load())
         except Exception as ex:
             logger.error(str(ex))
         finally:
             log_resp_time(logger, "Load user EIDs", timer)
-
-        print("Total user synced eid: {0:d}\n".format(total_count))
