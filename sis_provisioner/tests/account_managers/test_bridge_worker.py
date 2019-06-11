@@ -54,13 +54,12 @@ class TestBridgeWorker(TransactionTestCase):
                  'manager_id': 196,
                  'job_title': 'Clinical Associate Professor'}]})
 
-    def test_get_bridge_user_to_upd(self):
+    def test_set_bridge_user_to_update(self):
         set_db_records()
         person = get_person('faculty')
         worker = BridgeWorker()
-        user = worker.get_bridge_user_to_upd(
-            person, get_worker(person),
-            worker.bridge.get_user_by_uwnetid('tyler'))
+        user = worker.bridge.get_user_by_uwnetid('tyler')
+        worker.set_bridge_user_to_update(person, get_worker(person), user)
         self.assertEqual(
             user.to_json_patch(),
             {'user': {
