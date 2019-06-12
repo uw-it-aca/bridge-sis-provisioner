@@ -51,14 +51,14 @@ class BridgeWorker(Worker):
     def add_new_user(self, uw_account, person, hrp_wkr):
         action = "CREATE in Bridge: {0}".format(uw_account.netid)
         try:
-            bridge_account = self.bridge.add_user(
-                self.get_bridge_user_to_add(person, hrp_wkr))
-
+            bri_acc = self.get_bridge_user_to_add(person, hrp_wkr)
+            bridge_account = self.bridge.add_user(bri_acc)
             if self._uid_matched(uw_account, bridge_account):
                 uw_account.set_ids(bridge_account.bridge_id,
                                    person.employee_id)
                 self.total_new_users_count += 1
-                logger.info("{0} ==> {1}".format(action, bridge_account))
+                logger.info("{0} ==> {1}".format(
+                    action, bri_acc.to_json_post()))
                 return
             self.append_error("Unmatched UID {0}\n".format(action))
         except Exception as ex:
