@@ -7,7 +7,7 @@ from sis_provisioner.dao.uw_account import get_by_netid
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.tests import (
-    fdao_pws_override, fdao_bridge_override)
+    fdao_pws_override, fdao_bridge_override, fdao_hrp_override)
 from sis_provisioner.tests.dao import get_mock_bridge_user
 from sis_provisioner.tests.account_managers import (
     set_uw_account, set_db_records)
@@ -15,6 +15,7 @@ from sis_provisioner.tests.account_managers import (
 
 @fdao_pws_override
 @fdao_bridge_override
+@fdao_hrp_override
 class TestBridgeWorker(TransactionTestCase):
 
     def setup(self):

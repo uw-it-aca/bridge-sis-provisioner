@@ -5,8 +5,7 @@ from restclients_core.models import MockHTTP
 from rc_django.models import CacheEntryTimed
 from sis_provisioner.dao import DataFailureException
 from sis_provisioner.cache import BridgeAccountCache, get_cache_time
-from sis_provisioner.tests import (
-    user_file_name_override, fdao_gws_override, fdao_pws_override)
+from sis_provisioner.tests import fdao_gws_override
 
 
 CACHE = 'sis_provisioner.cache.BridgeAccountCache'
@@ -16,9 +15,7 @@ ONE_HOUR = 60 * 60
 FOUR_HOURS = 60 * 60 * 4
 
 
-@fdao_pws_override
 @fdao_gws_override
-@user_file_name_override
 class TestCachePolicy(TestCase):
 
     def test_get_cache_time(self):
