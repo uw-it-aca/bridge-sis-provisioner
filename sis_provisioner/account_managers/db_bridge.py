@@ -11,8 +11,6 @@ import traceback
 from sis_provisioner.dao.pws import get_person, is_prior_netid
 from sis_provisioner.dao.uw_account import (
     get_all_uw_accounts, get_by_netid)
-from sis_provisioner.dao.bridge import (
-    get_user_by_bridgeid, get_user_by_uwnetid)
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 
@@ -80,23 +78,32 @@ class UserUpdater(GwsBridgeLoader):
                 self.terminate_uw_account(uw_acc)
 
     def terminate_uw_account(self, uw_acc):
-        exists1, bridge_acc1 = get_user_by_uwnetid(uw_acc.netid)
-
+        bridge_acc1 = self.get_bridge().get_user_by_uwnetid(uw_acc.netid)
+        bridge_acc2 = None
         if uw_acc.has_bridge_id():
-            exists2, bridge_acc2 = get_user_by_bridgeid(uw_acc.bridge_id)
-            if (bridge_acc1 is not None and bridge_acc2 is not None and
+            bridge_acc2 = self.get_bridge().get_user_by_bridgeid(
+                uw_acc.bridge_id)
+
+            if bridge_acc2 is None:
+                self.add_error("{0} never existed in Bridge!".format(uw_acc))
+                return
+
+            if (bridge_acc1 is not None and
                     (bridge_acc1.bridge_id != bridge_acc2.bridge_id or
                      bridge_acc1.netid != bridge_acc2.netid)):
                 self.add_error(
                     "{0} has 2 Bridge accounts {1} {2} <== {3}!".format(
                         uw_acc, bridge_acc1, bridge_acc2, "Abort deletion"))
                 return
+        self.execute(uw_acc, bridge_acc1, bridge_acc2)
 
-        if exists1 is False:
-            self.add_error("{0} never existed in Bridge!".format(uw_acc))
+    def execute(self, uw_acc, bridge_acc1, bridge_acc2):
+        if bridge_acc1 is not None:
+            if self.del_bridge_account(bridge_acc1, conditional_del=False):
+                uw_acc.set_disable()
+                self.logger.info("Disabled in DB: {0}".format(uw_acc))
             return
-
-        if (bridge_acc1 is not None and
-                self.del_bridge_account(bridge_acc1, conditional_del=False)):
+        if (bridge_acc2 is not None and bridge_acc2.is_deleted and
+                uw_acc.netid == bridge_acc2.netid):
             uw_acc.set_disable()
             self.logger.info("Disabled in DB: {0}".format(uw_acc))

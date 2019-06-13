@@ -1,0 +1,67 @@
+{
+    "meta":{},
+    "linked":{
+       "custom_fields": [
+       {"id": "5", "name": "REGID"},
+       {"id": "11", "name":"pos1_budget_code"},
+       {"id": "12", "name":"pos1_job_code"},
+       {"id": "13", "name":"pos1_job_class"},
+       {"id": "14", "name":"pos1_org_code"},
+       {"id": "15", "name":"pos1_org_name"}
+      ],
+    "custom_field_values": [
+       {"id": "1",
+        "value": "",
+        "links": {"custom_field": {"id": "5", "type": "custom_fields"}}},
+        {"id": "4",
+        "value": "",
+        "links": {"custom_field": {"id": "11", "type": "custom_fields"}}},
+        {"id": "5",
+        "value": "21184",
+        "links": {"custom_field": {"id": "12", "type": "custom_fields"}}},
+        {"id": "6",
+        "value": "Academic Personnel",
+        "links": {"custom_field": {"id": "13", "type": "custom_fields"}}},
+        {"id": "7",
+        "value": "",
+        "links": {"custom_field": {"id": "14", "type": "custom_fields"}}},
+        {"id": "8",
+        "value": "",
+        "links": {"custom_field": {"id": "15", "type": "custom_fields"}}}
+    ]
+  },
+   "users":[
+      {
+       "id":"198",
+       "uid":"tyler@uw.edu",
+       "full_name":"Tyler Faculty",
+       "email":"tyler@uw.edu",
+       "hris_id":null,
+       "first_name":"Tyler",
+       "last_name":"Faculty",
+       "sortable_name":"Faculty, Tyler",
+       "locale":"en",
+       "roles":[],
+       "name":"Tyler Faculty",
+       "avatar_url":null,
+       "updated_at":"2019-03-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":null,
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
+       "next_due_date":null,
+       "completed_courses_count": 3,
+       "links":{
+          "custom_field_values":["1","4","5","6","7","8"]
+       },
+       "meta":{"can_masquerade":true}
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 {
 "DisplayName":"Average Joseph Student",
 "EduPersonAffiliations":["member",
-                         "student"],
+                         "student",
+                         "employee"],
 "IsTestEntity":false,
 "PreferredFirstName":"Average",
 "PreferredMiddleName":"Joseph",
@@ -19,6 +20,28 @@
 "PersonAffiliations":{
     "AlumPersonAffiliation":{
         "DevelopmentID":"0000773877"},
+    "EmployeePersonAffiliation":{
+        "EmployeeID":"123456789",
+        "EmployeeWhitePages":{
+            "Addresses": [],
+            "EmailAddresses":["javerage@uw.edu"],
+            "Faxes":[],
+            "Mobiles":[],
+            "Phones": [],
+            "Pagers":[],
+            "Name" : "Student, Average Joseph",
+            "Positions":[
+               {"EWPDept":"LIBRARY",
+                "EWPTitle":"Student Specialist",
+                "Primary":true},
+                {"EWPDept":"INFORMATION SCHOOL",
+                 "EWPTitle":"Reader/Grader",
+                 "Primary":false}],
+            "PublishInDirectory": true,
+            "TouchDials":[],
+            "VoiceMails":[]},
+        "HomeDepartment":"Library",
+        "MailStop":"352900"},
     "StudentPersonAffiliation":{
         "StudentNumber":"1033334",
         "StudentSystemKey":"000083856",

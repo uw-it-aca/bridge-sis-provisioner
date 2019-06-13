@@ -11,14 +11,24 @@ class TestModels(TransactionTestCase):
         return UwAccount.objects.create(netid=uwnetid,
                                         last_updated=get_now())
 
-    def test_uw_bridge_user(self):
+    def test_uw_account(self):
         user = self.mock_uw_account('staff')
         self.assertFalse(user.has_terminate_date())
 
+        user.set_ids(0, None)
         self.assertFalse(user.has_bridge_id())
-        user.set_bridge_id(123)
+        self.assertFalse(user.has_employee_id())
+
+        self.assertFalse(user.has_bridge_id())
+        user.set_ids(123, "100000005")
         self.assertTrue(user.has_bridge_id())
         self.assertEqual(user.bridge_id, 123)
+        self.assertTrue(user.has_employee_id())
+        self.assertEqual(user.employee_id, "100000005")
+
+        qset = UwAccount.objects.filter(employee_id="100000005")
+        self.assertEqual(len(qset), 1)
+        self.assertEqual(qset[0].employee_id, "100000005")
 
         user.set_terminate_date()
         self.assertTrue(user.has_terminate_date())

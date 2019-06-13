@@ -30,7 +30,7 @@ def get_aline_csv(data):
         writer.writerow(data)
     except UnicodeEncodeError:
         log_exception(logger,
-                      "get_aline_csv [%s]" % ','.join(data),
+                      "get_aline_csv [{0}]".format(','.join(data)),
                       traceback.format_exc())
 
     line = s.getvalue()

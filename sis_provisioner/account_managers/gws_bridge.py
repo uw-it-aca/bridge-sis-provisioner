@@ -8,12 +8,15 @@ Check against PWS Person, apply high priority changes.
 
 import logging
 import traceback
-from uw_bridge.models import BridgeUser
-from sis_provisioner.dao.bridge import (
-    get_user_by_bridgeid, get_user_by_uwnetid)
-from sis_provisioner.dao.uw_account import save_uw_account, set_bridge_id
+from uw_bridge.models import BridgeUser, BridgeCustomField
+from sis_provisioner.dao.hrp import get_worker
+from sis_provisioner.dao.uw_account import save_uw_account
 from sis_provisioner.dao.pws import get_person
-from sis_provisioner.account_managers import account_not_changed
+from sis_provisioner.account_managers import (
+    get_full_name, get_email, get_job_title, normalize_name,
+    get_pos1_budget_code, get_pos1_job_code, get_job_title,
+    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
+    get_supervisor_bridge_id, get_custom_field_value)
 from sis_provisioner.account_managers.loader import Loader
 
 
@@ -28,6 +31,12 @@ class GwsBridgeLoader(Loader):
     def fetch_users(self):
         self.data_source = "GWS uw_members group"
         return list(self.gws_user_set)
+
+    def get_bridge(self):
+        return self.worker.bridge
+
+    def get_hrp_worker(self, person):
+        return get_worker(person)
 
     def process_users(self):
         """
@@ -71,7 +80,9 @@ class GwsBridgeLoader(Loader):
         """
         @param: uw_account a valid UwAccount object to take action upon
         """
-        exists, bridge_acc = self.match_bridge_account(uw_account)
+        hrp_wkr = self.get_hrp_worker(person)
+
+        bridge_acc = self.match_bridge_account(uw_account)
         self.logger.debug("MATCH UW account {0} ==> Bridge account {1}".format(
             uw_account, bridge_acc))
 
@@ -84,57 +95,44 @@ class GwsBridgeLoader(Loader):
                     return
             else:
                 # account not exist in Bridge
-                self.worker.add_new_user(uw_account, person)
+                self.worker.add_new_user(uw_account, person, hrp_wkr)
                 return
-        uw_account.set_bridge_id(bridge_acc.bridge_id)
 
-        if not account_not_changed(uw_account, person, bridge_acc):
+        uw_account.set_ids(bridge_acc.bridge_id, person.employee_id)
+        if not self.account_not_changed(bridge_acc, person, hrp_wkr):
             # update the existing account with person data
-            self.worker.update_user(bridge_acc, uw_account, person)
+            self.worker.update_user(bridge_acc, uw_account,
+                                    person, hrp_wkr)
 
     def match_bridge_account(self, uw_account):
         """
-        :return: a boolean value and an active BridgeUser object
-        If exists an active account: True, a valid BridgeUser object
-        If exist a terminated account: True, None
-        If not exists: False, None
+        :return: a BridgeUser object or None
         """
-        exi_prev = False
         prev_bri_acc = None
         if uw_account.has_prev_netid():
-            exi_prev, prev_bri_acc = get_user_by_uwnetid(uw_account.prev_netid)
+            prev_bri_acc = self.get_bridge().get_user_by_uwnetid(
+                uw_account.prev_netid)
 
-        exi_cur, cur_bri_acc = get_user_by_uwnetid(uw_account.netid)
+        cur_bri_acc = self.get_bridge().get_user_by_uwnetid(uw_account.netid)
 
-        if exi_cur is False:
-            # account of the current netid never existed
-            return exi_prev, prev_bri_acc
+        if cur_bri_acc is None:
+            return prev_bri_acc
 
-        if exi_prev is False:
-            # account of the previous netid never existed
-            return exi_cur, cur_bri_acc
+        if prev_bri_acc is None:
+            return cur_bri_acc
 
-        if (prev_bri_acc is not None and cur_bri_acc is not None and
-                prev_bri_acc.bridge_id != cur_bri_acc.bridge_id):
+        if prev_bri_acc.bridge_id != cur_bri_acc.bridge_id:
             # Found two active accounts, choose one to keep
 
             if self.del_bridge_account(prev_bri_acc):
-                return True, cur_bri_acc
+                return cur_bri_acc
 
             if self.del_bridge_account(cur_bri_acc):
-                return True, prev_bri_acc
+                return prev_bri_acc
 
             self.add_error("Please manually merge: {0} TO {1}".format(
                 prev_bri_acc, cur_bri_acc))
-            return True, cur_bri_acc
-
-        # one active account and one deleted account
-        if prev_bri_acc is not None:
-            # account of the current netid is deleted
-            return exi_prev, prev_bri_acc
-
-        # account of the previous netid is deleted
-        return exi_cur, cur_bri_acc
+            return cur_bri_acc
 
     def del_bridge_account(self, bridge_acc, conditional_del=True):
         """
@@ -143,3 +141,80 @@ class GwsBridgeLoader(Loader):
         if conditional_del is False or bridge_acc.no_learning_history():
             return self.worker.delete_user(bridge_acc)
         return False
+
+    def account_not_changed(self, bridge_acc, person, hrp_wkr):
+        """
+        :param bridge_acc: a valid BridgeUser object
+        :param person: a valid Person object
+        :param hrp_wkr: a valid Worker object
+        :return: True if the attributes have the same values
+        """
+        return (
+            person.uwnetid == bridge_acc.netid and
+            get_email(person) == bridge_acc.email and
+            get_full_name(person) == bridge_acc.full_name and
+            normalize_name(person.first_name) == bridge_acc.first_name and
+            normalize_name(person.surname) == bridge_acc.last_name and
+            get_job_title(hrp_wkr) == bridge_acc.job_title and
+            get_supervisor_bridge_id(hrp_wkr) == bridge_acc.manager_id and
+            self.regid_not_changed(bridge_acc, person) and
+            self.eid_not_changed(bridge_acc, person) and
+            self.sid_not_changed(bridge_acc, person) and
+            self.pos1_budget_code_not_changed(bridge_acc, hrp_wkr) and
+            self.pos1_job_code_not_changed(bridge_acc, hrp_wkr) and
+            self.pos1_job_class_not_changed(bridge_acc, hrp_wkr) and
+            self.pos1_org_code_not_changed(bridge_acc, hrp_wkr) and
+            self.pos1_org_name_not_changed(bridge_acc, hrp_wkr))
+
+    def regid_not_changed(self, bridge_account, person):
+        regid = get_custom_field_value(bridge_account,
+                                       BridgeCustomField.REGID_NAME)
+        return regid is not None and regid == person.uwregid
+
+    def eid_not_changed(self, bridge_account, person):
+        eid = get_custom_field_value(bridge_account,
+                                     BridgeCustomField.EMPLOYEE_ID_NAME)
+        return (person.employee_id is None and eid is None or
+                eid == person.employee_id)
+
+    def sid_not_changed(self, bridge_account, person):
+        sid = get_custom_field_value(bridge_account,
+                                     BridgeCustomField.STUDENT_ID_NAME)
+        return (person.student_number is None and sid is None or
+                sid == person.student_number)
+
+    def pos1_budget_code_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_budget_code = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_BUDGET_CODE)
+        hrp_pos1_budget_code = get_pos1_budget_code(hrp_wkr)
+        return (cur_pos1_budget_code is None and
+                hrp_pos1_budget_code is None or
+                cur_pos1_budget_code == hrp_pos1_budget_code)
+
+    def pos1_job_code_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_job_code = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_JOB_CODE)
+        hrp_pos1_job_code = get_pos1_job_code(hrp_wkr)
+        return (cur_pos1_job_code is None and hrp_pos1_job_code is None or
+                cur_pos1_job_code == hrp_pos1_job_code)
+
+    def pos1_job_class_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_job_class = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_JOB_CLAS)
+        hrp_pos1_job_class = get_pos1_job_class(hrp_wkr)
+        return (cur_pos1_job_class is None and hrp_pos1_job_class is None or
+                cur_pos1_job_class == hrp_pos1_job_class)
+
+    def pos1_org_code_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_org_code = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_ORG_CODE)
+        hrp_pos1_org_code = get_pos1_org_code(hrp_wkr)
+        return (cur_pos1_org_code is None and hrp_pos1_org_code is None or
+                cur_pos1_org_code == hrp_pos1_org_code)
+
+    def pos1_org_name_not_changed(self, bridge_account, hrp_wkr):
+        cur_pos1_org_name = get_custom_field_value(
+            bridge_account, BridgeCustomField.POS1_ORG_NAME)
+        hrp_pos1_org_name = get_pos1_org_name(hrp_wkr)
+        return (cur_pos1_org_name is None and hrp_pos1_org_name is None or
+                cur_pos1_org_name == hrp_pos1_org_name)

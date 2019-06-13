@@ -1,25 +1,6 @@
 {
-    "meta":{},
-    "linked":{
-       "custom_fields": [
-       {
-        "id": "5",
-        "name": "REGID"
-      }
-      ],
-    "custom_field_values": [
-      {
-        "id": "4",
-        "value": "10000000000000000000000000000005",
-        "links": {
-          "custom_field": {
-            "id": "5",
-            "type": "custom_fields"
-          }
-        }
-      }
-    ]
-  },
+   "meta":{},
+   "linked":{},
    "users":[
       {
        "id":"198",
@@ -46,11 +27,7 @@
        "bio":null,
        "department":null,
        "anonymized":null,
-       "next_due_date":null,
-       "completed_courses_count":1,
-       "links":{
-          "custom_field_values":["4"]
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
     }
   ]

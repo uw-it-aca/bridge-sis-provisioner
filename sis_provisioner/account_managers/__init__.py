@@ -1,23 +1,17 @@
 import re
 from string import capwords
 from nameparser import HumanName
-from uw_bridge.custom_field import new_regid_custom_field
-from uw_bridge.models import BridgeUser
-from sis_provisioner.dao.bridge import get_regid_from_bridge_user
+from uw_bridge.models import BridgeCustomField
+from sis_provisioner.dao.uw_account import get_by_employee_id
 
 
-def account_not_changed(uw_account, person, bridge_account):
-    """
-    :param uw_account: a valid UwBridgeUser object
-    :param person: a valid Person object
-    :param bridge_account: a valid BridgeUser object
-    :return: True if the attributes have the same values
-    """
-    return (person.uwnetid == bridge_account.netid and
-            get_email(person) == bridge_account.email and
-            get_full_name(person) == bridge_account.full_name and
-            _normalize_name(person.surname) == bridge_account.last_name and
-            _not_changed_regid(person.uwregid, bridge_account))
+def get_email(person):
+    if len(person.email_addresses) == 0:
+        return "{0}@uw.edu".format(person.uwnetid)
+
+    email_str = person.email_addresses[0]
+    email_s1 = re.sub(" ", "", email_str)
+    return re.sub(r"\.$", "", email_s1, flags=re.IGNORECASE)
 
 
 def get_full_name(person):
@@ -32,21 +26,7 @@ def get_full_name(person):
     return str(name)
 
 
-def get_email(person):
-    if len(person.email_addresses) == 0:
-        return "{0}@uw.edu".format(person.uwnetid)
-
-    email_str = person.email_addresses[0]
-    email_s1 = re.sub(" ", "", email_str)
-    return re.sub(r"\.$", "", email_s1, flags=re.IGNORECASE)
-
-
-def _not_changed_regid(uwregid, bridge_account):
-    regid = get_regid_from_bridge_user(bridge_account)
-    return (regid is not None and uwregid == regid)
-
-
-def _normalize_name(name):
+def normalize_name(name):
     """
     Return a title faced name if the name is not empty
     """
@@ -55,39 +35,63 @@ def _normalize_name(name):
     return ""
 
 
-def get_bridge_user_to_add(person):
-    """
-    :param person: a valid Person object
-    :return: a BridgeUser object
-    """
-    user = BridgeUser(netid=person.uwnetid,
-                      email=get_email(person),
-                      full_name=get_full_name(person),
-                      first_name=_normalize_name(person.first_name),
-                      last_name=_normalize_name(person.surname))
-    user.custom_fields.append(new_regid_custom_field(person.uwregid))
-    return user
+def get_custom_field_value(bridge_account, field_name):
+    cf = bridge_account.get_custom_field(field_name)
+    if cf is not None:
+        return cf.value
+    return None
 
 
-def get_bridge_user_to_upd(person, existing_bridge_account):
-    """
-    :param person: a valid Person object
-    :param existing_bridge_account: a valid BridgeUser object
-    :return: a BridgeUser object
-    """
-    user = BridgeUser(bridge_id=existing_bridge_account.bridge_id,
-                      netid=person.uwnetid,
-                      email=get_email(person),
-                      full_name=get_full_name(person),
-                      first_name=_normalize_name(person.first_name),
-                      last_name=_normalize_name(person.surname))
-
-    if _not_changed_regid(person.uwregid, existing_bridge_account) is False:
-        cus_field = new_regid_custom_field(person.uwregid)
-        user.custom_fields.append(cus_field)
-    return user
+def get_job_title(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None):
+        return hrp_wkr.primary_position.title
+    return None
 
 
-def save_bridge_id(uw_account, bridge_id):
-    if uw_account.has_bridge_id() is False:
-        uw_account.set_bridge_id(bridge_id)
+def get_pos1_job_class(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None):
+        return hrp_wkr.primary_position.ecs_job_cla_code_desc
+    return None
+
+
+def get_pos1_job_code(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None and
+            hrp_wkr.primary_position.job_profile is not None):
+        return hrp_wkr.primary_position.job_profile.job_code
+    return None
+
+
+def get_pos1_budget_code(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None and
+            hrp_wkr.primary_position.supervisory_org is not None):
+        return hrp_wkr.primary_position.supervisory_org.budget_code
+    return None
+
+
+def get_pos1_org_code(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None and
+            hrp_wkr.primary_position.supervisory_org is not None):
+        return hrp_wkr.primary_position.supervisory_org.org_code
+    return None
+
+
+def get_pos1_org_name(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None and
+            hrp_wkr.primary_position.supervisory_org is not None):
+        return hrp_wkr.primary_position.supervisory_org.org_name
+    return None
+
+
+def get_supervisor_bridge_id(hrp_wkr):
+    if hrp_wkr is not None:
+        employee_id = hrp_wkr.primary_manager_id
+        uw_acc = get_by_employee_id(employee_id)
+        if uw_acc is not None:
+            return uw_acc.bridge_id
+    return 0

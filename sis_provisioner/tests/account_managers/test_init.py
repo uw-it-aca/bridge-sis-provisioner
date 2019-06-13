@@ -1,33 +1,17 @@
 from django.test import TransactionTestCase
-from sis_provisioner.dao.pws import get_person, is_prior_netid
+from uw_bridge.models import BridgeCustomField, BridgeUser
+from sis_provisioner.dao.pws import get_person
+from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.account_managers import (
-    account_not_changed, get_full_name, get_email,
-    _not_changed_regid, _normalize_name, get_bridge_user_to_add,
-    get_bridge_user_to_upd, save_bridge_id)
-from sis_provisioner.tests import fdao_pws_override
-from sis_provisioner.tests.account_managers import set_uw_account
-from sis_provisioner.tests.dao import get_mock_bridge_user
+    get_full_name, get_email, normalize_name, get_job_title,
+    get_pos1_budget_code, get_pos1_job_code, get_job_title,
+    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
+    get_custom_field_value, get_supervisor_bridge_id)
+from sis_provisioner.tests.account_managers import (
+    new_custom_field, set_db_records)
 
 
-@fdao_pws_override
 class TestValidUser(TransactionTestCase):
-
-    def test_account_not_changed(self):
-        uw_account = set_uw_account('javerage')
-        save_bridge_id(uw_account, 195)
-        person = get_person('javerage')
-        bridge_account = get_mock_bridge_user(
-            195,
-            "javerage",
-            "javerage@uw.edu",
-            "Average Joseph Student",
-            "Average Joseph",
-            "Student",
-            "9136CCB8F66711D5BE060004AC494FFE")
-        self.assertTrue(_not_changed_regid("9136CCB8F66711D5BE060004AC494FFE",
-                                           bridge_account))
-        self.assertTrue(
-            account_not_changed(uw_account, person, bridge_account))
 
     def test_get_full_name(self):
         person = get_person('javerage')
@@ -44,40 +28,78 @@ class TestValidUser(TransactionTestCase):
         self.assertEqual(get_email(person), "ellen@uw.edu")
 
     def test_normalize_name(self):
-        self.assertEqual(_normalize_name("XXXXXXXXX Y AAAAAAAAA"),
+        self.assertEqual(normalize_name("XXXXXXXXX Y AAAAAAAAA"),
                          "Xxxxxxxxx Y Aaaaaaaaa")
-        self.assertEqual(_normalize_name(None), "")
+        self.assertEqual(normalize_name(None), "")
 
-    def test_get_bridge_user_to_add(self):
+    def test_get_custom_field_value(self):
+        bridge_acc = BridgeUser(netid='javerage')
+        self.assertIsNone(get_custom_field_value(
+            bridge_acc, BridgeCustomField.REGID_NAME))
+        bridge_acc.custom_fields[BridgeCustomField.REGID_NAME] = \
+            new_custom_field(BridgeCustomField.REGID_NAME, "1")
+        self.assertIsNone(get_custom_field_value(
+            bridge_acc, BridgeCustomField.STUDENT_ID_NAME))
+        self.assertEqual(get_custom_field_value(
+            bridge_acc, BridgeCustomField.REGID_NAME), "1")
+
+    def test_get_job_title(self):
+        self.assertIsNone(get_job_title(None))
         person = get_person('javerage')
-        buser = get_bridge_user_to_add(person)
-        self.assertEqual(
-            buser.json_data(),
-            {'custom_fields': [{'custom_field_id': '5',
-                                'value': '9136CCB8F66711D5BE060004AC494FFE'}],
-             'email': 'javerage@uw.edu',
-             'first_name': 'Average Joseph',
-             'full_name': 'Average Joseph Student',
-             'last_name': 'Student',
-             'uid': 'javerage@uw.edu'})
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_job_title(hrp_wkr),
+                         "Student Reference Specialist - GMM")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_job_title(hrp_wkr))
 
-    def test_get_bridge_user_to_upd(self):
-        person = get_person('faculty')
-        bridge_account = get_mock_bridge_user(
-            198,
-            "tyler",
-            "tyler@uw.edu",
-            "Tyler Faculty",
-            "Tyler",
-            "Faculty",
-            "10000000000000000000000000000005")
-        buser_acc = get_bridge_user_to_upd(person, bridge_account)
-        self.assertEqual(
-            buser_acc.json_data(),
-            {'custom_fields': [],
-             'email': 'faculty@uw.edu',
-             'first_name': 'William E',
-             'full_name': 'William E Faculty',
-             'id': 198,
-             'last_name': 'Faculty',
-             'uid': 'faculty@uw.edu'})
+    def test_get_pos1_job_class(self):
+        self.assertIsNone(get_pos1_job_class(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_job_class(hrp_wkr),
+                         "Undergraduate Student")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_job_class(hrp_wkr))
+
+    def test_get_pos1_job_code(self):
+        self.assertIsNone(get_pos1_job_code(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_job_code(hrp_wkr),
+                         "10875")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_job_code(hrp_wkr))
+
+    def test_get_pos1_budget_code(self):
+        self.assertIsNone(get_pos1_budget_code(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_budget_code(hrp_wkr),
+                         "2070001000")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_budget_code(hrp_wkr))
+
+    def test_get_pos1_org_code(self):
+        self.assertIsNone(get_pos1_org_code(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_org_code(hrp_wkr),
+                         "LIB:")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_org_code(hrp_wkr))
+
+    def test_get_pos1_org_name(self):
+        self.assertIsNone(get_pos1_org_name(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_org_name(hrp_wkr),
+                         "GMMN: Public Services JM Student")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_org_name(hrp_wkr))
+
+    def test_get_supervisor_bridge_id(self):
+        set_db_records()
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_supervisor_bridge_id(hrp_wkr), 196)
+        self.assertEqual(get_supervisor_bridge_id(None), 0)

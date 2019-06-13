@@ -5,27 +5,26 @@ from restclients_core.models import MockHTTP
 from rc_django.models import CacheEntryTimed
 from sis_provisioner.dao import DataFailureException
 from sis_provisioner.cache import BridgeAccountCache, get_cache_time
-from sis_provisioner.tests import (
-    user_file_name_override, fdao_gws_override, fdao_pws_override)
+from sis_provisioner.tests import fdao_gws_override
 
 
 CACHE = 'sis_provisioner.cache.BridgeAccountCache'
 FIVE_SECONDS = 5
 FIVE_MINS = 60 * 5
 ONE_HOUR = 60 * 60
-EIGHT_HOURS = 60 * 60 * 8
+FOUR_HOURS = 60 * 60 * 4
 
 
-@fdao_pws_override
 @fdao_gws_override
-@user_file_name_override
 class TestCachePolicy(TestCase):
 
     def test_get_cache_time(self):
         self.assertEquals(get_cache_time("gws", "/group_sws/v3/group/"),
-                          EIGHT_HOURS)
-        self.assertEquals(get_cache_time("pws", "/identity/v2/person/"),
                           ONE_HOUR)
+        self.assertEquals(get_cache_time("pws", "/identity/v2/person/"),
+                          FOUR_HOURS)
+        self.assertEquals(get_cache_time("hrpws", "/hrp/v2/worker/"),
+                          FOUR_HOURS)
         self.assertEquals(get_cache_time("bridge", "/api/author/users/"),
                           FIVE_SECONDS)
         self.assertEquals(get_cache_time("bridge",
@@ -50,13 +49,13 @@ class TestCachePolicy(TestCase):
             cache_entry = CacheEntryTimed.objects.get(service='gws', url=url)
             orig_time_saved = cache_entry.time_saved
             cache_entry.time_saved = (orig_time_saved -
-                                      timedelta(minutes=(60 * 8) - 2))
+                                      timedelta(minutes=(60) - 2))
             cache_entry.save()
             response = cache.getCache("gws", url, {})
             self.assertNotEquals(response, None)
 
             cache_entry.time_saved = (orig_time_saved -
-                                      timedelta(minutes=(60 * 8) + 1))
+                                      timedelta(minutes=(60) + 1))
             cache_entry.save()
             response = cache.getCache("gws", url, {})
             self.assertEquals(response, None)
