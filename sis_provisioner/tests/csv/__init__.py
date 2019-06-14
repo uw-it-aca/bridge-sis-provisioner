@@ -6,6 +6,7 @@ from sis_provisioner.tests.account_managers import set_uw_account
 user_file_name_override = override_settings(
     BRIDGE_IMPORT_USER_FILENAME="users")
 
+
 def set_db_records():
     affiemp = set_uw_account("affiemp")
 
