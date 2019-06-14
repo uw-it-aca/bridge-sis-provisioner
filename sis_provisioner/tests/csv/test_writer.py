@@ -39,13 +39,13 @@ class TestCsvWriter(TransactionTestCase):
             self.assertRaises(OSError, get_file_path)
 
     def test_load_user_csv_file(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILE_SIZE=3):
+        with self.settings(BRIDGE_IMPORT_USER_FILE_SIZE=2):
             set_db_records()
             maker = CsvMaker()
             fp = maker.filepath
             self.assertTrue(re.match(PATTERN, fp))
             number_users_wrote = maker.load_files()
-            self.assertEqual(number_users_wrote, 6)
+            self.assertEqual(number_users_wrote, 3)
             self.assertTrue(os.path.exists(fp + "/busrs1.csv"))
             self.assertTrue(os.path.exists(fp + "/busrs2.csv"))
             os.remove(fp + "/busrs1.csv")
