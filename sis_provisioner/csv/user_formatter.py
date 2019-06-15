@@ -8,7 +8,7 @@ from sis_provisioner.account_managers import (
 
 logger = logging.getLogger(__name__)
 BASIC_HEADERS = ['UNIQUE ID', 'email',
-                 'full_name ', 'first_name', 'last_name',
+                 'full_name', 'first_name', 'last_name',
                  'regid', 'employee_id', 'student_id',
                  'job_title', 'manager_id', 'department',
                  'pos1_budget_code', 'pos1_job_code', 'pos1_job_class',
