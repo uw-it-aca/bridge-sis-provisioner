@@ -25,24 +25,31 @@ def get_user_file_name(filepath, index):
                         _get_file_name_prefix() + str(index) + '.csv')
 
 
-def make_import_user_csv_files(users,
+def make_import_user_csv_files(uw_accounts,
                                filepath):
     """
-    :param users: a list of UwAccount objects
+    :param uw_accounts: a list of UwAccount objects
     Writes all csv files. Returns number of records wrote out.
     """
-    if not users or len(users) == 0:
+    if not uw_accounts or len(uw_accounts) == 0:
         return 0
 
-    total_users = len(users)
+    total_users = len(uw_accounts)
     f_index = 1
     user_number = 0
     csv_headers = get_aline_csv(BASIC_HEADERS)
     f = open_file(get_user_file_name(filepath, f_index))
     f.write(csv_headers)
 
-    for user in users:
-        person = get_person(user.netid)
+    for uw_account in uw_accounts:
+        if uw_account.disabled or uw_account.has_terminate_date():
+            continue
+        person = get_person(uw_account.netid)
+        if person.home_department is None:
+            continue
+        if person.uwnetid != uw_account.netid:
+            logger.error("OLD netid, Skip {0}".format(uw_account))
+            continue
         aline = get_aline_csv(get_attr_list(person, get_worker(person)))
         try:
             f.write(aline)
