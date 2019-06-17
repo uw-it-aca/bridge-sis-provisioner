@@ -5,7 +5,7 @@ from django.utils import timezone
 from nameparser import HumanName
 
 
-GRACE_PERIOD = 21
+GRACE_PERIOD = 180
 
 
 def datetime_to_str(d_obj):
