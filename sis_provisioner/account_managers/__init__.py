@@ -1,8 +1,12 @@
+import logging
 import re
 from string import capwords
 from nameparser import HumanName
 from uw_bridge.models import BridgeCustomField
 from sis_provisioner.dao.uw_account import get_by_employee_id
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_email(person):
@@ -90,8 +94,13 @@ def get_pos1_org_name(hrp_wkr):
 
 def get_supervisor_bridge_id(hrp_wkr):
     if hrp_wkr is not None:
-        employee_id = hrp_wkr.primary_manager_id
-        uw_acc = get_by_employee_id(employee_id)
-        if uw_acc is not None:
+        manager_employee_id = hrp_wkr.primary_manager_id
+        if manager_employee_id is None:
+            return 0
+        if manager_employee_id == hrp_wkr.employee_id:
+            logger.error("Managere EID==own EID: {0}".format(hrp_wkr))
+            return 0
+        uw_acc = get_by_employee_id(manager_employee_id)
+        if (uw_acc is not None and uw_acc.netid != hrp_wkr.netid):
             return uw_acc.bridge_id
     return 0
