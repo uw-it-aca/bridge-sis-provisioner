@@ -1,5 +1,6 @@
 from django.test import TransactionTestCase
 from uw_bridge.models import BridgeCustomField, BridgeUser
+from uw_hrp.models import Worker
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.account_managers import (
@@ -102,4 +103,33 @@ class TestValidUser(TransactionTestCase):
         person = get_person('javerage')
         hrp_wkr = get_worker(person)
         self.assertEqual(get_supervisor_bridge_id(hrp_wkr), 196)
+
+        # hrp_wkr is None
         self.assertEqual(get_supervisor_bridge_id(None), 0)
+
+        # manager employee_id is None
+        hrp_wkr = Worker(netid="x",
+                         regid="111",
+                         employee_id="1")
+        self.assertEqual(get_supervisor_bridge_id(hrp_wkr), 0)
+
+        # manager employee_id is the same as the employee's
+        hrp_wkr = Worker(netid="x",
+                         regid="111",
+                         employee_id="1",
+                         primary_manager_id="1")
+        self.assertEqual(get_supervisor_bridge_id(hrp_wkr), 0)
+
+        # manager employee_id not in local DB
+        hrp_wkr = Worker(netid="javerage",
+                         regid="111111111111111111111111111111",
+                         employee_id="1",
+                         primary_manager_id="11")
+        self.assertEqual(get_supervisor_bridge_id(hrp_wkr), 0)
+
+        # manager's uw account is the same the user's
+        hrp_wkr = Worker(netid="javerage",
+                         regid="111111111111111111111111111111",
+                         employee_id="1",
+                         primary_manager_id="123456789")
+        self.assertEqual(get_supervisor_bridge_id(hrp_wkr), 0)

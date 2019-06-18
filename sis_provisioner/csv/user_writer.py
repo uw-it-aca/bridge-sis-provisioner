@@ -45,7 +45,7 @@ def make_import_user_csv_files(uw_accounts,
         if uw_account.disabled or uw_account.has_terminate_date():
             continue
         person = get_person(uw_account.netid)
-        if person.home_department is None:
+        if person is None or person.home_department is None:
             continue
         if person.uwnetid != uw_account.netid:
             logger.error("OLD netid, Skip {0}".format(uw_account))

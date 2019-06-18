@@ -26,7 +26,7 @@ setup(
         'UW-RestClients-Core<2.0',
         'UW-RestClients-PWS<3.0',
         'UW-RestClients-GWS<3.0',
-        'uw-restclients-bridge>=1.4,<2.0',
+        'uw-restclients-bridge>=1.4.1,<2.0',
         'uw-restclients-hrp>=1.1.1,<2.0',
         'UW-RestClients-Django-Utils<3.0',
     ],
