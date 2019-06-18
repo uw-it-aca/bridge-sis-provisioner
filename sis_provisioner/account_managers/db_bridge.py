@@ -38,7 +38,7 @@ class UserUpdater(GwsBridgeLoader):
 
             person = get_person(uwnetid)
             if person is None:
-                self.add_error(
+                self.logger.error(
                     "UWNetID NOT in PWS, skip {0}".format(uw_acc))
                 continue
 
