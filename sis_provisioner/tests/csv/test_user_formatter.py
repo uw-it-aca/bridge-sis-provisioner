@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.test import TransactionTestCase
 from django.test.utils import override_settings
-from sis_provisioner.csv.user_formatter import BASIC_HEADERS, get_attr_list
+from sis_provisioner.csv.user_formatter import HEADERS, get_attr_list
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.tests.csv import fdao_pws_override, fdao_hrp_override
@@ -16,8 +16,8 @@ class TestUserFormatter(TransactionTestCase):
         self.maxDiff = None
 
     def test_get_headers(self):
-        headers = BASIC_HEADERS
-        self.assertEqual(len(headers), 16)
+        headers = HEADERS
+        self.assertEqual(len(headers), 17)
 
     def test_get_attr_list_withhrp(self):
         set_db_records()
@@ -25,7 +25,7 @@ class TestUserFormatter(TransactionTestCase):
         worker = get_worker(person)
 
         user_attr_list = get_attr_list(person, worker)
-        self.assertEqual(len(user_attr_list), 16)
+        self.assertEqual(len(user_attr_list), 17)
         self.assertEqual(user_attr_list[0], "faculty@uw.edu")
         self.assertEqual(user_attr_list[1], "faculty@uw.edu")
         self.assertEqual(user_attr_list[2], "William E Faculty")
@@ -43,3 +43,4 @@ class TestUserFormatter(TransactionTestCase):
         self.assertEqual(user_attr_list[14], "SOM:")
         self.assertEqual(user_attr_list[15],
                          "Family Medicine: Volunteer JM Academic")
+        self.assertEqual(user_attr_list[16], "00753")

@@ -10,7 +10,8 @@
        {"id": "12", "name":"pos1_job_code"},
        {"id": "13", "name":"pos1_job_class"},
        {"id": "14", "name":"pos1_org_code"},
-       {"id": "15", "name":"pos1_org_name"}
+       {"id": "15", "name":"pos1_org_name"},
+       {"id": "16", "name":"pos1_unit_code"}
       ],
     "custom_field_values": [
        {"id": "1",
@@ -36,7 +37,10 @@
         "links": {"custom_field": {"id": "14", "type": "custom_fields"}}},
         {"id": "8",
         "value": "GMMN: Public Services JM Student",
-        "links": {"custom_field": {"id": "15", "type": "custom_fields"}}}
+        "links": {"custom_field": {"id": "15", "type": "custom_fields"}}},
+        {"id": "9",
+        "value": "00090",
+        "links": {"custom_field": {"id": "16", "type": "custom_fields"}}}
     ]
    },
    "users":[
@@ -71,7 +75,7 @@
        "next_due_date":null,
        "completed_courses_count":3,
        "links":{
-          "custom_field_values":["1","2","3","4","5","6","7","8"]
+          "custom_field_values":["1","2","3","4","5","6","7","8","9"]
        },
        "meta":{"can_masquerade":true}
      }

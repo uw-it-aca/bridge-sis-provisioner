@@ -17,7 +17,8 @@ def load():
     for uw_acc in get_all_uw_accounts():
         uwnetid = uw_acc.netid
         person = get_person(uwnetid)
-        if person is not None and person.is_employee:
+        if (person is not None and person.is_employee and
+                person.is_test_entity is False):
             total += 1
             if (uw_acc.employee_id is None or
                     uw_acc.employee_id != person.employee_id):

@@ -50,7 +50,7 @@ class TestUserUpdater(TransactionTestCase):
         set_db_records()
         loader = UserUpdater(BridgeWorker())
         loader.load()
-        self.assertEqual(loader.get_total_count(), 6)
+        self.assertEqual(loader.get_total_count(), 7)
         self.assertEqual(loader.get_new_user_count(), 0)
         self.assertEqual(loader.get_netid_changed_count(), 2)
         self.assertEqual(loader.get_deleted_count(), 1)

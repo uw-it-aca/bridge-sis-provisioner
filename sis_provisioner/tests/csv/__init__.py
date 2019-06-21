@@ -23,3 +23,5 @@ def set_db_records():
 
     leftuw = set_uw_account("leftuw")
     leftuw.set_terminate_date()
+
+    testid = set_uw_account("testid")

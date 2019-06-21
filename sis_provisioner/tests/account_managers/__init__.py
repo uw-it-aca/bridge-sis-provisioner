@@ -27,6 +27,8 @@ def set_db_records():
     leftuw = set_uw_account("leftuw")
     leftuw.set_ids(200, None)
 
+    testid = set_uw_account("testid")
+
 
 def set_db_err_records():
     error500 = set_uw_account("error500")

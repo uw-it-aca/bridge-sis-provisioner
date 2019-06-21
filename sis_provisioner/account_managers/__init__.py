@@ -92,6 +92,13 @@ def get_pos1_org_name(hrp_wkr):
     return None
 
 
+def get_pos1_unit_code(hrp_wkr):
+    if (hrp_wkr is not None and
+            hrp_wkr.primary_position is not None):
+        return hrp_wkr.primary_position.payroll_unit_code
+    return None
+
+
 def get_supervisor_bridge_id(hrp_wkr):
     if hrp_wkr is not None:
         manager_employee_id = hrp_wkr.primary_manager_id

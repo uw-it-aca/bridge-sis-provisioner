@@ -7,7 +7,7 @@ from sis_provisioner.account_managers import (
     get_full_name, get_email, normalize_name, get_job_title,
     get_pos1_budget_code, get_pos1_job_code, get_job_title,
     get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
-    get_custom_field_value, get_supervisor_bridge_id)
+    get_pos1_unit_code, get_custom_field_value, get_supervisor_bridge_id)
 from sis_provisioner.tests.account_managers import (
     new_custom_field, set_db_records)
 
@@ -97,6 +97,14 @@ class TestValidUser(TransactionTestCase):
                          "GMMN: Public Services JM Student")
         hrp_wkr.primary_position = None
         self.assertIsNone(get_pos1_org_name(hrp_wkr))
+
+    def test_get_pos1_unit_code(self):
+        self.assertIsNone(get_pos1_unit_code(None))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(get_pos1_unit_code(hrp_wkr), "00090")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_pos1_unit_code(hrp_wkr))
 
     def test_get_supervisor_bridge_id(self):
         set_db_records()

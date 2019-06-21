@@ -3,16 +3,16 @@ from sis_provisioner.account_managers import (
     get_email, get_full_name, normalize_name,
     get_pos1_budget_code, get_pos1_job_code, get_job_title,
     get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
-    get_supervisor_bridge_id)
+    get_pos1_unit_code, get_supervisor_bridge_id)
 
 
 logger = logging.getLogger(__name__)
-BASIC_HEADERS = ['UNIQUE ID', 'email',
-                 'full_name', 'first_name', 'last_name',
-                 'regid', 'employee_id', 'student_id',
-                 'job_title', 'manager_id', 'department',
-                 'pos1_budget_code', 'pos1_job_code', 'pos1_job_class',
-                 'pos1_org_code', 'pos1_org_name']
+HEADERS = ['UNIQUE ID', 'email',
+           'full_name', 'first_name', 'last_name',
+           'regid', 'employee_id', 'student_id',
+           'job_title', 'manager_id', 'department',
+           'pos1_budget_code', 'pos1_job_code', 'pos1_job_class',
+           'pos1_org_code', 'pos1_org_name', 'pos1_unit_code']
 
 
 def get_attr_list(person, hrp_worker):
@@ -37,7 +37,8 @@ def get_attr_list(person, hrp_worker):
             get_pos1_job_code(hrp_worker),
             get_pos1_job_class(hrp_worker),
             get_pos1_org_code(hrp_worker),
-            get_pos1_org_name(hrp_worker)]
+            get_pos1_org_name(hrp_worker),
+            get_pos1_unit_code(hrp_worker)]
 
 
 def get_uid(netid):
