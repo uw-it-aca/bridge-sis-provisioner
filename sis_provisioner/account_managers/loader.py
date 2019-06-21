@@ -33,6 +33,17 @@ class Loader:
         self.process_users()
         self.log_status()
 
+    def is_invalid_person(self, uwnetid, person):
+        if person is None:
+            self.logger.error(
+                "{0} NOT in PWS, skip!".format(uwnetid))
+            return True
+        if person.is_test_entity:
+            self.logger.error(
+                "{0} IsTestEntity in PWS, skip!".format(uwnetid))
+            return True
+        return False
+
     @abstractmethod
     def fetch_users(self):
         pass

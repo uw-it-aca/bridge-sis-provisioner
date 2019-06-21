@@ -37,9 +37,7 @@ class BridgeChecker(UserUpdater):
             bridge_id = bridge_acc.bridge_id
 
             person = get_person(uwnetid)
-            if person is None:
-                self.logger.error(
-                    "Invalid UWNetID, skip {0}".format(bridge_acc))
+            if self.is_invalid_person(uwnetid, person):
                 continue
 
             if is_prior_netid(uwnetid, person):

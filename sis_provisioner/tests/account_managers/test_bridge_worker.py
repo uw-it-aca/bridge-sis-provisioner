@@ -48,7 +48,9 @@ class TestBridgeWorker(TransactionTestCase):
                      {'custom_field_id': '14',
                       'value': 'SOM:'},
                      {'custom_field_id': '15',
-                      'value': 'Family Medicine: Volunteer JM Academic'}],
+                      'value': 'Family Medicine: Volunteer JM Academic'},
+                     {'custom_field_id': '16',
+                      'value': '00753'}],
                  'first_name': 'William E',
                  'last_name': 'Faculty',
                  'sortable_name': 'Faculty, William E',
@@ -95,7 +97,10 @@ class TestBridgeWorker(TransactionTestCase):
                     {'custom_field_id': '6',
                      'value': '000000005'},
                     {'custom_field_id': '7',
-                     'value': '0000005'}]}})
+                     'value': '0000005'},
+                    {'custom_field_id': '16',
+                     'value': '00753'},
+                ]}})
 
     def test_add_new_user(self):
         worker = BridgeWorker()

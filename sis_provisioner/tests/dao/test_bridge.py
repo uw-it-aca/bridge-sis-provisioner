@@ -80,7 +80,7 @@ class TestBridge(TransactionTestCase):
         self.assertIsNotNone(buser)
         self.assertEqual(buser.bridge_id, 195)
         self.assertEqual(buser.netid, "javerage")
-        self.assertEqual(len(buser.custom_fields), 8)
+        self.assertEqual(len(buser.custom_fields), 9)
 
         buser = TestBridge.bridge.get_user_by_bridgeid(204)
         self.assertIsNotNone(buser)

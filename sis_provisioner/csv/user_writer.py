@@ -5,7 +5,7 @@ from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.csv import get_aline_csv, open_file
-from sis_provisioner.csv.user_formatter import BASIC_HEADERS, get_attr_list
+from sis_provisioner.csv.user_formatter import HEADERS, get_attr_list
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ def make_import_user_csv_files(uw_accounts,
     total_users = len(uw_accounts)
     f_index = 1
     user_number = 0
-    csv_headers = get_aline_csv(BASIC_HEADERS)
+    csv_headers = get_aline_csv(HEADERS)
     f = open_file(get_user_file_name(filepath, f_index))
     f.write(csv_headers)
 
@@ -45,7 +45,8 @@ def make_import_user_csv_files(uw_accounts,
         if uw_account.disabled or uw_account.has_terminate_date():
             continue
         person = get_person(uw_account.netid)
-        if person is None or person.home_department is None:
+        if (person is None or person.is_test_entity or
+                person.home_department is None):
             continue
         if person.uwnetid != uw_account.netid:
             logger.error("OLD netid, Skip {0}".format(uw_account))
