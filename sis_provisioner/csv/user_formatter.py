@@ -11,7 +11,7 @@ HEADERS = ['UNIQUE ID', 'email',
            'full_name', 'first_name', 'last_name',
            'regid', 'employee_id', 'student_id',
            'job_title', 'manager_id', 'department',
-           'pos1_budget_code', 'pos1_job_code', 'pos1_job_class',
+           'pos1_budget_code', 'pos1_job_class', 'pos1_job_code',
            'pos1_org_code', 'pos1_org_name', 'pos1_unit_code']
 
 
@@ -34,8 +34,8 @@ def get_attr_list(person, hrp_worker):
             get_supervisor_bridge_id(hrp_worker),
             person.home_department,
             get_pos1_budget_code(hrp_worker),
-            get_pos1_job_code(hrp_worker),
             get_pos1_job_class(hrp_worker),
+            get_pos1_job_code(hrp_worker),
             get_pos1_org_code(hrp_worker),
             get_pos1_org_name(hrp_worker),
             get_pos1_unit_code(hrp_worker)]

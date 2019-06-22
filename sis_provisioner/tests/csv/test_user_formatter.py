@@ -38,8 +38,8 @@ class TestUserFormatter(TransactionTestCase):
         self.assertEqual(user_attr_list[9], 196)
         self.assertEqual(user_attr_list[10], "Family Medicine")
         self.assertEqual(user_attr_list[11], "3040111000")
-        self.assertEqual(user_attr_list[12], "21184")
-        self.assertEqual(user_attr_list[13], "Academic Personnel")
+        self.assertEqual(user_attr_list[12], "Academic Personnel")
+        self.assertEqual(user_attr_list[13], "21184")
         self.assertEqual(user_attr_list[14], "SOM:")
         self.assertEqual(user_attr_list[15],
                          "Family Medicine: Volunteer JM Academic")
