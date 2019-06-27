@@ -127,14 +127,14 @@ class TestBridgeWorker(TransactionTestCase):
 
     def test_add_new_user(self):
         worker = BridgeWorker()
-        uw_acc = set_uw_account('affiemp')
         person = get_person('affiemp')
+        uw_acc = set_uw_account('affiemp')
         worker.add_new_user(uw_acc, person, get_worker(person))
         self.assertEqual(worker.get_new_user_count(), 1)
 
         person = get_person('javerage')
-        worker.add_new_user(set_uw_account('javerage'), person,
-                            get_worker(person))
+        uw_acc = set_uw_account('javerage')
+        worker.add_new_user(uw_acc, person, get_worker(person))
         self.assertTrue(worker.has_err())
 
     def test_delete_user(self):
