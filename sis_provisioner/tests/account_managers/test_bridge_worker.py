@@ -94,6 +94,12 @@ class TestBridgeWorker(TransactionTestCase):
                     {'custom_field_id': '5',
                      'value': '10000000000000000000000000000005',
                      'id': '1'},
+                    {'custom_field_id': '6',
+                     'id': '2',
+                     'value': '000000005'},
+                    {'custom_field_id': '7',
+                     'id': '3',
+                     'value': '0000005'},
                     {'custom_field_id': '11',
                      'value': '3040111000',
                      'id': '4'},
@@ -119,9 +125,7 @@ class TestBridgeWorker(TransactionTestCase):
                     {'custom_field_id': '27', 'value': None, 'id': '27'},
                     {'custom_field_id': '24', 'value': None, 'id': '28'},
                     {'custom_field_id': '25', 'value': None, 'id': '29'},
-                    {'custom_field_id': '26', 'value': None, 'id': '30'},
-                    {'custom_field_id': '6', 'value': '000000005'},
-                    {'custom_field_id': '7', 'value': '0000005'}]}})
+                    {'custom_field_id': '26', 'value': None, 'id': '30'}]}})
 
     def test_add_new_user(self):
         worker = BridgeWorker()
