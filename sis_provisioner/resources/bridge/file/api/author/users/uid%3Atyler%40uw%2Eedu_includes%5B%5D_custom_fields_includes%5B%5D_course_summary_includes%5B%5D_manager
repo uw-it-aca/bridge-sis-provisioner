@@ -24,9 +24,6 @@
        {"id": "1",
         "value": "",
         "links": {"custom_field": {"id": "5", "type": "custom_fields"}}},
-        {"id": "2",
-        "value": "",
-        "links": {"custom_field": {"id": "6", "type": "custom_fields"}}},
         {"id": "3",
         "value": "",
         "links": {"custom_field": {"id": "7", "type": "custom_fields"}}},
@@ -103,7 +100,7 @@
        "next_due_date":null,
        "completed_courses_count": 3,
        "links":{
-          "custom_field_values":["1","2","3","4","5","6","7","8","9","10","24","25","26","27","28","29","30"]
+          "custom_field_values":["1","3","4","5","6","7","8","9","10","24","25","26","27","28","29","30"]
        },
        "meta":{"can_masquerade":true}
     }

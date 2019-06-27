@@ -41,7 +41,9 @@ class UwAccount(models.Model):
         return self.employee_id is not None
 
     def set_employee_id(self, employee_id):
-        self.employee_id = employee_id
+        if self.has_employee_id() or employee_id != self.employee_id:
+            self.employee_id = employee_id
+            self.save()
 
     def set_ids(self, bridge_id, employee_id):
         upded = False
@@ -50,17 +52,12 @@ class UwAccount(models.Model):
             upded = True
 
         if (employee_id is not None and
-                self.employee_id is None or employee_id != self.employee_id):
-            self.set_employee_id(employee_id)
+                self.has_employee_id() or employee_id != self.employee_id):
+            self.employee_id = employee_id
             upded = True
 
         if upded:
             self.last_updated = get_now()
-            self.save()
-
-    def set_employee_id(self, employee_id):
-        if self.employee_id is None or employee_id != self.employee_id:
-            self.employee_id = employee_id
             self.save()
 
     def has_prev_netid(self):
