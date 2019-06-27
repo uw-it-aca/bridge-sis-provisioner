@@ -7,11 +7,11 @@ import logging
 import traceback
 from uw_bridge.models import BridgeUser, BridgeCustomField
 from sis_provisioner.dao.bridge import BridgeUsers
+from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
+from sis_provisioner.util.settings import get_total_work_positions_to_load
 from sis_provisioner.account_managers import (
-    get_email, get_full_name, normalize_name,
-    get_pos1_budget_code, get_pos1_job_code, get_job_title,
-    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
-    get_pos1_unit_code, get_supervisor_bridge_id)
+    get_email, get_full_name, normalize_name, get_job_title,
+    GET_POS_ATT_FUNCS, get_supervisor_bridge_id)
 from sis_provisioner.account_managers.worker import Worker
 
 
@@ -28,6 +28,7 @@ class BridgeWorker(Worker):
         self.total_new_users_count = 0
         self.total_restored_count = 0
         self.total_updated_count = 0
+        self.total_work_positions = get_total_work_positions_to_load()
 
     def get_new_user_count(self):
         return self.total_new_users_count
@@ -141,26 +142,12 @@ class BridgeWorker(Worker):
                                   BridgeCustomField.STUDENT_ID_NAME,
                                   person.student_number)
 
-        if (hrp_wkr is not None and
-                hrp_wkr.primary_position is not None):
-            self.add_custom_field(user,
-                                  BridgeCustomField.POS1_BUDGET_CODE,
-                                  get_pos1_budget_code(hrp_wkr))
-            self.add_custom_field(user,
-                                  BridgeCustomField.POS1_JOB_CODE,
-                                  get_pos1_job_code(hrp_wkr))
-            self.add_custom_field(user,
-                                  BridgeCustomField.POS1_JOB_CLAS,
-                                  get_pos1_job_class(hrp_wkr))
-            self.add_custom_field(user,
-                                  BridgeCustomField.POS1_ORG_CODE,
-                                  get_pos1_org_code(hrp_wkr))
-            self.add_custom_field(user,
-                                  BridgeCustomField.POS1_ORG_NAME,
-                                  get_pos1_org_name(hrp_wkr))
-            self.add_custom_field(user,
-                                  BridgeCustomField.POS1_UNIT_CODE,
-                                  get_pos1_unit_code(hrp_wkr))
+        for pos_num in range(self.total_work_positions):
+            pos_field_names = WORK_POSITION_FIELDS[pos_num]
+            for i in range(len(pos_field_names)):
+                self.add_custom_field(user,
+                                      pos_field_names[i],
+                                      GET_POS_ATT_FUNCS[i](hrp_wkr, pos_num))
         return user
 
     def add_custom_field(self, bridge_account, field_name, value):
@@ -190,24 +177,13 @@ class BridgeWorker(Worker):
         self.update_custom_field(bridge_account,
                                  BridgeCustomField.STUDENT_ID_NAME,
                                  person.student_number)
-        self.update_custom_field(bridge_account,
-                                 BridgeCustomField.POS1_BUDGET_CODE,
-                                 get_pos1_budget_code(hrp_wkr))
-        self.update_custom_field(bridge_account,
-                                 BridgeCustomField.POS1_JOB_CODE,
-                                 get_pos1_job_code(hrp_wkr))
-        self.update_custom_field(bridge_account,
-                                 BridgeCustomField.POS1_JOB_CLAS,
-                                 get_pos1_job_class(hrp_wkr))
-        self.update_custom_field(bridge_account,
-                                 BridgeCustomField.POS1_ORG_CODE,
-                                 get_pos1_org_code(hrp_wkr))
-        self.update_custom_field(bridge_account,
-                                 BridgeCustomField.POS1_ORG_NAME,
-                                 get_pos1_org_name(hrp_wkr))
-        self.update_custom_field(bridge_account,
-                                 BridgeCustomField.POS1_UNIT_CODE,
-                                 get_pos1_unit_code(hrp_wkr))
+        for pos_num in range(self.total_work_positions):
+            pos_field_names = WORK_POSITION_FIELDS[pos_num]
+            for i in range(len(pos_field_names)):
+                self.update_custom_field(bridge_account,
+                                         pos_field_names[i],
+                                         GET_POS_ATT_FUNCS[i](hrp_wkr,
+                                                              pos_num))
         return bridge_account
 
     def update_custom_field(self, bridge_account, field_name, value):

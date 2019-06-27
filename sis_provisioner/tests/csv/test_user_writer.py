@@ -1,27 +1,23 @@
 import os
 from django.conf import settings
 from django.test import TransactionTestCase
+from django.test.utils import override_settings
 from sis_provisioner.csv.user_writer import (
-    _get_file_name_prefix, _get_file_size, get_user_file_name,
-    make_import_user_csv_files)
+    get_user_file_name, make_import_user_csv_files)
 from sis_provisioner.dao.uw_account import get_all_uw_accounts
 from sis_provisioner.tests.csv import (
     user_file_name_override, fdao_pws_override, fdao_hrp_override)
 from sis_provisioner.tests.account_managers import set_db_records
 
 
+override_bridge = override_settings(BRIDGE_USER_WORK_POSITIONS=2)
+
+
 @fdao_pws_override
 @fdao_hrp_override
 @user_file_name_override
+@override_bridge
 class TestUserWriter(TransactionTestCase):
-
-    def test_get_file_name_prefix(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILENAME="blah"):
-            self.assertEqual(_get_file_name_prefix(), "blah")
-
-    def test_get_file_size(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILE_SIZE=5):
-            self.assertEqual(_get_file_size(), 5)
 
     def test_get_file_name_prefix(self):
         with self.settings(BRIDGE_IMPORT_USER_FILENAME="blah"):

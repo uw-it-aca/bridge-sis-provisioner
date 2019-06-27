@@ -46,57 +46,82 @@ def get_custom_field_value(bridge_account, field_name):
     return None
 
 
+def get_work_position(hrp_wkr, position_num):
+    """
+    :param position_num: [0..]
+    """
+    if hrp_wkr is not None:
+        if position_num == 0:
+            if hrp_wkr.primary_position is not None:
+                return hrp_wkr.primary_position
+        if position_num >= 1:
+            index = position_num - 1
+            if len(hrp_wkr.other_active_positions) > index:
+                return hrp_wkr.other_active_positions[index]
+    return None
+
+
 def get_job_title(hrp_wkr):
-    if (hrp_wkr is not None and
-            hrp_wkr.primary_position is not None):
-        return hrp_wkr.primary_position.title
+    pos = get_work_position(hrp_wkr, 0)
+    if pos is not None:
+        return pos.title
     return None
 
 
-def get_pos1_job_class(hrp_wkr):
-    if (hrp_wkr is not None and
-            hrp_wkr.primary_position is not None):
-        return hrp_wkr.primary_position.ecs_job_cla_code_desc
+def get_pos_job_class(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None:
+        return pos.ecs_job_cla_code_desc
     return None
 
 
-def get_pos1_job_code(hrp_wkr):
-    if (hrp_wkr is not None and
-            hrp_wkr.primary_position is not None and
-            hrp_wkr.primary_position.job_profile is not None):
-        return hrp_wkr.primary_position.job_profile.job_code
+def get_pos_location(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None:
+        return pos.location
     return None
 
 
-def get_pos1_budget_code(hrp_wkr):
-    if (hrp_wkr is not None and
-            hrp_wkr.primary_position is not None and
-            hrp_wkr.primary_position.supervisory_org is not None):
-        return hrp_wkr.primary_position.supervisory_org.budget_code
+def get_pos_job_code(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None and pos.job_profile is not None:
+        return pos.job_profile.job_code
     return None
 
 
-def get_pos1_org_code(hrp_wkr):
-    if (hrp_wkr is not None and
-            hrp_wkr.primary_position is not None and
-            hrp_wkr.primary_position.supervisory_org is not None):
-        return hrp_wkr.primary_position.supervisory_org.org_code
+def get_pos_budget_code(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None and pos.supervisory_org is not None:
+        return pos.supervisory_org.budget_code
     return None
 
 
-def get_pos1_org_name(hrp_wkr):
-    if (hrp_wkr is not None and
-            hrp_wkr.primary_position is not None and
-            hrp_wkr.primary_position.supervisory_org is not None):
-        return hrp_wkr.primary_position.supervisory_org.org_name
+def get_pos_org_code(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None and pos.supervisory_org is not None:
+        return pos.supervisory_org.org_code
     return None
 
 
-def get_pos1_unit_code(hrp_wkr):
-    if (hrp_wkr is not None and
-            hrp_wkr.primary_position is not None):
-        return hrp_wkr.primary_position.payroll_unit_code
+def get_pos_org_name(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None and pos.supervisory_org is not None:
+        return pos.supervisory_org.org_name
     return None
+
+
+def get_pos_unit_code(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None:
+        return pos.payroll_unit_code
+    return None
+
+
+# make sure the order is consistent with that in
+# sis_provisioner.models.work_positions.WORK_POSITION_FIELDS
+GET_POS_ATT_FUNCS = [get_pos_budget_code, get_pos_job_class, get_pos_job_code,
+                     get_pos_location, get_pos_org_code, get_pos_org_name,
+                     get_pos_unit_code]
 
 
 def get_supervisor_bridge_id(hrp_wkr):

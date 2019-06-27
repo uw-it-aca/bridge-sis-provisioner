@@ -1,13 +1,12 @@
 from django.test import TransactionTestCase
 from uw_bridge.models import BridgeCustomField, BridgeUser
+from uw_hrp.models import SupervisoryOrganization
 from uw_hrp.models import Worker
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.account_managers import (
-    get_full_name, get_email, normalize_name, get_job_title,
-    get_pos1_budget_code, get_pos1_job_code, get_job_title,
-    get_pos1_job_class, get_pos1_org_code, get_pos1_org_name,
-    get_pos1_unit_code, get_custom_field_value, get_supervisor_bridge_id)
+    get_full_name, get_email, normalize_name, get_job_title, get_work_position,
+    GET_POS_ATT_FUNCS, get_custom_field_value, get_supervisor_bridge_id)
 from sis_provisioner.tests.account_managers import (
     new_custom_field, set_db_records)
 
@@ -44,67 +43,118 @@ class TestValidUser(TransactionTestCase):
         self.assertEqual(get_custom_field_value(
             bridge_acc, BridgeCustomField.REGID_NAME), "1")
 
+    def test_get_work_position(self):
+        self.assertIsNone(get_work_position(None, -1))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertIsNone(get_work_position(hrp_wkr, -1))
+        pos1 = get_work_position(hrp_wkr, 0)
+        self.assertTrue(pos1.is_primary)
+        self.assertEqual(pos1.title, "Student Reference Specialist - GMM")
+
+        hrp_wkr.primary_position = None
+        self.assertIsNone(get_work_position(hrp_wkr, 0))
+
+        pos2 = get_work_position(hrp_wkr, 1)
+        self.assertFalse(pos2.is_primary)
+        self.assertEqual(pos2.title, "Reader/Grader")
+        self.assertIsNone(get_work_position(hrp_wkr, 3))
+
+        hrp_wkr.other_active_positions = []
+        self.assertIsNone(get_work_position(hrp_wkr, 1))
+
     def test_get_job_title(self):
         self.assertIsNone(get_job_title(None))
         person = get_person('javerage')
         hrp_wkr = get_worker(person)
         self.assertEqual(get_job_title(hrp_wkr),
                          "Student Reference Specialist - GMM")
-        hrp_wkr.primary_position = None
-        self.assertIsNone(get_job_title(hrp_wkr))
 
-    def test_get_pos1_job_class(self):
-        self.assertIsNone(get_pos1_job_class(None))
+    def test_get_pos_budget_code(self):
+        func_name = GET_POS_ATT_FUNCS[0]
+        self.assertIsNone(func_name(None, 0))
         person = get_person('javerage')
         hrp_wkr = get_worker(person)
-        self.assertEqual(get_pos1_job_class(hrp_wkr),
-                         "Undergraduate Student")
-        hrp_wkr.primary_position = None
-        self.assertIsNone(get_pos1_job_class(hrp_wkr))
-
-    def test_get_pos1_job_code(self):
-        self.assertIsNone(get_pos1_job_code(None))
-        person = get_person('javerage')
-        hrp_wkr = get_worker(person)
-        self.assertEqual(get_pos1_job_code(hrp_wkr),
-                         "10875")
-        hrp_wkr.primary_position = None
-        self.assertIsNone(get_pos1_job_code(hrp_wkr))
-
-    def test_get_pos1_budget_code(self):
-        self.assertIsNone(get_pos1_budget_code(None))
-        person = get_person('javerage')
-        hrp_wkr = get_worker(person)
-        self.assertEqual(get_pos1_budget_code(hrp_wkr),
+        self.assertEqual(func_name(hrp_wkr, 0),
                          "2070001000")
-        hrp_wkr.primary_position = None
-        self.assertIsNone(get_pos1_budget_code(hrp_wkr))
+        hrp_wkr.primary_position.supervisory_org = None
+        self.assertIsNone(func_name(hrp_wkr, 0))
+        self.assertIsNone(func_name(hrp_wkr, 1))
+        hrp_wkr.other_active_positions[0].supervisory_org = \
+            SupervisoryOrganization(budget_code="1")
+        self.assertEqual(func_name(hrp_wkr, 1), "1")
 
-    def test_get_pos1_org_code(self):
-        self.assertIsNone(get_pos1_org_code(None))
+    def test_get_pos_job_class(self):
+        func_name = GET_POS_ATT_FUNCS[1]
+        self.assertIsNone(func_name(None, 0))
         person = get_person('javerage')
         hrp_wkr = get_worker(person)
-        self.assertEqual(get_pos1_org_code(hrp_wkr),
+        self.assertEqual(func_name(hrp_wkr, 0),
+                         "Undergraduate Student")
+        self.assertEqual(func_name(hrp_wkr, 1),
+                         "Undergraduate Student")
+
+    def test_get_pos_job_code(self):
+        func_name = GET_POS_ATT_FUNCS[2]
+        person = get_person('javerage')
+        self.assertIsNone(func_name(None, 0))
+        hrp_wkr = get_worker(person)
+        self.assertEqual(func_name(hrp_wkr, 0), "10875")
+        hrp_wkr.primary_position.job_profile = None
+        self.assertIsNone(func_name(hrp_wkr, 0))
+        self.assertEqual(func_name(hrp_wkr, 1), "10886")
+
+    def test_get_pos_location(self):
+        func_name = GET_POS_ATT_FUNCS[3]
+        self.assertIsNone(func_name(None, 0))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(func_name(hrp_wkr, 0), "Seattle Campus")
+        hrp_wkr.primary_position = None
+        self.assertIsNone(func_name(hrp_wkr, 0))
+        self.assertEqual(func_name(hrp_wkr, 1), "Seattle Campus")
+        hrp_wkr.other_active_positions = []
+        self.assertIsNone(func_name(hrp_wkr, 1))
+
+    def test_get_pos_org_code(self):
+        func_name = GET_POS_ATT_FUNCS[4]
+        self.assertIsNone(func_name(None, 0))
+        person = get_person('javerage')
+        hrp_wkr = get_worker(person)
+        self.assertEqual(func_name(hrp_wkr, 0),
                          "LIB:")
-        hrp_wkr.primary_position = None
-        self.assertIsNone(get_pos1_org_code(hrp_wkr))
+        hrp_wkr.primary_position.supervisory_org = None
+        self.assertIsNone(func_name(hrp_wkr, 0))
+        self.assertIsNone(func_name(hrp_wkr, 1))
+        hrp_wkr.other_active_positions[0].supervisory_org = \
+            SupervisoryOrganization(org_code="1")
+        self.assertEqual(func_name(hrp_wkr, 1), "1")
 
-    def test_get_pos1_org_name(self):
-        self.assertIsNone(get_pos1_org_name(None))
+    def test_get_pos_org_name(self):
+        func_name = GET_POS_ATT_FUNCS[5]
+        self.assertIsNone(func_name(None, 0))
         person = get_person('javerage')
         hrp_wkr = get_worker(person)
-        self.assertEqual(get_pos1_org_name(hrp_wkr),
+        self.assertEqual(func_name(hrp_wkr, 0),
                          "GMMN: Public Services JM Student")
-        hrp_wkr.primary_position = None
-        self.assertIsNone(get_pos1_org_name(hrp_wkr))
+        hrp_wkr.primary_position.supervisory_org = None
+        self.assertIsNone(func_name(hrp_wkr, 0))
+        self.assertIsNone(func_name(hrp_wkr, 1))
+        hrp_wkr.other_active_positions[0].supervisory_org = \
+            SupervisoryOrganization(org_name="A")
+        self.assertEqual(func_name(hrp_wkr, 1), "A")
 
-    def test_get_pos1_unit_code(self):
-        self.assertIsNone(get_pos1_unit_code(None))
+    def test_get_pos_unit_code(self):
+        func_name = GET_POS_ATT_FUNCS[6]
+        self.assertIsNone(func_name(None, 0))
         person = get_person('javerage')
         hrp_wkr = get_worker(person)
-        self.assertEqual(get_pos1_unit_code(hrp_wkr), "00090")
+        self.assertEqual(func_name(hrp_wkr, 0), "00090")
         hrp_wkr.primary_position = None
-        self.assertIsNone(get_pos1_unit_code(hrp_wkr))
+        self.assertIsNone(func_name(hrp_wkr, 0))
+        self.assertEqual(func_name(hrp_wkr, 1), "00652")
+        hrp_wkr.other_active_positions = []
+        self.assertIsNone(func_name(hrp_wkr, 1))
 
     def test_get_supervisor_bridge_id(self):
         set_db_records()
