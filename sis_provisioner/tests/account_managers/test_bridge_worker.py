@@ -18,11 +18,9 @@ from sis_provisioner.tests.account_managers import (
 @fdao_hrp_override
 class TestBridgeWorker(TransactionTestCase):
 
-    def setup(self):
-        self.maxDiff = None
-
     def test_get_bridge_user_to_add(self):
         set_db_records()
+        # self.maxDiff = None
         worker = BridgeWorker()
         person = get_person('faculty')
         user = worker.get_bridge_user_to_add(person, get_worker(person))
@@ -41,16 +39,32 @@ class TestBridgeWorker(TransactionTestCase):
                       'value': '0000005'},
                      {'custom_field_id': '11',
                       'value': '3040111000'},
-                     {'custom_field_id': '12',
-                      'value': '21184'},
                      {'custom_field_id': '13',
                       'value': 'Academic Personnel'},
+                     {'custom_field_id': '12',
+                      'value': '21184'},
+                     {'custom_field_id': '17',
+                      'value': 'Seattle Campus'},
                      {'custom_field_id': '14',
                       'value': 'SOM:'},
                      {'custom_field_id': '15',
                       'value': 'Family Medicine: Volunteer JM Academic'},
                      {'custom_field_id': '16',
-                      'value': '00753'}],
+                      'value': '00753'},
+                     {'custom_field_id': '21',
+                      'value': None},
+                     {'custom_field_id': '23',
+                      'value': None},
+                     {'custom_field_id': '22',
+                      'value': None},
+                     {'custom_field_id': '27',
+                      'value': None},
+                     {'custom_field_id': '24',
+                      'value': None},
+                     {'custom_field_id': '25',
+                      'value': None},
+                     {'custom_field_id': '26',
+                      'value': None}],
                  'first_name': 'William E',
                  'last_name': 'Faculty',
                  'sortable_name': 'Faculty, William E',
@@ -63,6 +77,7 @@ class TestBridgeWorker(TransactionTestCase):
         worker = BridgeWorker()
         user = worker.bridge.get_user_by_uwnetid('tyler')
         worker.set_bridge_user_to_update(person, get_worker(person), user)
+        # self.maxDiff = None
         self.assertEqual(
             user.to_json_patch(),
             {'user': {
@@ -79,39 +94,47 @@ class TestBridgeWorker(TransactionTestCase):
                     {'custom_field_id': '5',
                      'value': '10000000000000000000000000000005',
                      'id': '1'},
+                    {'custom_field_id': '7',
+                     'id': '3',
+                     'value': '0000005'},
                     {'custom_field_id': '11',
                      'value': '3040111000',
                      'id': '4'},
-                    {'custom_field_id': '12',
-                     'value': '21184',
-                     'id': '5'},
                     {'custom_field_id': '13',
                      'value': 'Academic Personnel',
+                     'id': '5'},
+                    {'custom_field_id': '12',
+                     'value': '21184',
                      'id': '6'},
+                    {'custom_field_id': '17',
+                     'value': 'Seattle Campus',
+                     'id': '7'},
                     {'custom_field_id': '14',
                      'value': 'SOM:',
-                     'id': '7'},
+                     'id': '8'},
                     {'custom_field_id': '15',
                      'value': 'Family Medicine: Volunteer JM Academic',
-                     'id': '8'},
-                    {'custom_field_id': '6',
-                     'value': '000000005'},
-                    {'custom_field_id': '7',
-                     'value': '0000005'},
-                    {'custom_field_id': '16',
-                     'value': '00753'},
-                ]}})
+                     'id': '9'},
+                    {'custom_field_id': '16', 'value': '00753', 'id': '10'},
+                    {'custom_field_id': '21', 'value': None, 'id': '24'},
+                    {'custom_field_id': '23', 'value': None, 'id': '25'},
+                    {'custom_field_id': '22', 'value': None, 'id': '26'},
+                    {'custom_field_id': '27', 'value': None, 'id': '27'},
+                    {'custom_field_id': '24', 'value': None, 'id': '28'},
+                    {'custom_field_id': '25', 'value': None, 'id': '29'},
+                    {'custom_field_id': '26', 'value': None, 'id': '30'},
+                    {'custom_field_id': '6', 'value': '000000005'}]}})
 
     def test_add_new_user(self):
         worker = BridgeWorker()
-        uw_acc = set_uw_account('affiemp')
         person = get_person('affiemp')
+        uw_acc = set_uw_account('affiemp')
         worker.add_new_user(uw_acc, person, get_worker(person))
         self.assertEqual(worker.get_new_user_count(), 1)
 
         person = get_person('javerage')
-        worker.add_new_user(set_uw_account('javerage'), person,
-                            get_worker(person))
+        uw_acc = set_uw_account('javerage')
+        worker.add_new_user(uw_acc, person, get_worker(person))
         self.assertTrue(worker.has_err())
 
     def test_delete_user(self):

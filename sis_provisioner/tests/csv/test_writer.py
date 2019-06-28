@@ -4,8 +4,7 @@ import shutil
 from django.conf import settings
 from django.test import TransactionTestCase
 from django.test.utils import override_settings
-from sis_provisioner.csv.writer import _get_file_path_prefix,\
-    get_file_path, CsvMaker
+from sis_provisioner.csv.writer import get_file_path, CsvMaker
 from sis_provisioner.tests.csv import (
     fdao_pws_override, fdao_hrp_override, set_db_records)
 
@@ -16,16 +15,15 @@ override_csv_root = override_settings(BRIDGE_IMPORT_CSV_ROOT=CSV_ROOT)
 USER_FILENAME = 'busrs'
 override_user_filename = override_settings(
     BRIDGE_IMPORT_USER_FILENAME=USER_FILENAME)
+override_bridge = override_settings(BRIDGE_USER_WORK_POSITIONS=2)
 
 
 @fdao_pws_override
 @fdao_hrp_override
 @override_csv_root
 @override_user_filename
+@override_bridge
 class TestCsvWriter(TransactionTestCase):
-
-    def test_get_file_path_prefix(self):
-        self.assertEqual(_get_file_path_prefix(), CSV_ROOT)
 
     def test_get_file_path(self):
         fp = get_file_path()

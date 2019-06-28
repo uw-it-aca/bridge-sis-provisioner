@@ -156,7 +156,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertTrue(
             loader.account_not_changed(bridge_account, person, hrp_wkr))
 
-    def test_not_changed(self):
+    def test_field_not_changed(self):
         loader = GwsBridgeLoader(BridgeWorker())
 
         person = get_person('javerage')
@@ -165,16 +165,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertTrue(loader.regid_not_changed(bridge_account, person))
         self.assertTrue(loader.eid_not_changed(bridge_account, person))
         self.assertTrue(loader.sid_not_changed(bridge_account, person))
-        self.assertTrue(loader.pos1_budget_code_not_changed(
-            bridge_account, hrp_wkr))
-        self.assertTrue(loader.pos1_job_code_not_changed(
-            bridge_account, hrp_wkr))
-        self.assertTrue(loader.pos1_job_class_not_changed(
-            bridge_account, hrp_wkr))
-        self.assertTrue(loader.pos1_org_code_not_changed(
-            bridge_account, hrp_wkr))
-        self.assertTrue(loader.pos1_org_name_not_changed(
-            bridge_account, hrp_wkr))
+        self.assertTrue(loader.pos_data_not_changed(bridge_account, hrp_wkr))
 
         person = get_person('faculty')
         hrp_wkr = get_worker(person)
@@ -182,13 +173,4 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertFalse(loader.regid_not_changed(bridge_account, person))
         self.assertFalse(loader.eid_not_changed(bridge_account, person))
         self.assertFalse(loader.sid_not_changed(bridge_account, person))
-        self.assertFalse(loader.pos1_budget_code_not_changed(
-            bridge_account, hrp_wkr))
-        self.assertTrue(loader.pos1_job_code_not_changed(
-            bridge_account, hrp_wkr))
-        self.assertTrue(loader.pos1_job_class_not_changed(
-            bridge_account, hrp_wkr))
-        self.assertFalse(loader.pos1_org_code_not_changed(
-            bridge_account, hrp_wkr))
-        self.assertFalse(loader.pos1_org_name_not_changed(
-            bridge_account, hrp_wkr))
+        self.assertFalse(loader.pos_data_not_changed(bridge_account, hrp_wkr))

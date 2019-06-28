@@ -33,6 +33,9 @@ class TestModels(TransactionTestCase):
         user.set_terminate_date()
         self.assertTrue(user.has_terminate_date())
         self.assertFalse(user.passed_terminate_date())
+        date1 = user.terminate_at
+        user.set_terminate_date()
+        self.assertEqual(user.terminate_at, date1)
 
         user.terminate_at -= timedelta(days=GRACE_PERIOD + 1)
         self.assertTrue(user.passed_terminate_date())
@@ -70,11 +73,11 @@ class TestModels(TransactionTestCase):
         self.assertIsNone(datetime_to_str(None))
 
     def test_class_method(self):
-        user1 = self.mock_uw_account("tyler")
+        uw_acc1 = self.mock_uw_account("tyler")
         self.assertTrue(UwAccount.exists("tyler"))
 
         user = UwAccount.get("tyler")
-        self.assertEqual(user, user1)
+        self.assertTrue(user == uw_acc1)
 
         uw_acc = UwAccount.get_uw_acc("faculty", ["tyler"])
         self.assertEqual(uw_acc.netid, "faculty")
@@ -82,6 +85,7 @@ class TestModels(TransactionTestCase):
 
         uw_acc1 = UwAccount.get_uw_acc("staff", [], create=True)
         self.assertEqual(uw_acc1.netid, "staff")
+        self.assertFalse(uw_acc == uw_acc1)
 
         uw_acc2 = UwAccount.get_uw_acc("staff", [])
-        self.assertEqual(uw_acc1, uw_acc2)
+        self.assertTrue(uw_acc1 == uw_acc2)
