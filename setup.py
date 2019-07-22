@@ -20,7 +20,7 @@ setup(
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires = [
-        'Django>=2.0.10,<2.1',
+        'Django>=2.0.13,<2.1',
         'python-dateutil',
         'ordereddict',
         'UW-RestClients-Core<2.0',
