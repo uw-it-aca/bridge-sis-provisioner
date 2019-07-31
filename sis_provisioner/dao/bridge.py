@@ -48,10 +48,7 @@ class BridgeUsers(Users):
         if not exists: None
         """
         try:
-            return self.get_user_by_id(id)
-            # include_course_summary=True,
-            # include_manager=True,
-            # include_deleted=True
+            return self.get_user_by_id(id, include_deleted=True)
         except DataFailureException as ex:
             if ex.status == 404:
                 # the user not exists in Bridge
