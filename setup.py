@@ -25,7 +25,7 @@ setup(
         'ordereddict',
         'UW-RestClients-Core>=1.2.1,<2.0',
         'UW-RestClients-PWS>=2.0.3,<3.0',
-        'UW-RestClients-GWS>=2.2,<3.0',
+        'UW-RestClients-GWS>2.2,<3.0',
         'uw-restclients-bridge>=1.5.1,<2.0',
         'uw-restclients-hrp>=1.1.2,<2.0',
         'UW-RestClients-Django-Utils<3.0',
