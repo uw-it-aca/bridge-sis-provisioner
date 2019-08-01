@@ -1,0 +1,29 @@
+{
+  "meta": {},
+  "linked": {},
+   "users":[
+     {
+       "id":"199",
+       "uid":"alumni@uw.edu",
+       "hris_id":null,
+       "first_name":"Uw",
+       "last_name":"Alumnus",
+       "full_name":"Uw Alumnus",
+       "sortable_name":"Uw, Alumnus",
+       "email":"alumni@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Uw Alumnus",
+       "avatar_url":null,
+       "updated_at":"2016-09-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":null,
+       "next_due_date":null,
+       "completed_courses_count": 1,
+       "links":{},
+       "meta":{"can_masquerade":true}
+     }
+   ]
+}

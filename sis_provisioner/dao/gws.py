@@ -1,73 +1,47 @@
 """
-The Member class encapsulates the interactions
-with the UW Group API resource
+The functions here interact with uw_gws
 """
 
 import logging
-from restclients.gws import GWS
+from sis_provisioner.dao import DataFailureException
+from uw_gws import GWS
 from sis_provisioner.util.log import log_resp_time, Timer
 
 
 logger = logging.getLogger(__name__)
-UW_GROUP = "uw_member"
-UW_AFFI_GROUP = "uw_affiliation_affiliate-employee"
+UW_GROUPS = ["uw_member", "uw_affiliate", "u_bridgeap_tempusers"]
 gws = GWS()
 
 
 def get_members_of_group(group_id):
     """
-    Returns a list of restclients.models.gws.GroupMember objects
+    Returns a list of uw_gws.GroupMember objects
+    except: DataFailureException
     """
-    action = 'get_members of group %s' % group_id
     timer = Timer()
+    action = "get_effective_members('{0}')".format(group_id)
     try:
         return gws.get_effective_members(group_id)
     finally:
         log_resp_time(logger, action, timer)
+    return None
 
 
-def get_uw_members():
-    """
-    Returns a list of uwnetids in the "uw_member" Group
-    """
-    ret_list = []
-    for gm in get_members_of_group(UW_GROUP):
-        if gm.is_uwnetid() and gm.name is not None and len(gm.name) > 0:
-            ret_list.append(gm.name)
-
-    return ret_list
-
-
-def get_affiliate_employees():
-    """
-    Returns a list of uwnetids in the "uw_member" Group
-    """
-    ret_list = []
-    for gm in get_members_of_group(UW_AFFI_GROUP):
-        if gm.is_uwnetid() and gm.name is not None and len(gm.name) > 0:
-            ret_list.append(gm.name)
-
-    return ret_list
+def append_netids_to_list(members, user_set):
+    if members is not None and len(members) > 0:
+        for gm in members:
+            if gm.is_uwnetid() and gm.name is not None and len(gm.name) > 0:
+                if gm.name not in user_set:
+                    user_set.add(gm.name)
 
 
 def get_potential_users():
-    return get_uw_members() + get_affiliate_employees()
-
-
-def is_qualified_user(uwnetid):
-    return is_uw_member(uwnetid) or is_affiliate_employee(uwnetid)
-
-
-def is_uw_member(uwnetid):
     """
-    Return True if the user netid is an effective member of the uw_member group
+    return a set of uwnetids
     """
-    return (uwnetid in get_uw_members())
-
-
-def is_affiliate_employee(uwnetid):
-    """
-    Return True if the user netid is an effective member of
-    the uw_affiliation_affiliate-employee group
-    """
-    return (uwnetid in get_affiliate_employees())
+    timer = Timer()
+    user_set = set()
+    for gr in UW_GROUPS:
+        append_netids_to_list(get_members_of_group(gr), user_set)
+    log_resp_time(logger, "get_potential_users", timer)
+    return user_set

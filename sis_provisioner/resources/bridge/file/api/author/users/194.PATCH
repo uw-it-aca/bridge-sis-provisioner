@@ -1,0 +1,33 @@
+{
+  "meta": {},
+  "linked": {},
+   "users":[
+     { "id":"194",
+       "uid":"retiree@uw.edu",
+       "hris_id":null,
+       "first_name":"Ellen",
+       "last_name":"Retiree",
+       "full_name":"Retiree Louise Retiree",
+       "sortable_name":"Retiree, Ellen L",
+       "email":"retiree@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Retiree Louise Retiree",
+       "avatar_url":null,
+       "updated_at":"2016-07-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":"2016-09-02T15:27:01.827-07:00",
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
+       "links":{},
+       "meta":{"can_masquerade":true}
+     }
+   ]
+}

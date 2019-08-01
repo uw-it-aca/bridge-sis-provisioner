@@ -1,0 +1,49 @@
+{
+"DisplayName":"Ellen Louise Retiree",
+"EduPersonAffiliations":["member"],
+"IsTestEntity":false,
+"PreferredFirstName":"Ellen",
+"PreferredMiddleName":"Louise",
+"PreferredSurname":"Retiree",
+"PriorUWNetIDs":["ellen"],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"Ellen L",
+"RegisteredName":"Ellen L Retiree",
+"RegisteredSurname":"Retiree",
+"RepositoryTimeStamp":"2/5/2018 1:34:47 PM",
+"UIDNumber":"4326",
+"UWNetID":"retiree",
+"UWRegID":"10000000000000000000000000000006",
+"WhitepagesPublish":false,
+"PersonAffiliations":{
+    "AlumPersonAffiliation":{
+        "DevelopmentID":"0000000006"},
+    "EmployeePersonAffiliation":{
+        "EmployeeID":"000000006",
+        "EmployeeWhitePages":{
+            "Addresses":[],
+            "EmailAddresses":[],
+            "Faxes":["+1 206 221-0006"],
+            "Mobiles":[],
+            "Name":null,
+            "Pagers":[],
+            "Phones":["+1 206 221-0066"],
+            "Positions":[
+                {"EWPDept":"University of Washington",
+                 "EWPTitle":"Retiree",
+                 "Primary":true}],
+            "PublishInDirectory":false,
+            "TouchDials":[],
+            "VoiceMails":[]},
+        "HomeDepartment":"UW Benefits Office",
+        "MailStop":"359556"},
+    "StudentPersonAffiliation":{
+        "StudentNumber":"0000006",
+        "StudentSystemKey":"000000006",
+        "StudentWhitePages":{"Class":null,
+                             "Departments":[],
+                             "Email":null,
+                             "Name":null,
+                             "Phone":null,
+                             "PublishInDirectory":false}
+}}}

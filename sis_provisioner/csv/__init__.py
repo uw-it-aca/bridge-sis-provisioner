@@ -1,4 +1,4 @@
-import StringIO
+import io
 import csv
 import errno
 import os
@@ -22,7 +22,7 @@ def get_aline_csv(data):
     """
     Create a line of csv data from the passed list of data.
     """
-    s = StringIO.StringIO()
+    s = io.StringIO()
 
     csv.register_dialect("unix_newline", lineterminator="\n")
     writer = csv.writer(s, dialect="unix_newline")
@@ -30,7 +30,7 @@ def get_aline_csv(data):
         writer.writerow(data)
     except UnicodeEncodeError:
         log_exception(logger,
-                      "get_aline_csv [%s]" % ','.join(data),
+                      "get_aline_csv [{0}]".format(','.join(data)),
                       traceback.format_exc())
 
     line = s.getvalue()

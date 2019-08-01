@@ -1,105 +1,138 @@
 import logging
-import traceback
-from restclients.exceptions import DataFailureException,\
-     InvalidNetID, InvalidRegID
-from sis_provisioner.dao.bridge import get_all_bridge_users
-from sis_provisioner.dao.gws import get_potential_users
-from sis_provisioner.dao.pws import get_person, get_person_by_regid
-from sis_provisioner.dao.user import get_all_users
-from sis_provisioner.util.log import log_exception
+import re
+from string import capwords
+from nameparser import HumanName
+from uw_bridge.models import BridgeCustomField
+from sis_provisioner.dao.uw_account import get_by_employee_id
 
 
-INVALID = -2  # netid or regid itself is invalid
-DISALLOWED = -1  # not a personal netid or regid
-LEFT_UW = 0   # netid and regid are up-to-date and no longer with UW
-VALID = 1     # netid and regid are up-to-date (match with Person)
-CHANGED = 2   # netid or regid or both changed
+logger = logging.getLogger(__name__)
 
 
-def get_validated_user(logger, uwnetid, uwregid=None, users_in_gws=[]):
+def get_email(person):
+    if len(person.email_addresses) == 0:
+        return "{0}@uw.edu".format(person.uwnetid)
+
+    email_str = person.email_addresses[0]
+    email_s1 = re.sub(" ", "", email_str)
+    return re.sub(r"\.$", "", email_s1, flags=re.IGNORECASE)
+
+
+def get_full_name(person):
+    if (len(person.display_name) > 0 and
+            not person.display_name.isdigit() and
+            not person.display_name.isupper()):
+        return person.display_name
+
+    name = HumanName(person.full_name)
+    name.capitalize()
+    name.string_format = "{first} {last}"
+    return str(name)
+
+
+def normalize_name(name):
     """
-    Validate an existing user.
-    return the corresponding Person object and a status
-    raise DataFailureException if failed to access GWS or PWS
+    Return a title faced name if the name is not empty
     """
-    try:
-        if uwregid is None:
-            person = get_person(uwnetid)
-        else:
-            person = get_person_by_regid(uwregid)
-
-        # changed takes priority over left UW
-        if person.uwnetid != uwnetid:
-            return person, CHANGED
-
-        if uwregid is not None and person.uwregid != uwregid:
-            return person, CHANGED
-
-        if _user_left_uw(users_in_gws, uwnetid):
-            logger.info("validate '%s' has left uw!", uwnetid)
-            return person, LEFT_UW
-
-        return person, VALID
-
-    except InvalidNetID:
-        logger.error("validate_by_netid: '%s' invalid!",
-                     uwnetid)
-        return None, INVALID
-    except InvalidRegID:
-        logger.error("validate_by_regid: '%s' invalid!",
-                     uwregid)
-        return None, INVALID
-    except DataFailureException as ex:
-        if ex.status == 404:
-            # shared or system netids
-            logger.info("validate ('%s', %s) not personal netid/regid",
-                        uwnetid, uwregid)
-            return None, DISALLOWED
-        log_exception(logger,
-                      "validate ('%s', %s) failed, skip!" % (uwnetid,
-                                                             uwregid),
-                      traceback.format_exc())
-        raise
+    if name is not None and len(name) > 0:
+        return capwords(name)
+    return ""
 
 
-def fetch_users_from_gws(logger):
-    try:
-        return get_potential_users()
-    except Exception:
-        log_exception(logger,
-                      "Failed to fetch_users_from_gws:",
-                      traceback.format_exc())
-    return []
+def get_custom_field_value(bridge_account, field_name):
+    cf = bridge_account.get_custom_field(field_name)
+    if cf is not None:
+        return cf.value
+    return None
 
 
-def fetch_users_from_db(logger):
+def get_work_position(hrp_wkr, position_num):
     """
-    Return a list of UwBridgeUser objects of
-    all the existing users in the DB
+    :param position_num: [0..]
     """
-    try:
-        return get_all_users()
-    except Exception:
-        log_exception(logger,
-                      "Failed to fetch_users_from_db:",
-                      traceback.format_exc())
-    return []
+    if hrp_wkr is not None:
+        if position_num == 0:
+            if hrp_wkr.primary_position is not None:
+                return hrp_wkr.primary_position
+        if position_num >= 1:
+            index = position_num - 1
+            if len(hrp_wkr.other_active_positions) > index:
+                return hrp_wkr.other_active_positions[index]
+    return None
 
 
-def fetch_users_from_bridge(logger):
-    """
-    Return a list of BridgeUser objects of
-    all the existing active users in Bridge
-    """
-    try:
-        return get_all_bridge_users()
-    except Exception:
-        log_exception(logger,
-                      "Failed to fetch_users_from_bridge:",
-                      traceback.format_exc())
-    return []
+def get_job_title(hrp_wkr):
+    pos = get_work_position(hrp_wkr, 0)
+    if pos is not None:
+        return pos.title
+    return None
 
 
-def _user_left_uw(users_in_gws, uwnetid):
-    return (uwnetid is not None and
-            len(users_in_gws) > 0 and uwnetid not in users_in_gws)
+def get_pos_job_class(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None:
+        return pos.ecs_job_cla_code_desc
+    return None
+
+
+def get_pos_location(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None:
+        return pos.location
+    return None
+
+
+def get_pos_job_code(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None and pos.job_profile is not None:
+        return pos.job_profile.job_code
+    return None
+
+
+def get_pos_budget_code(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None and pos.supervisory_org is not None:
+        return pos.supervisory_org.budget_code
+    return None
+
+
+def get_pos_org_code(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None and pos.supervisory_org is not None:
+        return pos.supervisory_org.org_code
+    return None
+
+
+def get_pos_org_name(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None and pos.supervisory_org is not None:
+        return pos.supervisory_org.org_name
+    return None
+
+
+def get_pos_unit_code(hrp_wkr, position_num):
+    pos = get_work_position(hrp_wkr, position_num)
+    if pos is not None:
+        return pos.payroll_unit_code
+    return None
+
+
+# make sure the order is consistent with that in
+# sis_provisioner.models.work_positions.WORK_POSITION_FIELDS
+GET_POS_ATT_FUNCS = [get_pos_budget_code, get_pos_job_class, get_pos_job_code,
+                     get_pos_location, get_pos_org_code, get_pos_org_name,
+                     get_pos_unit_code]
+
+
+def get_supervisor_bridge_id(hrp_wkr):
+    if hrp_wkr is not None:
+        manager_employee_id = hrp_wkr.primary_manager_id
+        if manager_employee_id is None:
+            return 0
+        if manager_employee_id == hrp_wkr.employee_id:
+            logger.error("Managere EID==own EID: {0}".format(hrp_wkr))
+            return 0
+        uw_acc = get_by_employee_id(manager_employee_id)
+        if (uw_acc is not None and uw_acc.netid != hrp_wkr.netid):
+            return uw_acc.bridge_id
+    return 0

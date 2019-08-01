@@ -1,19 +1,23 @@
 """
-This class will load all the users in gws uw_member group, check
-against pws person, update their database records and bridge
-accounts via the given worker.
+This class will load all the users in gws uw_member, uw_afiliate groups.
+Check against PWS Person, apply high priority changes.
+1. Add new user account (to DB and Bridge)
+2. Restore and update disabled/terminated account
+3. Update account if uwnetid has changed
 """
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
-from restclients.models.bridge import BridgeUser
-from sis_provisioner.models import UwBridgeUser
-from sis_provisioner.account_managers import get_validated_user, VALID
+from uw_bridge.models import BridgeUser, BridgeCustomField
+from sis_provisioner.dao.hrp import get_worker
+from sis_provisioner.dao.uw_account import save_uw_account
+from sis_provisioner.dao.pws import get_person
+from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
+from sis_provisioner.util.settings import get_total_work_positions_to_load
+from sis_provisioner.account_managers import (
+    get_full_name, get_email, get_job_title, normalize_name,
+    GET_POS_ATT_FUNCS, get_supervisor_bridge_id, get_custom_field_value)
 from sis_provisioner.account_managers.loader import Loader
-from sis_provisioner.util.log import log_exception
-from sis_provisioner.dao.bridge import is_active_user_exist
-from sis_provisioner.dao.user import save_user
 
 
 logger = logging.getLogger(__name__)
@@ -21,12 +25,18 @@ logger = logging.getLogger(__name__)
 
 class GwsBridgeLoader(Loader):
 
-    def __init__(self, worker, clogger=logger, include_hrp=False):
-        super(GwsBridgeLoader, self).__init__(worker, clogger, include_hrp)
+    def __init__(self, worker, clogger=logger):
+        super(GwsBridgeLoader, self).__init__(worker, clogger)
 
     def fetch_users(self):
         self.data_source = "GWS uw_members group"
-        return self.get_users_in_gws()
+        return list(self.gws_user_set)
+
+    def get_bridge(self):
+        return self.worker.bridge
+
+    def get_hrp_worker(self, person):
+        return get_worker(person)
 
     def process_users(self):
         """
@@ -34,94 +44,146 @@ class GwsBridgeLoader(Loader):
         the exsiting users
         """
         for uwnetid in self.get_users_to_process():
-            try:
-                person, validation_status = get_validated_user(
-                    self.logger, uwnetid)
-            except DataFailureException as ex:
-                self.worker.append_error(
-                    "Validate user %s ==> %s" % (uwnetid, ex))
+            person = get_person(uwnetid)
+            if self.is_invalid_person(uwnetid, person):
                 continue
-            # Ignore DISALLOWED, INVALID ones
-            if person is not None and validation_status >= VALID:
-                self.take_action(person)
+            self.take_action(person)
 
-    def take_action(self, person):
+    def take_action(self, person, priority_changes_only=True):
         """
         @param: person is a valid Person object
         """
         try:
-            uw_bridge_user, del_user = save_user(
-                person, include_hrp=self.include_hrp())
+            uw_account = save_uw_account(person)
+            if (priority_changes_only and
+                    not self.is_priority_change(uw_account)):
+                return
+            self.apply_change_to_bridge(uw_account, person)
+
         except Exception as ex:
-            uwnetid = person.uwnetid
-            log_exception(self.logger,
-                          "Save user %s " % uwnetid,
-                          traceback.format_exc())
-            self.worker.append_error("Save user %s ==> %s" % (uwnetid, ex))
-            return
+            self.handle_exception(
+                "Failed priority change on {0} ".format(person.uwnetid),
+                ex, traceback)
 
-        if uw_bridge_user is None:
-            self.add_error(
-                "Save user (%s, %s) in DB ==> return None" %
-                (person.uwnetid, person.uwregid))
-            return
-
-        if del_user is not None:
-            # deleted from local DB as result of a merge
-            self.merge_user_accounts(del_user, uw_bridge_user)
-
-        self.apply_change_to_bridge(uw_bridge_user)
-
-        if self.include_hrp() and uw_bridge_user.is_employee:
-            self.emp_app_totals.append(uw_bridge_user.get_total_emp_apps())
-
-    def merge_user_accounts(self, del_user, user_to_keep):
+    def is_priority_change(self, uw_account):
         """
-        :param del_user: user to be terminated in Bridge
-        :param user_to_keep: accunt to be merged to
+        Given the user appears in GWS groups now
         """
-        if type(user_to_keep) == BridgeUser:
-            kp_user = user_to_keep
-        else:   # user_to_keep is UwBridgeUser
-            exists2, kp_user = is_active_user_exist(user_to_keep.netid)
-            if not exists2 or kp_user is None:
-                self.logger.error("Merge %s to %s, #2 not in Bridge, skip!",
-                                  del_user, user_to_keep)
+        return (uw_account.last_updated is None or
+                uw_account.netid_changed() or
+                uw_account.disabled or
+                uw_account.has_terminate_date())
+
+    def apply_change_to_bridge(self, uw_account, person):
+        """
+        @param: uw_account a valid UwAccount object to take action upon
+        """
+        hrp_wkr = self.get_hrp_worker(person)
+
+        bridge_acc = self.match_bridge_account(uw_account)
+        self.logger.debug("MATCH UW account {0} ==> Bridge account {1}".format(
+            uw_account, bridge_acc))
+
+        if bridge_acc is None:
+            if uw_account.disabled:
+                # exists a deleted bridge account
+                bridge_acc = self.worker.restore_user(uw_account)
+                if bridge_acc is None:
+                    self.add_error("Failed to restore {0}".format(uw_account))
+                    return
+            else:
+                # account not exist in Bridge
+                self.worker.add_new_user(uw_account, person, hrp_wkr)
                 return
-            user_to_keep.set_bridge_id(kp_user.bridge_id)
 
-        if type(del_user) == BridgeUser:
-            user = del_user
-        else:   # type(del_user) == UwBridgeUser
-            exists1, user = is_active_user_exist(del_user.netid)
-            if not exists1 or user is None:
-                self.logger.error("Merge %s to %s, #1 not exists in Bridge",
-                                  del_user, user_to_keep)
-                return
-        if user.bridge_id != kp_user.bridge_id:
-            self.merge_users_in_bridge(user, kp_user)
+        uw_account.set_ids(bridge_acc.bridge_id, person.employee_id)
+        if not self.account_not_changed(bridge_acc, person, hrp_wkr):
+            # update the existing account with person data
+            self.worker.update_user(bridge_acc, uw_account,
+                                    person, hrp_wkr)
 
-    def merge_users_in_bridge(self, user_to_del, user_to_keep):
-        self.logger.info(
-            "Merge Bridge users %s to %s, then delete the 1st.",
-            user_to_del, user_to_keep)
-        # TO add: merge learning history from user_to_del to user_to_keep
-        self.logger.info("worker.delete if no history %s",
-                         user_to_del)
-        self.worker.delete_user(user_to_del, is_merge=True)
-
-    def apply_change_to_bridge(self, uw_bridge_user):
+    def match_bridge_account(self, uw_account):
         """
-        @param: uw_bridge_user a valid UwBridgeUser object to take action upon
+        :return: a BridgeUser object or None
         """
-        if uw_bridge_user.is_new():
-            self.logger.info("worker.add_new %s", uw_bridge_user)
-            self.worker.add_new_user(uw_bridge_user)
+        prev_bri_acc = None
+        if uw_account.has_prev_netid():
+            prev_bri_acc = self.get_bridge().get_user_by_uwnetid(
+                uw_account.prev_netid)
 
-        elif uw_bridge_user.is_restore():
-            self.logger.info("worker.restore %s", uw_bridge_user)
-            self.worker.restore_user(uw_bridge_user)
+        cur_bri_acc = self.get_bridge().get_user_by_uwnetid(uw_account.netid)
 
-        else:
-            self.logger.info("worker.update %s", uw_bridge_user)
-            self.worker.update_user(uw_bridge_user)
+        if cur_bri_acc is None:
+            return prev_bri_acc
+
+        if prev_bri_acc is None:
+            return cur_bri_acc
+
+        if prev_bri_acc.bridge_id != cur_bri_acc.bridge_id:
+            # Found two active accounts, choose one to keep
+
+            if self.del_bridge_account(prev_bri_acc):
+                return cur_bri_acc
+
+            if self.del_bridge_account(cur_bri_acc):
+                return prev_bri_acc
+
+            self.add_error("Please manually merge: {0} TO {1}".format(
+                prev_bri_acc, cur_bri_acc))
+            return cur_bri_acc
+
+    def del_bridge_account(self, bridge_acc, conditional_del=True):
+        """
+        Return True if the desired deletion is carried out
+        """
+        if conditional_del is False or bridge_acc.no_learning_history():
+            return self.worker.delete_user(bridge_acc)
+        return False
+
+    def account_not_changed(self, bridge_acc, person, hrp_wkr):
+        """
+        :param bridge_acc: a valid BridgeUser object
+        :param person: a valid Person object
+        :param hrp_wkr: a valid Worker object
+        :return: True if the attributes have the same values
+        """
+        return (person.uwnetid == bridge_acc.netid and
+                get_email(person) == bridge_acc.email and
+                get_full_name(person) == bridge_acc.full_name and
+                normalize_name(person.first_name) == bridge_acc.first_name and
+                normalize_name(person.surname) == bridge_acc.last_name and
+                get_job_title(hrp_wkr) == bridge_acc.job_title and
+                get_supervisor_bridge_id(hrp_wkr) == bridge_acc.manager_id and
+                self.regid_not_changed(bridge_acc, person) and
+                self.eid_not_changed(bridge_acc, person) and
+                self.sid_not_changed(bridge_acc, person) and
+                self.pos_data_not_changed(bridge_acc, hrp_wkr))
+
+    def regid_not_changed(self, bridge_account, person):
+        regid = get_custom_field_value(bridge_account,
+                                       BridgeCustomField.REGID_NAME)
+        return regid is not None and regid == person.uwregid
+
+    def eid_not_changed(self, bridge_account, person):
+        eid = get_custom_field_value(bridge_account,
+                                     BridgeCustomField.EMPLOYEE_ID_NAME)
+        return (person.employee_id is None and eid is None or
+                eid == person.employee_id)
+
+    def sid_not_changed(self, bridge_account, person):
+        sid = get_custom_field_value(bridge_account,
+                                     BridgeCustomField.STUDENT_ID_NAME)
+        return (person.student_number is None and sid is None or
+                sid == person.student_number)
+
+    def pos_data_not_changed(self, bridge_account, hrp_wkr):
+        for pos_num in range(get_total_work_positions_to_load()):
+            pos_field_names = WORK_POSITION_FIELDS[pos_num]
+            for i in range(len(pos_field_names)):
+                bri_value = get_custom_field_value(bridge_account,
+                                                   pos_field_names[i])
+                hrp_value = GET_POS_ATT_FUNCS[i](hrp_wkr, pos_num)
+                if not (bri_value is None and hrp_value is None or
+                        bri_value == hrp_value):
+                    return False
+        return True

@@ -1,0 +1,55 @@
+{
+"DisplayName":"Average Joseph Student",
+"EduPersonAffiliations":["member",
+                         "student",
+                         "employee"],
+"IsTestEntity":false,
+"PreferredFirstName":"Average",
+"PreferredMiddleName":"Joseph",
+"PreferredSurname":"Student",
+"PriorUWNetIDs":["changed"],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"Average Joseph",
+"RegisteredName":"Average Joseph Student",
+"RegisteredSurname":"Student",
+"RepositoryTimeStamp":"12/7/2018 1:45:33 AM",
+"UIDNumber":"35443",
+"UWNetID":"javerage",
+"UWRegID":"9136CCB8F66711D5BE060004AC494FFE",
+"WhitepagesPublish":false,
+"PersonAffiliations":{
+    "AlumPersonAffiliation":{
+        "DevelopmentID":"0000773877"},
+    "EmployeePersonAffiliation":{
+        "EmployeeID":"123456789",
+        "EmployeeWhitePages":{
+            "Addresses": [],
+            "EmailAddresses":["javerage@uw.edu"],
+            "Faxes":[],
+            "Mobiles":[],
+            "Phones": [],
+            "Pagers":[],
+            "Name" : "Student, Average Joseph",
+            "Positions":[
+               {"EWPDept":"LIBRARY",
+                "EWPTitle":"Student Specialist",
+                "Primary":true},
+                {"EWPDept":"INFORMATION SCHOOL",
+                 "EWPTitle":"Reader/Grader",
+                 "Primary":false}],
+            "PublishInDirectory": true,
+            "TouchDials":[],
+            "VoiceMails":[]},
+        "HomeDepartment":"Library",
+        "MailStop":"352900"},
+    "StudentPersonAffiliation":{
+        "StudentNumber":"1033334",
+        "StudentSystemKey":"000083856",
+        "StudentWhitePages":{
+            "Class":null,
+            "Departments":[],
+            "Email":null,
+            "Name":null,
+            "Phone":null,
+            "PublishInDirectory":false}
+}}}

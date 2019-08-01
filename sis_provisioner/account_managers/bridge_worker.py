@@ -5,13 +5,13 @@ via the Bridge APIs.
 
 import logging
 import traceback
-from restclients.exceptions import DataFailureException
-from sis_provisioner.models import UwBridgeUser
-from sis_provisioner.dao import is_using_file_dao
-from sis_provisioner.dao.bridge import add_bridge_user, change_uwnetid,\
-    get_regid_from_bridge_user, delete_bridge_user, update_bridge_user,\
-    restore_bridge_user
-from sis_provisioner.util.log import log_exception
+from uw_bridge.models import BridgeUser, BridgeCustomField
+from sis_provisioner.dao.bridge import BridgeUsers
+from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
+from sis_provisioner.util.settings import get_total_work_positions_to_load
+from sis_provisioner.account_managers import (
+    get_email, get_full_name, normalize_name, get_job_title,
+    GET_POS_ATT_FUNCS, get_supervisor_bridge_id)
 from sis_provisioner.account_managers.worker import Worker
 
 
@@ -21,165 +21,14 @@ logger = logging.getLogger(__name__)
 class BridgeWorker(Worker):
 
     def __init__(self):
-        super(BridgeWorker, self).__init__()
+        super(BridgeWorker, self).__init__(logger)
+        self.bridge = BridgeUsers()
         self.total_deleted_count = 0
         self.total_netid_changes_count = 0
-        self.total_regid_changes_count = 0
         self.total_new_users_count = 0
         self.total_restored_count = 0
-        self.total_loaded_count = 0
-
-    def _uid_matched(self, uw_bridge_user, ret_bridge_user):
-        return (ret_bridge_user is not None and
-                ret_bridge_user.netid == uw_bridge_user.netid)
-
-    def _save_bridge_id(self, uw_bridge_user, ret_bridge_user):
-        if not uw_bridge_user.has_bridge_id():
-            uw_bridge_user.set_bridge_id(ret_bridge_user.bridge_id)
-
-    def _save_verified(self, uw_bridge_user, upd_counter=True):
-        uw_bridge_user.save_verified()
-        if upd_counter:
-            self.total_loaded_count += 1
-
-    def add_new_user(self, uw_bridge_user):
-        try:
-            ret_bridge_user, exist = add_bridge_user(uw_bridge_user)
-            if not exist:
-                if self._uid_matched(uw_bridge_user, ret_bridge_user):
-                    logger.info("Created user %s in Bridge", uw_bridge_user)
-                    self.total_new_users_count += 1
-                    self._save_bridge_id(uw_bridge_user, ret_bridge_user)
-                    self._save_verified(uw_bridge_user)
-                    return
-                self.append_error("Failed to create %s\n" %
-                                  uw_bridge_user.netid)
-            else:
-                if self._uid_matched(uw_bridge_user, ret_bridge_user):
-                    logger.info("New in DB %s ==> But exists in Bridge %s",
-                                uw_bridge_user, ret_bridge_user)
-                    self._save_bridge_id(uw_bridge_user, ret_bridge_user)
-                    uw_bridge_user.set_action_update()
-                    self._update_user(uw_bridge_user)
-                    return
-                self.append_error("Can't create %s ==> CHECK in Bridge\n" %
-                                  uw_bridge_user.netid)
-        except Exception as ex:
-            self._handle_exception("create", uw_bridge_user, ex, traceback)
-
-    def delete_user(self, user_to_del, is_merge=False):
-        try:
-            if delete_bridge_user(user_to_del, is_merge):
-                logger.info("Deleted %s from Bridge", user_to_del)
-                self.total_deleted_count += 1
-                if type(user_to_del) == UwBridgeUser:
-                    user_to_del.disable()
-                    logger.info("Disable user in DB %s", user_to_del)
-            else:
-                self.append_error("Failed to delete %s\n" %
-                                  user_to_del)
-        except Exception as ex:
-            self._handle_exception("delete", user_to_del, ex, traceback)
-
-    def mark_restored(self, uw_bridge_user, ret_bridge_user):
-        logger.info("Restored %s in Bridge", uw_bridge_user)
-        uw_bridge_user.set_restored()
-        self._save_bridge_id(uw_bridge_user, ret_bridge_user)
-        self.total_restored_count += 1
-
-    def restore_user(self, uw_bridge_user):
-        try:
-            ret_buser = restore_bridge_user(uw_bridge_user)
-            if ret_buser is not None:
-
-                regid = get_regid_from_bridge_user(ret_buser)
-
-                if uw_bridge_user.netid == ret_buser.netid:
-                    if regid is None or uw_bridge_user.regid == regid:
-                        uw_bridge_user.set_action_update()
-                    else:
-                        uw_bridge_user.set_action_regid_changed()
-
-                elif uw_bridge_user.regid == regid:
-                    # netid changed
-                    if not uw_bridge_user.has_prev_netid():
-                        uw_bridge_user.set_prev_netid(ret_buser.netid)
-
-                else:
-                    self.append_error("Retored user %s not match %s\n" %
-                                      ret_buser, uw_bridge_user)
-                    return
-
-                self.mark_restored(uw_bridge_user, ret_buser)
-                self.update_user(uw_bridge_user)
-            else:
-                self.append_error("Failed to restore %s\n" %
-                                  uw_bridge_user)
-                logger.error("Failed restore %s", uw_bridge_user)
-
-        except Exception as ex:
-            self._handle_exception("restore", uw_bridge_user, ex, traceback)
-
-    def update_user(self, uw_bridge_user):
-        if (not uw_bridge_user.netid_changed()) or\
-           self.update_uid(uw_bridge_user):
-            self._update_user(uw_bridge_user)
-
-    def update_uid(self, uw_bridge_user):
-        try:
-            logger.debug("worker.update_uid %s", uw_bridge_user)
-            ret_bridge_user = change_uwnetid(uw_bridge_user)
-            if self._uid_matched(uw_bridge_user, ret_bridge_user):
-                logger.info("Changed UID for %s in Bridge",
-                            uw_bridge_user)
-                uw_bridge_user.clear_prev_netid()
-                self._save_bridge_id(uw_bridge_user, ret_bridge_user)
-                self.total_netid_changes_count += 1
-                return True
-
-            self.append_error("Failed to Change-uid for %s\n" %
-                              uw_bridge_user)
-        except Exception as ex:
-            self._handle_exception("change-uid", uw_bridge_user, ex, traceback)
-        return False
-
-    def _update_user(self, uw_bridge_user):
-        try:
-            ret = update_bridge_user(uw_bridge_user)
-            if ret is None:
-                # verified no change
-                self._save_verified(uw_bridge_user, upd_counter=False)
-            else:
-                if ret:
-                    logger.info("Updated user %s in Bridge",
-                                uw_bridge_user)
-                    if uw_bridge_user.regid_changed():
-                        self.total_regid_changes_count += 1
-                    self._save_verified(uw_bridge_user)
-                else:
-                    self.append_error("Failed to update: %s ==> restore?\n" %
-                                      uw_bridge_user)
-        except Exception as ex:
-            self._handle_exception("update", uw_bridge_user, ex, traceback)
-
-    def _handle_exception(self, action, user,
-                          ex, traceback):
-        if isinstance(user, UwBridgeUser) and self._not_exist(user, ex):
-            return
-        log_exception(logger,
-                      "Failed %s: %s ==>" % (action, user),
-                      traceback.format_exc())
-        self.append_error("Failed to %s: %s ==> %s\n" %
-                          (action, user.netid, ex))
-
-    def _not_exist(self, user, ex):
-        if isinstance(ex, DataFailureException) and\
-           ex.status == 404:
-            logger.info("Not exist in Bridge, delete from local DB %s" %
-                        user)
-            user.delete()
-            return True
-        return False
+        self.total_updated_count = 0
+        self.total_work_positions = get_total_work_positions_to_load()
 
     def get_new_user_count(self):
         return self.total_new_users_count
@@ -187,14 +36,159 @@ class BridgeWorker(Worker):
     def get_netid_changed_count(self):
         return self.total_netid_changes_count
 
-    def get_regid_changed_count(self):
-        return self.total_regid_changes_count
-
     def get_restored_count(self):
         return self.total_restored_count
 
     def get_deleted_count(self):
         return self.total_deleted_count
 
-    def get_loaded_count(self):
-        return self.total_loaded_count
+    def get_updated_count(self):
+        return self.total_updated_count
+
+    def _uid_matched(self, uw_account, ret_bridge_user):
+        return (ret_bridge_user is not None and
+                ret_bridge_user.netid == uw_account.netid)
+
+    def add_new_user(self, uw_account, person, hrp_wkr):
+        action = "CREATE in Bridge: {0}".format(uw_account.netid)
+        try:
+            bri_acc = self.get_bridge_user_to_add(person, hrp_wkr)
+            bridge_account = self.bridge.add_user(bri_acc)
+            if self._uid_matched(uw_account, bridge_account):
+                uw_account.set_ids(bridge_account.bridge_id,
+                                   person.employee_id)
+                self.total_new_users_count += 1
+                logger.info("{0} ==> {1}".format(
+                    action, bri_acc.to_json_post()))
+                return
+            self.append_error("Unmatched UID {0}\n".format(action))
+        except Exception as ex:
+            self.handle_exception(action, ex, traceback)
+
+    def delete_user(self, bridge_acc):
+        action = "DELETE from Bridge {0}".format(bridge_acc)
+        try:
+            if self.bridge.delete_bridge_user(bridge_acc):
+                self.total_deleted_count += 1
+                logger.info(action)
+                return True
+            self.append_error("Error {0}\n".format(action))
+        except Exception as ex:
+            self.handle_exception(action, ex, traceback)
+        return False
+
+    def restore_user(self, uw_account):
+        action = "RESTORE in Bridge {0}".format(uw_account)
+        try:
+            bridge_account = self.bridge.restore_bridge_user(uw_account)
+            if bridge_account is not None:
+                uw_account.set_restored()
+                self.total_restored_count += 1
+                logger.info("{0} ==> {1}".format(action, bridge_account))
+                return bridge_account
+        except Exception as ex:
+            self.handle_exception(action, ex, traceback)
+        return None
+
+    def update_uid(self, uw_account):
+        action = "CHANGE UID from {0} to {1}".format(
+            uw_account.prev_netid, uw_account.netid)
+        bridge_account = self.bridge.change_uwnetid(uw_account)
+        if self._uid_matched(uw_account, bridge_account):
+            self.total_netid_changes_count += 1
+            logger.info("{0} ==> {1}".format(action, bridge_account))
+            return
+        self.append_error("Unmatched UID {0}\n".format(action))
+
+    def update_user(self, bridge_account, uw_account, person, hrp_wkr):
+        self.set_bridge_user_to_update(person, hrp_wkr, bridge_account)
+        action = "UPDATE in Bridge: {0}".format(bridge_account.netid)
+        try:
+            if uw_account.netid_changed():
+                self.update_uid(uw_account)
+
+            ret_bri_acc = self.bridge.update_user(bridge_account)
+            if self._uid_matched(uw_account, ret_bri_acc):
+                uw_account.set_updated()
+                self.total_updated_count += 1
+                logger.info("{0} ==> {1}".format(
+                    action, bridge_account.to_json_patch()))
+                return
+            self.append_error("Unmatched UID {0}\n".format(action))
+        except Exception as ex:
+            self.handle_exception(action, ex, traceback)
+
+    def get_bridge_user_to_add(self, person, hrp_wkr):
+        """
+        :param person: a valid Person object
+        :return: a BridgeUser object
+        """
+        user = BridgeUser(netid=person.uwnetid,
+                          email=get_email(person),
+                          full_name=get_full_name(person),
+                          first_name=normalize_name(person.first_name),
+                          last_name=normalize_name(person.surname),
+                          job_title=get_job_title(hrp_wkr),
+                          manager_id=get_supervisor_bridge_id(hrp_wkr))
+        self.add_custom_field(user,
+                              BridgeCustomField.REGID_NAME,
+                              person.uwregid)
+        if person.employee_id is not None:
+            self.add_custom_field(user,
+                                  BridgeCustomField.EMPLOYEE_ID_NAME,
+                                  person.employee_id)
+        if person.student_number is not None:
+            self.add_custom_field(user,
+                                  BridgeCustomField.STUDENT_ID_NAME,
+                                  person.student_number)
+
+        for pos_num in range(self.total_work_positions):
+            pos_field_names = WORK_POSITION_FIELDS[pos_num]
+            for i in range(len(pos_field_names)):
+                self.add_custom_field(user,
+                                      pos_field_names[i],
+                                      GET_POS_ATT_FUNCS[i](hrp_wkr, pos_num))
+        return user
+
+    def add_custom_field(self, bridge_account, field_name, value):
+        bridge_account.custom_fields[field_name] = \
+            self.bridge.custom_fields.new_custom_field(field_name, value)
+
+    def set_bridge_user_to_update(self, person, hrp_wkr, bridge_account):
+        """
+        :param person: a valid Person object
+        :param hrp_wkr: a valid Worker object
+        :param bridge_account: a BridgeUser object to be updated
+        """
+        bridge_account.netid = person.uwnetid
+        bridge_account.email = get_email(person)
+        bridge_account.full_name = get_full_name(person)
+        bridge_account.first_name = normalize_name(person.first_name)
+        bridge_account.last_name = normalize_name(person.surname)
+        bridge_account.job_title = get_job_title(hrp_wkr)
+        bridge_account.manager_id = get_supervisor_bridge_id(hrp_wkr)
+
+        self.update_custom_field(bridge_account,
+                                 BridgeCustomField.REGID_NAME,
+                                 person.uwregid)
+        self.update_custom_field(bridge_account,
+                                 BridgeCustomField.EMPLOYEE_ID_NAME,
+                                 person.employee_id)
+        self.update_custom_field(bridge_account,
+                                 BridgeCustomField.STUDENT_ID_NAME,
+                                 person.student_number)
+        for pos_num in range(self.total_work_positions):
+            pos_field_names = WORK_POSITION_FIELDS[pos_num]
+            for i in range(len(pos_field_names)):
+                self.update_custom_field(bridge_account,
+                                         pos_field_names[i],
+                                         GET_POS_ATT_FUNCS[i](hrp_wkr,
+                                                              pos_num))
+        return bridge_account
+
+    def update_custom_field(self, bridge_account, field_name, value):
+        cf = bridge_account.get_custom_field(field_name)
+        if cf is None:
+            self.add_custom_field(bridge_account, field_name, value)
+        else:
+            cf.value = value
