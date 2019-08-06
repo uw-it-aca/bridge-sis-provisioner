@@ -26,6 +26,12 @@
     }
     ,{
       "type": "uwnetid",
+      "id": "alumni",
+      "mtype": "direct",
+      "source": ""
+    }
+    ,{
+      "type": "uwnetid",
       "id": "error500",
       "mtype": "direct",
       "source": ""

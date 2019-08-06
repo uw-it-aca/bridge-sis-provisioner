@@ -133,5 +133,6 @@ class TestBridge(TransactionTestCase):
 
     def test_get_all_authors(self):
         busers = TestBridge.bridge.get_all_authors()
-        self.assertEqual(len(busers), 1)
+        self.assertEqual(len(busers), 2)
         self.assertTrue(busers[0].roles[0].is_author())
+        self.assertTrue(busers[1].roles[0].is_author())

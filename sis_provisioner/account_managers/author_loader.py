@@ -29,10 +29,10 @@ class AuthorChecker(GwsBridgeLoader):
         # 1. remove former authors
         for bri_acc in self.get_users_to_process():
             uwnetid = bri_acc.netid
-            if uwnetid not in self.cur_author_set:
-                self.remove_author_role(bri_acc)
-            else:
+            if uwnetid in self.cur_author_set:
                 existing_bri_authors.add(uwnetid)
+            else:
+                self.remove_author_role(bri_acc)
 
         # 2. add new authors
         for netid in list(self.cur_author_set):

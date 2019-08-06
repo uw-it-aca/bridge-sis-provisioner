@@ -16,8 +16,8 @@ class TestBridgeUserChecker(TransactionTestCase):
     def test_fetch_users(self):
         loader = AuthorChecker(BridgeWorker())
         bridge_users = loader.fetch_users()
-        self.assertEqual(len(bridge_users), 1)
-        self.assertEqual(len(loader.cur_author_set), 3)
+        self.assertEqual(len(bridge_users), 2)
+        self.assertEqual(len(loader.cur_author_set), 4)
 
     def test_add_author_role(self):
         set_db_records()
