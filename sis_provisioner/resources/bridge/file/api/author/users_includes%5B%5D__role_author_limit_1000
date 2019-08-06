@@ -1,27 +1,7 @@
-{
-  "meta": {},
-  "linked":
-   {
-    "custom_fields": [
-       {
-        "id": "5",
-        "name": "REGID"
-      }],
-    "custom_field_values": [
+{"meta":{},
+"linked":{},
+"users":[
       {
-        "id": "8",
-        "value": "10000000000000000000000000000066",
-        "links": {
-          "custom_field": {
-            "id": "5",
-            "type": "custom_fields"
-          }
-        }
-      }
-    ]
-   },
-   "users":[
-     {
        "id":"204",
        "uid":"retiree@uw.edu",
        "hris_id":null,
@@ -48,10 +28,7 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
-       "links":{
-          "custom_field_values":["8"]
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
-     }
-   ]
-}
+      }
+]}

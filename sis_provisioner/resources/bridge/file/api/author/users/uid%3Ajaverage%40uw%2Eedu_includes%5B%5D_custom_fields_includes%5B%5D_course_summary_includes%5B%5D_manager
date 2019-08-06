@@ -91,7 +91,7 @@
        "job_title":"Student Reference Specialist - GMM",
        "locale":"en",
        "manager_id": 196,
-       "roles":["account_admin"],
+       "roles":["fb412e52"],
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",
        "deleted_at":null,

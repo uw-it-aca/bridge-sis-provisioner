@@ -130,3 +130,8 @@ class TestBridge(TransactionTestCase):
                                     "10000000000000000000000000000000")
         self.assertRaises(DataFailureException,
                           TestBridge.bridge.update_user, user)
+
+    def test_get_all_authors(self):
+        busers = TestBridge.bridge.get_all_authors()
+        self.assertEqual(len(busers), 1)
+        self.assertTrue(busers[0].roles[0].is_author())

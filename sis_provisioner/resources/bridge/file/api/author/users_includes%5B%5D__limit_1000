@@ -71,7 +71,7 @@
        "sortable_name":"Student, Average Joseph",
        "email":"javerage@uw.edu",
        "locale":"en",
-       "roles":["account_admin"],
+       "roles":["fb412e52","author"],
        "name":"Average Joseph Student",
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",

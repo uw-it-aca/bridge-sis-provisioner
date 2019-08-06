@@ -2,7 +2,8 @@ from django.test import TestCase
 from django.conf import settings
 from sis_provisioner.util.settings import (
     errors_to_abort_loader, get_csv_file_path_prefix, get_csv_file_size,
-    get_csv_file_name_prefix, get_total_work_positions_to_load)
+    get_csv_file_name_prefix, get_total_work_positions_to_load,
+    get_author_group_name)
 
 CSV_ROOT = "/tmp/fl_test"
 
@@ -30,3 +31,7 @@ class TestSetting(TestCase):
     def test_get_total_worker_positions_to_load(self):
         with self.settings(BRIDGE_USER_WORK_POSITIONS=1):
             self.assertEqual(get_total_work_positions_to_load(), 1)
+
+    def test_get_author_group_name(self):
+        with self.settings(BRIDGE_AUTHOR_GROUP_NAME='a'):
+            self.assertEqual(get_author_group_name(), 'a')
