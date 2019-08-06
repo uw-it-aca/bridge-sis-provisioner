@@ -224,3 +224,9 @@ class TestBridgeWorker(TransactionTestCase):
                                    BridgeCustomField.POS1_BUDGET_CODE,
                                    value)
         self.assertEqual(cf.value, value)
+
+    def test_update_user_role(self):
+        worker = BridgeWorker()
+        bridge_account = worker.bridge.get_user_by_uwnetid('tyler')
+        worker.update_user_role(bridge_account)
+        self.assertTrue(worker.has_err())

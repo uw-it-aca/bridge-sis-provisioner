@@ -31,7 +31,7 @@
        "sortable_name":"Uw, Alumnus",
        "email":"alumni@uw.edu",
        "locale":"en",
-       "roles":[],
+       "roles":["author"],
        "name":"Uw Alumnus",
        "avatar_url":null,
        "updated_at":"2016-09-25T16:24:42.131-07:00",

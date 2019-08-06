@@ -56,9 +56,6 @@ class UserUpdater(GwsBridgeLoader):
 
                 self.take_action(person, priority_changes_only=False)
 
-    def in_uw_groups(self, uwnetid):
-        return uwnetid in self.gws_user_set
-
     def process_termination(self, uw_acc):
         """
         @param uw_acc the UwBridgeUser object of an existing account

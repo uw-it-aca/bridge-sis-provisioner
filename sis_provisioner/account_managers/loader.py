@@ -44,6 +44,9 @@ class Loader:
             return True
         return False
 
+    def in_uw_groups(self, uwnetid):
+        return uwnetid in self.gws_user_set
+
     @abstractmethod
     def fetch_users(self):
         pass

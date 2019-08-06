@@ -192,3 +192,15 @@ class BridgeWorker(Worker):
             self.add_custom_field(bridge_account, field_name, value)
         else:
             cf.value = value
+
+    def update_user_role(self, bridge_account):
+        action = "UPDATE {0}'s roles".format(bridge_account.netid)
+        try:
+            ret_bri_acc = self.bridge.update_user_roles(bridge_account)
+            if ret_bri_acc is not None:
+                self.total_updated_count += 1
+                logger.info("{0} ==> {1}".format(
+                    action, ret_bri_acc.roles_to_json()))
+                return
+        except Exception as ex:
+            self.handle_exception(action, ex, traceback)

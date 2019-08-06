@@ -1,25 +1,6 @@
 {
   "meta": {},
-  "linked":
-   {
-    "custom_fields": [
-       {
-        "id": "5",
-        "name": "REGID"
-      }],
-    "custom_field_values": [
-      {
-        "id": "8",
-        "value": "10000000000000000000000000000066",
-        "links": {
-          "custom_field": {
-            "id": "5",
-            "type": "custom_fields"
-          }
-        }
-      }
-    ]
-   },
+  "linked": {},
    "users":[
      {
        "id":"204",
@@ -31,7 +12,7 @@
        "sortable_name":"Retiree, Ellen Louise",
        "email":"retiree@uw.edu",
        "locale":"en",
-       "roles":["author"],
+       "roles":[],
        "name":"Ellen Louise Retiree",
        "avatar_url":null,
        "updated_at":"2016-07-25T16:24:42.131-07:00",
@@ -48,9 +29,7 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
-       "links":{
-          "custom_field_values":["8"]
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
      }
    ]
