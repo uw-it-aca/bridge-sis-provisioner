@@ -1,0 +1,46 @@
+{
+  "schemas": [
+    "urn:mace:washington.edu:schemas:groups:1.0"
+  ],
+  "meta": {
+    "resourceType": "members",
+    "version": "v3.0",
+    "regid": "9d11b2910f1d442dafd37fb5e7895a44",
+    "id": "u_bridgeap_authors",
+    "type": "effective",
+    "selfRef": "",
+    "timestamp": 1565046506404
+  },
+  "data": [
+    {
+      "type": "uwnetid",
+      "id": "javerage",
+      "mtype": "direct",
+      "source": ""
+    }
+    ,{
+      "type": "uwnetid",
+      "id": "not_in_pws",
+      "mtype": "direct",
+      "source": ""
+    }
+    ,{
+      "type": "uwnetid",
+      "id": "alumni",
+      "mtype": "direct",
+      "source": ""
+    }
+    ,{
+      "type": "uwnetid",
+      "id": "staff",
+      "mtype": "direct",
+      "source": ""
+    }
+    ,{
+      "type": "uwnetid",
+      "id": "error500",
+      "mtype": "direct",
+      "source": ""
+    }
+  ]
+}

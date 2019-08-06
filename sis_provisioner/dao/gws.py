@@ -6,6 +6,7 @@ import logging
 from sis_provisioner.dao import DataFailureException
 from uw_gws import GWS
 from sis_provisioner.util.log import log_resp_time, Timer
+from sis_provisioner.util.settings import get_author_group_name
 
 
 logger = logging.getLogger(__name__)
@@ -44,4 +45,11 @@ def get_potential_users():
     for gr in UW_GROUPS:
         append_netids_to_list(get_members_of_group(gr), user_set)
     log_resp_time(logger, "get_potential_users", timer)
+    return user_set
+
+
+def get_bridge_authors():
+    user_set = set()
+    append_netids_to_list(get_members_of_group(get_author_group_name()),
+                          user_set)
     return user_set

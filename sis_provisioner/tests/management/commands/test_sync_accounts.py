@@ -13,14 +13,14 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
 
     def test_load_from_gws_to_bridge(self):
         set_db_records()
-        call_command('load_user_to_bridge', 'gws')
+        call_command('sync_accounts', 'gws')
 
     def test_load_from_db_to_bridge(self):
         time.sleep(1)
         set_db_records()
-        call_command('load_user_to_bridge', 'db')
+        call_command('sync_accounts', 'db')
 
     def test_load_bridge_to_db(self):
         time.sleep(2)
         set_db_records()
-        call_command('load_user_to_bridge', 'bridge')
+        call_command('sync_accounts', 'bridge')

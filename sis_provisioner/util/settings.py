@@ -21,3 +21,7 @@ def get_csv_file_size():
 def get_total_work_positions_to_load():
     num = getattr(settings, 'BRIDGE_USER_WORK_POSITIONS', None)
     return int(num) if num else 2
+
+
+def get_author_group_name():
+    return getattr(settings, 'BRIDGE_AUTHOR_GROUP_NAME', None)

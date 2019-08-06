@@ -1,27 +1,7 @@
-{
-  "meta": {},
-  "linked":
-   {
-    "custom_fields": [
-       {
-        "id": "5",
-        "name": "REGID"
-      }],
-    "custom_field_values": [
+{"meta":{},
+"linked":{},
+"users":[
       {
-        "id": "8",
-        "value": "10000000000000000000000000000066",
-        "links": {
-          "custom_field": {
-            "id": "5",
-            "type": "custom_fields"
-          }
-        }
-      }
-    ]
-   },
-   "users":[
-     {
        "id":"204",
        "uid":"retiree@uw.edu",
        "hris_id":null,
@@ -48,10 +28,32 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
+       "links":{},
+       "meta":{"can_masquerade":true}
+      },
+      {
+       "id":"199",
+       "uid":"alumni@uw.edu",
+       "hris_id":null,
+       "first_name":"Uw",
+       "last_name":"Alumnus",
+       "full_name":"Uw Alumnus",
+       "sortable_name":"Uw, Alumnus",
+       "email":"alumni@uw.edu",
+       "locale":"en",
+       "roles":["author"],
+       "name":"Uw Alumnus",
+       "avatar_url":null,
+       "updated_at":"2016-09-25T16:24:42.131-07:00",
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":null,
+       "next_due_date":null,
+       "completed_courses_count": 1,
        "links":{
-          "custom_field_values":["8"]
+          "custom_field_values":["5"]
        },
        "meta":{"can_masquerade":true}
      }
-   ]
-}
+]}

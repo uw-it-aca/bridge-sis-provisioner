@@ -4,6 +4,7 @@ This module encapsulates the interactions with uw_bridge.users
 
 import logging
 import traceback
+from uw_bridge.models import BridgeUserRole
 from uw_bridge.users import Users
 from sis_provisioner.dao import DataFailureException
 from sis_provisioner.util.log import log_exception
@@ -72,6 +73,15 @@ class BridgeUsers(Users):
                 return None
             log_exception(logger,
                           "get_user_by_uwnetid('{0}')".format(netid),
+                          traceback.format_exc(chain=False))
+            raise
+
+    def get_all_authors(self):
+        try:
+            return self.get_all_users(role_id=self.user_roles.get_role_id(
+                BridgeUserRole.AUTHOR_NAME))
+        except DataFailureException:
+            log_exception(logger, "get_all_authors",
                           traceback.format_exc(chain=False))
             raise
 
