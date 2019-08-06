@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.author_loader import AuthorChecker
+from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.util.log import log_resp_time, Timer
 
 
