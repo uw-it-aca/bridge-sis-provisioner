@@ -24,8 +24,9 @@ class TestGwsDao(TestCase):
 
     def test_get_bridge_authors(self):
         user_set = get_bridge_authors()
-        self.assertEqual(len(user_set), 4)
+        self.assertEqual(len(user_set), 5)
         self.assertTrue("alumni" in user_set)
         self.assertTrue("javerage" in user_set)
+        self.assertTrue("staff" in user_set)
         self.assertTrue("error500" in user_set)
         self.assertTrue("not_in_pws" in user_set)
