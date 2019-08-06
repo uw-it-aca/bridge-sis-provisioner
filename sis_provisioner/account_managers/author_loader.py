@@ -35,11 +35,10 @@ class AuthorChecker(GwsBridgeLoader):
                 self.remove_author_role(bri_acc)
 
         # 2. add new authors
-        for netid in list(self.cur_author_set):
+        for netid in list(self.cur_author_set - existing_bri_authors):
             if self.in_uw_groups(netid) is False:
                 continue
-            if netid not in existing_bri_authors:
-                self.add_author_role(netid)
+            self.add_author_role(netid)
 
     def add_author_role(self, netid):
         action = "SET AUTHOR on {0}".format(netid)
