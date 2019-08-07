@@ -1,4 +1,6 @@
 from django.test import TransactionTestCase
+from datetime import timedelta
+from sis_provisioner.models import get_now
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import get_by_netid
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker
@@ -84,18 +86,27 @@ class TestBridgeUserChecker(TransactionTestCase):
         loader.take_action(error500, bri_acc)
         self.assertTrue(loader.has_error())
 
-    def test_load(self):
-        loader = BridgeChecker(BridgeWorker())
-        set_db_records()
-        loader.load()
+    def test_has_accessed(self):
+        with self.settings(BRIDGE_LOGIN_WINDOW=1):
+            loader = BridgeChecker(BridgeWorker())
+            bri_acc = loader.get_bridge().get_user_by_uwnetid('alumni')
+            self.assertFalse(loader.has_accessed(bri_acc))
+            bri_acc.logged_in_at = get_now() - timedelta(days=1)
+            self.assertTrue(loader.has_accessed(bri_acc))
 
-        alumni = get_by_netid('alumni')
-        self.assertEqual(alumni.bridge_id, 199)
-        self.assertEqual(loader.get_total_count(), 7)
-        self.assertEqual(loader.get_new_user_count(), 0)
-        self.assertEqual(loader.get_netid_changed_count(), 2)
-        self.assertEqual(loader.get_deleted_count(), 1)
-        self.assertEqual(loader.get_restored_count(), 0)
-        self.assertEqual(loader.get_updated_count(), 4)
-        self.assertEqual(loader.get_error_report(), "")
-        self.assertFalse(loader.has_error())
+    def test_load(self):
+        with self.settings(BRIDGE_LOGIN_WINDOW=0):
+            loader = BridgeChecker(BridgeWorker())
+            set_db_records()
+            loader.load()
+
+            alumni = get_by_netid('alumni')
+            self.assertEqual(alumni.bridge_id, 199)
+            self.assertEqual(loader.get_total_count(), 7)
+            self.assertEqual(loader.get_new_user_count(), 0)
+            self.assertEqual(loader.get_netid_changed_count(), 2)
+            self.assertEqual(loader.get_deleted_count(), 1)
+            self.assertEqual(loader.get_restored_count(), 0)
+            self.assertEqual(loader.get_updated_count(), 4)
+            self.assertEqual(loader.get_error_report(), "")
+            self.assertFalse(loader.has_error())

@@ -38,7 +38,7 @@
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
-       "loggedInAt":null,
+       "loggedInAt":"2016-09-25T16:24:42.131-07:00",
        "next_due_date":null,
        "completed_courses_count": 1,
        "links":{
