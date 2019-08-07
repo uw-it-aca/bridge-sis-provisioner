@@ -6,11 +6,14 @@ for those having a validate pws person, make sure it has a record in DB.
 3. Update existing account.
 """
 
+from datetime import timedelta
 import logging
 import traceback
+from sis_provisioner.models import get_now
 from sis_provisioner.dao.pws import get_person, is_prior_netid
 from sis_provisioner.dao.uw_account import get_by_netid, save_uw_account
 from sis_provisioner.util.log import log_resp_time, Timer
+from sis_provisioner.util.settings import get_login_window
 from sis_provisioner.account_managers.db_bridge import UserUpdater
 
 
@@ -21,6 +24,9 @@ class BridgeChecker(UserUpdater):
 
     def __init__(self, worker, clogger=logger):
         super(BridgeChecker, self).__init__(worker, clogger)
+        self.login_window = get_login_window()
+        if self.login_window > 0:
+            self.check_time = get_now() - timedelta(days=self.login_window)
 
     def fetch_users(self):
         self.data_source = "Bridge"
@@ -30,9 +36,21 @@ class BridgeChecker(UserUpdater):
         finally:
             log_resp_time(logger, "Get all users from Bridge", timer)
 
+    def has_accessed(self, bridge_acc):
+        """
+        if login_window exists, return True if the user
+        has accessed Bridge within the login_window.
+        """
+        return (self.login_window == 0 or
+                bridge_acc.logged_in_at is not None and
+                bridge_acc.logged_in_at >= self.check_time)
+
     def process_users(self):
         for bridge_acc in self.get_users_to_process():
-            self.logger.debug("Validating Bridge user {0}".format(bridge_acc))
+            if not self.has_accessed(bridge_acc):
+                continue
+
+            self.logger.debug("Validate {0}".format(bridge_acc))
             uwnetid = bridge_acc.netid
             bridge_id = bridge_acc.bridge_id
 
