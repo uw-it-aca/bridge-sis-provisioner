@@ -28,8 +28,7 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":1,
-       "links":{
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
       },
      { "id":"194",
@@ -58,8 +57,7 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":1,
-       "links":{
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
        },
      { "id":"195",
@@ -88,8 +86,7 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":1,
-       "links":{
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
       },
      { "id":"198",
@@ -108,7 +105,7 @@
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
-       "loggedInAt":null,
+       "loggedInAt":"2016-08-25T16:24:42.131-07:00",
        "passwordIsSet":false,
        "hire_date":null,
        "is_manager":false,
@@ -118,8 +115,7 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
-       "links":{
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
        },
      { "id":"199",
@@ -138,7 +134,7 @@
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
-       "loggedInAt":null,
+       "loggedInAt":"2016-09-25T16:24:42.131-07:00",
        "passwordIsSet":false,
        "hire_date":null,
        "is_manager":false,
@@ -148,8 +144,7 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
-       "links":{
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
        },
      { "id":"200",
@@ -168,7 +163,7 @@
        "deleted_at":null,
        "unsubscribed":null,
        "welcomedAt":null,
-       "loggedInAt":null,
+       "loggedInAt":"2016-09-25T16:24:42.131-07:00",
        "passwordIsSet":false,
        "hire_date":null,
        "is_manager":false,
@@ -178,8 +173,7 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
-       "links":{
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
        },
      {
@@ -209,9 +203,37 @@
        "anonymized":null,
        "next_due_date":null,
        "completed_courses_count":0,
-       "links":{
-       },
+       "links":{},
        "meta":{"can_masquerade":true}
-     }
+     },
+     { "id":"101",
+       "uid":"not_accessed@uw.edu",
+       "hris_id":null,
+       "first_name":"Not",
+       "last_name":"Accessed",
+       "full_name":"Not Accessed",
+       "sortable_name":"Accessed, Not",
+       "email":"not_accessed@uw.edu",
+       "locale":"en",
+       "roles":[],
+       "name":"Not Accessed",
+       "avatar_url":null,
+       "updated_at":null,
+       "deleted_at":null,
+       "unsubscribed":null,
+       "welcomedAt":null,
+       "loggedInAt":null,
+       "passwordIsSet":false,
+       "hire_date":null,
+       "is_manager":false,
+       "job_title":null,
+       "bio":null,
+       "department":null,
+       "anonymized":null,
+       "next_due_date":null,
+       "completed_courses_count":1,
+       "links":{},
+       "meta":{"can_masquerade":true}
+      }
   ]
 }

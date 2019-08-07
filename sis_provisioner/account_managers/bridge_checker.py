@@ -26,8 +26,7 @@ class BridgeChecker(UserUpdater):
         super(BridgeChecker, self).__init__(worker, clogger)
         self.login_window = get_login_window()
         if self.login_window > 0:
-            self.delta = timedelta(days=get_login_window())
-        self.now = get_now()
+            self.check_time = get_now() - timedelta(days=self.login_window)
 
     def fetch_users(self):
         self.data_source = "Bridge"
@@ -38,10 +37,13 @@ class BridgeChecker(UserUpdater):
             log_resp_time(logger, "Get all users from Bridge", timer)
 
     def has_accessed(self, bridge_acc):
-        # not accessed Bridge within the specified days
+        """
+        if login_window exists, return True if the user
+        has accessed Bridge within the login_window.
+        """
         return (self.login_window == 0 or
                 bridge_acc.logged_in_at is not None and
-                bridge_acc.logged_in_at >= (self.now - self.delta))
+                bridge_acc.logged_in_at >= self.check_time)
 
     def process_users(self):
         for bridge_acc in self.get_users_to_process():

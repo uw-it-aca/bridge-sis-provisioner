@@ -20,7 +20,7 @@ class TestBridgeUserChecker(TransactionTestCase):
     def test_fetch_users(self):
         loader = BridgeChecker(BridgeWorker())
         bridge_users = loader.fetch_users()
-        self.assertEqual(len(bridge_users), 7)
+        self.assertEqual(len(bridge_users), 8)
 
     def test_take_action(self):
         set_db_records()
@@ -93,6 +93,8 @@ class TestBridgeUserChecker(TransactionTestCase):
             self.assertFalse(loader.has_accessed(bri_acc))
             bri_acc.logged_in_at = get_now() - timedelta(days=1)
             self.assertTrue(loader.has_accessed(bri_acc))
+            bri_acc.logged_in_at = None
+            self.assertFalse(loader.has_accessed(bri_acc))
 
     def test_load(self):
         with self.settings(BRIDGE_LOGIN_WINDOW=0):
@@ -102,7 +104,7 @@ class TestBridgeUserChecker(TransactionTestCase):
 
             alumni = get_by_netid('alumni')
             self.assertEqual(alumni.bridge_id, 199)
-            self.assertEqual(loader.get_total_count(), 7)
+            self.assertEqual(loader.get_total_count(), 8)
             self.assertEqual(loader.get_new_user_count(), 0)
             self.assertEqual(loader.get_netid_changed_count(), 2)
             self.assertEqual(loader.get_deleted_count(), 1)
