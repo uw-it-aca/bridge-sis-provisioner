@@ -36,21 +36,21 @@ class BridgeChecker(UserUpdater):
         finally:
             log_resp_time(logger, "Get all users from Bridge", timer)
 
-    def has_accessed(self, bridge_acc):
+    def not_accessed(self, bridge_acc):
         """
-        if login_window exists, return True if the user
-        has accessed Bridge within the login_window.
+        Return True if the user has not logged on or
+        has accessed Bridge prior to the login_window.
         """
-        return (self.login_window == 0 or
-                bridge_acc.logged_in_at is not None and
-                bridge_acc.logged_in_at >= self.check_time)
+        return (bridge_acc.logged_in_at is None or
+                self.login_window > 0 and
+                bridge_acc.logged_in_at < self.check_time)
 
     def process_users(self):
         for bridge_acc in self.get_users_to_process():
-            if not self.has_accessed(bridge_acc):
+            if self.not_accessed(bridge_acc):
                 continue
 
-            self.logger.debug("Validate {0}".format(bridge_acc))
+            logger.info("Validate {0}".format(bridge_acc))
             uwnetid = bridge_acc.netid
             bridge_id = bridge_acc.bridge_id
 
