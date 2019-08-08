@@ -17,7 +17,7 @@ class TestBridge(TransactionTestCase):
 
     def test_get_all_bridge_users(self):
         busers = TestBridge.bridge.get_all_users()
-        self.assertEqual(len(busers), 7)
+        self.assertEqual(len(busers), 8)
         buser = busers[0]
         self.assertEqual(buser.bridge_id, 100)
         self.assertEqual(buser.netid, 'not_in_pws')
@@ -39,6 +39,9 @@ class TestBridge(TransactionTestCase):
         buser = busers[6]
         self.assertEqual(buser.bridge_id, 204)
         self.assertEqual(buser.netid, 'retiree')
+        buser = busers[7]
+        self.assertEqual(buser.bridge_id, 101)
+        self.assertEqual(buser.netid, 'not_accessed')
 
     def test_delete_bridge_user(self):
         # normal case

@@ -25,3 +25,9 @@ def get_total_work_positions_to_load():
 
 def get_author_group_name():
     return getattr(settings, 'BRIDGE_AUTHOR_GROUP_NAME', None)
+
+
+def get_login_window():
+    # number of days
+    num = getattr(settings, 'BRIDGE_LOGIN_WINDOW', None)
+    return int(num) if num else 0
