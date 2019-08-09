@@ -90,11 +90,11 @@ class TestBridgeUserChecker(TransactionTestCase):
         with self.settings(BRIDGE_LOGIN_WINDOW=1):
             loader = BridgeChecker(BridgeWorker())
             bri_acc = loader.get_bridge().get_user_by_uwnetid('alumni')
-            self.assertFalse(loader.has_accessed(bri_acc))
+            self.assertTrue(loader.not_accessed(bri_acc))
             bri_acc.logged_in_at = get_now() - timedelta(days=1)
-            self.assertTrue(loader.has_accessed(bri_acc))
+            self.assertFalse(loader.not_accessed(bri_acc))
             bri_acc.logged_in_at = None
-            self.assertFalse(loader.has_accessed(bri_acc))
+            self.assertTrue(loader.not_accessed(bri_acc))
 
     def test_load(self):
         with self.settings(BRIDGE_LOGIN_WINDOW=0):
