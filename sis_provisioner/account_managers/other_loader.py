@@ -1,5 +1,5 @@
 """
-This class will validate all the user accounts in the database
+This class will validate all non-employee user accounts in the database
 against GWS groups and PWS person.
 1. If the user is no longer in the specified GWS groups, schedule terminate.
 2. If uw account passed the grace period for termination, disable it.
