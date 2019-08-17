@@ -125,6 +125,45 @@ class TestBridgeWorker(TransactionTestCase):
                     {'custom_field_id': '26', 'value': None, 'id': '30'},
                     {'custom_field_id': '6', 'value': '000000005'}]}})
 
+        worker = BridgeWorker()
+        user = worker.bridge.get_user_by_uwnetid('ellen')
+        person = get_person('retiree')
+        worker.set_bridge_user_to_update(person, get_worker(person), user)
+        # self.maxDiff = None
+        self.assertEqual(
+            user.to_json_patch(),
+            {'user': {
+                'uid': 'retiree@uw.edu',
+                'full_name': 'Ellen Louise Retiree',
+                'email': 'retiree@uw.edu',
+                'id': 194,
+                'first_name': 'Ellen L',
+                'last_name': 'Retiree',
+                'sortable_name': 'Retiree, Ellen L',
+                'manager_id': None,
+                'custom_field_values': [
+                    {'custom_field_id': '5',
+                     'value': '10000000000000000000000000000006',
+                     'id': '1'},
+                    {'custom_field_id': '6',
+                     'value': '000000006',
+                     'id': '2'},
+                    {'custom_field_id': '7', 'value': '0000006', 'id': '3'},
+                    {'custom_field_id': '11', 'value': None, 'id': '4'},
+                    {'custom_field_id': '13', 'value': None, 'id': '5'},
+                    {'custom_field_id': '12', 'value': None, 'id': '6'},
+                    {'custom_field_id': '17', 'value': None, 'id': '7'},
+                    {'custom_field_id': '14', 'value': None, 'id': '8'},
+                    {'custom_field_id': '15', 'value': None, 'id': '9'},
+                    {'custom_field_id': '16', 'value': None, 'id': '10'},
+                    {'custom_field_id': '21', 'value': None, 'id': '24'},
+                    {'custom_field_id': '23', 'value': None, 'id': '25'},
+                    {'custom_field_id': '22', 'value': None, 'id': '26'},
+                    {'custom_field_id': '27', 'value': None, 'id': '27'},
+                    {'custom_field_id': '24', 'value': None, 'id': '28'},
+                    {'custom_field_id': '25', 'value': None, 'id': '29'},
+                    {'custom_field_id': '26', 'value': None, 'id': '30'}]}})
+
     def test_add_new_user(self):
         worker = BridgeWorker()
         person = get_person('affiemp')
