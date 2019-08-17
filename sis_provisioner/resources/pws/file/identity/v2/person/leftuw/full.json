@@ -15,9 +15,9 @@
 "UWRegID":"B814EFBC6A7C11D5A4AE0004AC494FFE",
 "WhitepagesPublish":false,
 "PersonAffiliations":{
-"AlumPersonAffiliation":{"DevelopmentID":"0000000071"},
-"EmployeePersonAffiliation":{
+    "EmployeePersonAffiliation":{
         "EmployeeID":"000000007",
+        "EmployeeAffiliationState":"prior",
         "EmployeeWhitePages":{
             "Addresses":[],
             "EmailAddresses":[],
@@ -35,6 +35,7 @@
     "StudentPersonAffiliation":{
         "StudentNumber":"0000007",
         "StudentSystemKey":"000000071",
+        "StudentAffiliationState":"prior",
         "StudentWhitePages":{"Class":null,
                              "Departments":[],
                              "Email":null,

@@ -1,6 +1,7 @@
 {
 "DisplayName":"Average Joseph Student",
 "EduPersonAffiliations":["member",
+                         "alum",
                          "student",
                          "employee"],
 "IsTestEntity":false,
@@ -19,9 +20,11 @@
 "WhitepagesPublish":false,
 "PersonAffiliations":{
     "AlumPersonAffiliation":{
-        "DevelopmentID":"0000773877"},
+        "DevelopmentID":"0000773877",
+        "AlumAffiliationState":"current"},
     "EmployeePersonAffiliation":{
         "EmployeeID":"123456789",
+        "EmployeeAffiliationState":"current",
         "EmployeeWhitePages":{
             "Addresses": [],
             "EmailAddresses":["javerage@uw.edu"],
@@ -45,6 +48,7 @@
     "StudentPersonAffiliation":{
         "StudentNumber":"1033334",
         "StudentSystemKey":"000083856",
+        "StudentAffiliationState":"current",
         "StudentWhitePages":{
             "Class":null,
             "Departments":[],

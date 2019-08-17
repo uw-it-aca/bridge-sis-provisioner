@@ -1,6 +1,6 @@
 import logging
 import os
-from sis_provisioner.dao.pws import get_person
+from sis_provisioner.dao.pws import get_person, is_active_worker
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.util.settings import (
@@ -38,7 +38,7 @@ def make_import_user_csv_files(uw_accounts,
             continue
         person = get_person(uw_account.netid)
         if (person is None or person.is_test_entity or
-                person.home_department is None):
+                not is_active_worker(person)):
             continue
         if person.uwnetid != uw_account.netid:
             logger.error("OLD netid, Skip {0}".format(uw_account))

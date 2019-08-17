@@ -129,6 +129,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
             loader = GwsBridgeLoader(BridgeWorker())
             loader.load()
             self.assertEqual(loader.get_total_count(), 7)
+            self.assertEqual(loader.get_total_checked_users(), 6)
             self.assertEqual(loader.get_new_user_count(), 1)
             self.assertEqual(loader.get_restored_count(), 1)
             self.assertEqual(loader.get_netid_changed_count(), 2)

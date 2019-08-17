@@ -105,6 +105,7 @@ class TestBridgeUserChecker(TransactionTestCase):
             alumni = get_by_netid('alumni')
             self.assertEqual(alumni.bridge_id, 199)
             self.assertEqual(loader.get_total_count(), 8)
+            self.assertEqual(loader.get_total_checked_users(), 6)
             self.assertEqual(loader.get_new_user_count(), 0)
             self.assertEqual(loader.get_netid_changed_count(), 2)
             self.assertEqual(loader.get_deleted_count(), 1)
