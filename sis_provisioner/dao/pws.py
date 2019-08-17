@@ -32,15 +32,6 @@ def get_person(uwnetid):
     return None
 
 
-def is_active_worker(person):
-    """
-    is_employee: faculty, staff, student employee with a grace period.
-    is_emp_state_current: is_employee plus affiliates and retiree
-    but no grace period. It reflects within 24 hours of a status change.
-    """
-    return person.is_employee or person.is_emp_state_current()
-
-
 def is_prior_netid(uwnetid, person):
     """
     :param person: PWS Person object

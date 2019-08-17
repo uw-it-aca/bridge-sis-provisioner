@@ -1,5 +1,5 @@
 """
-This class will load all the existing users in bridge.
+This class will sync the daily active users in bridge,
 for those having a validate pws person, make sure it has a record in DB.
 1. Add missing uw accounts into Db (manually added in Bridge).
 2. If the bridge account has more than one records in DB, purge.
