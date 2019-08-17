@@ -7,9 +7,7 @@ against GWS groups and PWS person.
 """
 
 import logging
-from sis_provisioner.dao.pws import is_active_worker
 from sis_provisioner.account_managers.emp_loader import ActiveWkrLoader
-
 
 logger = logging.getLogger(__name__)
 
@@ -21,4 +19,4 @@ class OtherUserLoader(ActiveWkrLoader):
         self.data_source = "DB other users"
 
     def to_check(self, person):
-        return not is_active_worker(person)
+        return not person.is_emp_state_current()

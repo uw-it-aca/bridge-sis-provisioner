@@ -5,7 +5,6 @@ This module interacts with hrpws restclient for employee appointments
 import logging
 import traceback
 from sis_provisioner.dao import DataFailureException, InvalidRegID
-from sis_provisioner.dao.pws import is_active_worker
 from uw_hrp.worker import get_worker_by_regid
 from sis_provisioner.util.log import log_exception
 
@@ -18,7 +17,7 @@ def get_worker(person):
     Return the Appointee for the given Person object
     """
     try:
-        if is_active_worker(person):
+        if person.is_emp_state_current():
             return get_worker_by_regid(person.uwregid)
     except InvalidRegID:
         logger.error("'{0}' has invalid uwregid".format(person.uwnetid))
