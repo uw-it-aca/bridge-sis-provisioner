@@ -1,5 +1,6 @@
 from django.test import TestCase
-from sis_provisioner.dao.pws import get_person, is_prior_netid
+from sis_provisioner.dao.pws import (
+    get_person, is_prior_netid, is_active_worker)
 from sis_provisioner.tests import fdao_pws_override
 
 
@@ -30,3 +31,16 @@ class TestPwsDao(TestCase):
     def test_is_prior_netid(self):
         person = get_person("faculty")
         self.assertTrue(is_prior_netid("tyler", person))
+
+    def test_is_active_worker(self):
+        person = get_person("faculty")
+        self.assertTrue(is_active_worker(person))
+        person = get_person("ellen")
+        self.assertTrue(is_active_worker(person))
+        person = get_person("retiree")
+        self.assertTrue(is_active_worker(person))
+
+        person = get_person("leftuw")
+        self.assertFalse(is_active_worker(person))
+        person = get_person("alumni")
+        self.assertFalse(is_active_worker(person))

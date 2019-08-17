@@ -14,22 +14,22 @@ from sis_provisioner.dao.pws import get_person, is_prior_netid
 from sis_provisioner.dao.uw_account import get_by_netid, save_uw_account
 from sis_provisioner.util.log import log_resp_time, Timer
 from sis_provisioner.util.settings import get_login_window
-from sis_provisioner.account_managers.db_bridge import UserUpdater
+from sis_provisioner.account_managers.emp_loader import ActiveWkrLoader
 
 
 logger = logging.getLogger(__name__)
 
 
-class BridgeChecker(UserUpdater):
+class BridgeChecker(ActiveWkrLoader):
 
     def __init__(self, worker, clogger=logger):
         super(BridgeChecker, self).__init__(worker, clogger)
+        self.data_source = "Bridge"
         self.login_window = get_login_window()
         if self.login_window > 0:
             self.check_time = get_now() - timedelta(days=self.login_window)
 
     def fetch_users(self):
-        self.data_source = "Bridge"
         timer = Timer()
         try:
             return self.get_bridge().get_all_users()
@@ -57,6 +57,8 @@ class BridgeChecker(UserUpdater):
             person = get_person(uwnetid)
             if self.is_invalid_person(uwnetid, person):
                 continue
+
+            self.total_checked_users += 1
 
             if is_prior_netid(uwnetid, person):
 

@@ -8,7 +8,8 @@ against GWS groups and PWS person.
 
 import logging
 import traceback
-from sis_provisioner.dao.pws import get_person, is_prior_netid
+from sis_provisioner.dao.pws import (
+    get_person, is_active_worker, is_prior_netid)
 from sis_provisioner.dao.uw_account import (
     get_all_uw_accounts, get_by_netid)
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
@@ -17,14 +18,21 @@ from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 logger = logging.getLogger(__name__)
 
 
-class UserUpdater(GwsBridgeLoader):
+class ActiveWkrLoader(GwsBridgeLoader):
 
     def __init__(self, worker, clogger=logger):
-        super(UserUpdater, self).__init__(worker, clogger)
+        super(ActiveWkrLoader, self).__init__(worker, clogger)
+        self.data_source = "DB Active-Workers"
 
     def fetch_users(self):
-        self.data_source = "DB"
         return get_all_uw_accounts()
+
+    def to_check(self, person):
+        """
+        Check only currently employed faculty, staff, affiliate, and
+        student employees.
+        """
+        return is_active_worker(person)
 
     def process_users(self):
         """
@@ -32,15 +40,16 @@ class UserUpdater(GwsBridgeLoader):
         update those changed.
         """
         for uw_acc in self.get_users_to_process():
-
             self.logger.debug("Validate DB record {0}".format(uw_acc))
             uwnetid = uw_acc.netid
-
             person = get_person(uwnetid)
-            if self.is_invalid_person(uwnetid, person):
+            if (self.is_invalid_person(uwnetid, person) or
+                    not self.to_check(person)):
                 continue
 
             if not uw_acc.disabled:
+                self.total_checked_users += 1
+
                 if uwnetid == person.uwnetid:
                     if self.in_uw_groups(person.uwnetid) is False:
                         self.process_termination(uw_acc)

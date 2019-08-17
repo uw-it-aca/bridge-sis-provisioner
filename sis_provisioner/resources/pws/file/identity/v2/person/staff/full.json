@@ -20,6 +20,7 @@
 "PersonAffiliations":{
     "EmployeePersonAffiliation":{
         "EmployeeID":"100000001",
+        "EmployeeAffiliationState":"current",
         "EmployeeWhitePages":{
             "Addresses":[],
             "EmailAddresses":["staff@uw.edu"],
