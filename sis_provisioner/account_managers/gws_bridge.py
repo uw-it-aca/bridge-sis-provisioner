@@ -27,9 +27,9 @@ class GwsBridgeLoader(Loader):
 
     def __init__(self, worker, clogger=logger):
         super(GwsBridgeLoader, self).__init__(worker, clogger)
+        self.data_source = "GWS uw_members group"
 
     def fetch_users(self):
-        self.data_source = "GWS uw_members group"
         return list(self.gws_user_set)
 
     def get_bridge(self):
@@ -47,6 +47,7 @@ class GwsBridgeLoader(Loader):
             person = get_person(uwnetid)
             if self.is_invalid_person(uwnetid, person):
                 continue
+            self.total_checked_users += 1
             self.take_action(person)
 
     def take_action(self, person, priority_changes_only=True):

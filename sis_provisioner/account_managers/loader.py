@@ -21,6 +21,7 @@ class Loader:
         """
         self.logger = logger
         self.users_to_process = []
+        self.total_checked_users = 0
         self.data_source = None  # where the user is fetched from
         self.worker = worker
         self.gws_user_set = get_potential_users()  # DataFailureException
@@ -57,7 +58,7 @@ class Loader:
 
     def log_status(self):
         self.logger.info("Checked {0:d} users in {1},".format(
-                         self.get_total_count(), self.data_source))
+                         self.get_total_checked_users(), self.data_source))
 
         if self.get_new_user_count():
             self.logger.info("{0:d} are new users.".format(
@@ -85,6 +86,9 @@ class Loader:
 
     def get_total_count(self):
         return len(self.users_to_process)
+
+    def get_total_checked_users(self):
+        return self.total_checked_users
 
     def get_users_to_process(self):
         return self.users_to_process

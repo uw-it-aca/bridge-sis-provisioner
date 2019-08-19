@@ -2,7 +2,8 @@ import logging
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
-from sis_provisioner.account_managers.db_bridge import UserUpdater
+from sis_provisioner.account_managers.emp_loader import ActiveWkrLoader
+from sis_provisioner.account_managers.other_loader import OtherUserLoader
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.util.log import log_resp_time, Timer
@@ -17,7 +18,7 @@ class Command(BaseCommand):
     """
     def add_arguments(self, parser):
         parser.add_argument('data-source',
-                            choices=['gws', 'db', 'bridge'])
+                            choices=['gws', 'db-emp', 'db-other', 'bridge'])
 
     def handle(self, *args, **options):
         timer = Timer()
@@ -26,8 +27,10 @@ class Command(BaseCommand):
         source = options['data-source']
         if source == 'gws':
             loader = GwsBridgeLoader(BridgeWorker())
-        elif source == 'db':
-            loader = UserUpdater(BridgeWorker())
+        elif source == 'db-emp':
+            loader = ActiveWkrLoader(BridgeWorker())
+        elif source == 'db-other':
+            loader = OtherUserLoader(BridgeWorker())
         elif source == 'bridge':
             loader = BridgeChecker(BridgeWorker())
         else:
@@ -41,7 +44,7 @@ class Command(BaseCommand):
         log_resp_time(logger, "Load users", timer)
 
         logger.info("Checked {0:d} users, source: {1}\n".format(
-            loader.get_total_count(), source))
+            loader.get_total_checked_users(), source))
 
         logger.info("{0:d} new users added\n".format(
             loader.get_new_user_count()))

@@ -16,15 +16,32 @@
 "UWRegID":"10000000000000000000000000000011",
 "WhitepagesPublish":false,
 "PersonAffiliations":{
-    "AlumPersonAffiliation":{
-        "DevelopmentID":"0001500476"},
-"StudentPersonAffiliation":{
+  "StudentPersonAffiliation":{
     "StudentNumber":"1000011",
     "StudentSystemKey":"100000011",
+    "StudentAffiliationState":"prior",
     "StudentWhitePages":{"Class":null,
                          "Departments":[],
                          "Email":null,
                          "Name":null,
                          "Phone":null,
                          "PublishInDirectory":false}
- }}}
+ },
+ "EmployeePersonAffiliation":{
+     "EmployeeID":"100000011",
+     "EmployeeAffiliationState":"current",
+     "HomeDepartment":"ISCHL: Instructor",
+     "MailStop":"352840",
+     "EmployeeWhitePages":{
+         "Name":null,
+         "PublishInDirectory":false,
+         "Phones":[],
+         "EmailAddresses":[],
+         "Positions":[],
+         "Addresses":[],
+         "VoiceMails":[],
+         "TouchDials":[],
+         "Faxes":[],
+         "Mobiles":[],
+         "Pagers":[]}}
+}}

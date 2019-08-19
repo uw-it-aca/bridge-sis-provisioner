@@ -17,7 +17,7 @@ def get_worker(person):
     Return the Appointee for the given Person object
     """
     try:
-        if person.is_employee:
+        if person.is_emp_state_current():
             return get_worker_by_regid(person.uwregid)
     except InvalidRegID:
         logger.error("'{0}' has invalid uwregid".format(person.uwnetid))

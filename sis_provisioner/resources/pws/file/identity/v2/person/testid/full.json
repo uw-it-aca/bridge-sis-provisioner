@@ -1,6 +1,7 @@
 {"PersonAffiliations":{
     "EmployeePersonAffiliation":{
         "EmployeeID":"000000050",
+        "EmployeeAffiliationState":"current",
         "HomeDepartment":"C&C TEST BUDGET",
         "MailStop":null,
         "EmployeeWhitePages":{"Name":null,

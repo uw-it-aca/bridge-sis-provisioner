@@ -27,6 +27,18 @@ class TestPwsDao(TestCase):
         self.assertIsNone(get_person("not_in_pws"))
         self.assertIsNone(get_person("0 in valid uw netid"))
 
+        person = get_person("faculty")
+        self.assertTrue(person.is_emp_state_current())
+        person = get_person("ellen")
+        self.assertTrue(person.is_emp_state_current())
+        person = get_person("retiree")
+        self.assertTrue(person.is_emp_state_current())
+
+        person = get_person("leftuw")
+        self.assertFalse(person.is_emp_state_current())
+        person = get_person("alumni")
+        self.assertFalse(person.is_emp_state_current())
+
     def test_is_prior_netid(self):
         person = get_person("faculty")
         self.assertTrue(is_prior_netid("tyler", person))

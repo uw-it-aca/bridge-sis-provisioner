@@ -38,7 +38,7 @@ def make_import_user_csv_files(uw_accounts,
             continue
         person = get_person(uw_account.netid)
         if (person is None or person.is_test_entity or
-                person.home_department is None):
+                not person.is_emp_state_current()):
             continue
         if person.uwnetid != uw_account.netid:
             logger.error("OLD netid, Skip {0}".format(uw_account))

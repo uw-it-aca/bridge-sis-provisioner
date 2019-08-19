@@ -18,16 +18,17 @@ class AuthorChecker(GwsBridgeLoader):
 
     def __init__(self, worker, clogger=logger):
         super(AuthorChecker, self).__init__(worker, clogger)
+        self.data_source = "Bridge authors"
 
     def fetch_users(self):
         self.cur_author_set = get_bridge_authors()
-        self.data_source = "Bridge authors"
         return self.get_bridge().get_all_authors()
 
     def process_users(self):
         existing_bri_authors = set()
         # 1. remove former authors
         for bri_acc in self.get_users_to_process():
+            self.total_checked_users += 1
             uwnetid = bri_acc.netid
             if uwnetid in self.cur_author_set:
                 existing_bri_authors.add(uwnetid)
@@ -36,6 +37,7 @@ class AuthorChecker(GwsBridgeLoader):
 
         # 2. add new authors
         for netid in list(self.cur_author_set - existing_bri_authors):
+            self.total_checked_users += 1
             if self.in_uw_groups(netid) is False:
                 continue
             self.add_author_role(netid)
