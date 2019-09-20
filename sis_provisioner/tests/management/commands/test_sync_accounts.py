@@ -29,3 +29,8 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
         time.sleep(2)
         set_db_records()
         call_command('sync_accounts', 'bridge')
+
+    def test_load_pws_bridge(self):
+        time.sleep(2)
+        set_db_records()
+        call_command('sync_accounts', 'pws')

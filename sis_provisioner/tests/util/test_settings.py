@@ -3,7 +3,7 @@ from django.conf import settings
 from sis_provisioner.util.settings import (
     errors_to_abort_loader, get_csv_file_path_prefix, get_csv_file_size,
     get_csv_file_name_prefix, get_total_work_positions_to_load,
-    get_author_group_name, get_login_window)
+    get_author_group_name, get_login_window, get_person_changed_window)
 
 CSV_ROOT = "/tmp/fl_test"
 
@@ -39,3 +39,7 @@ class TestSetting(TestCase):
     def test_get_login_window(self):
         with self.settings(BRIDGE_LOGIN_WINDOW=1):
             self.assertEqual(get_login_window(), 1)
+
+    def test_get_person_changed_window(self):
+        with self.settings(BRIDGE_PERSON_CHANGE_WINDOW=60):
+            self.assertEqual(get_person_changed_window(), 60)

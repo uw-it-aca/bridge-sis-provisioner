@@ -32,6 +32,19 @@ def get_person(uwnetid):
     return None
 
 
+def get_updated_persons(changed_since_datetime):
+    """
+    Retrieve the Person object of the current uwnetid for the given netid
+    Raise: DataFailureException if PWS returns a non-404 error
+    """
+    try:
+        return pws.person_search(changed_since_date=changed_since_datetime)
+    except DataFailureException as ex:
+        log_exception(logger, "get_updated_persons",
+                      traceback.format_exc(chain=False))
+    return []
+
+
 def is_prior_netid(uwnetid, person):
     """
     :param person: PWS Person object
