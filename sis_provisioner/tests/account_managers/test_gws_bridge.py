@@ -27,12 +27,13 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertEqual(loader.get_deleted_count(), 1)
 
     def test_fetch_users(self):
-        loader = GwsBridgeLoader(BridgeWorker())
-        user_list = loader.fetch_users()
-        self.assertEqual(len(user_list), 7)
-        self.assertEqual(sorted(user_list),
-                         ['affiemp', 'error500', 'faculty', 'javerage',
-                          'not_in_pws', 'retiree', 'staff'])
+        with self.settings(BRIDGE_GWS_CACHE='/tmp/gwsuser1'):
+            loader = GwsBridgeLoader(BridgeWorker())
+            user_list = loader.fetch_users()
+            self.assertEqual(len(user_list), 7)
+            self.assertEqual(sorted(user_list),
+                             ['affiemp', 'error500', 'faculty', 'javerage',
+                              'not_in_pws', 'retiree', 'staff'])
 
     def test_is_priority_change(self):
         loader = GwsBridgeLoader(BridgeWorker())
@@ -124,7 +125,8 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertEqual(loader.get_updated_count(), 3)
 
     def test_load_gws(self):
-        with self.settings(ERRORS_TO_ABORT_LOADER=[]):
+        with self.settings(ERRORS_TO_ABORT_LOADER=[],
+                           BRIDGE_GWS_CACHE='/tmp/gwsuser2'):
             set_db_records()
             loader = GwsBridgeLoader(BridgeWorker())
             loader.load()
@@ -137,7 +139,8 @@ class TestGwsBridgeLoader(TransactionTestCase):
             self.assertTrue(loader.has_error())
 
     def test_load_abort(self):
-        with self.settings(ERRORS_TO_ABORT_LOADER=[500]):
+        with self.settings(ERRORS_TO_ABORT_LOADER=[500],
+                           BRIDGE_GWS_CACHE='/tmp/gwsuser3'):
             set_db_err_records()
             loader = GwsBridgeLoader(BridgeWorker())
             self.assertRaises(DataFailureException, loader.load)

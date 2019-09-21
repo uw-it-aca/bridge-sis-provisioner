@@ -3,10 +3,12 @@ The functions here interact with uw_gws
 """
 
 import logging
-from sis_provisioner.dao import DataFailureException
+from sis_provisioner.dao import (
+    DataFailureException, read_gws_cache_file, write_gws_cache_file)
 from uw_gws import GWS
 from sis_provisioner.util.log import log_resp_time, Timer
-from sis_provisioner.util.settings import get_author_group_name
+from sis_provisioner.util.settings import (
+    get_author_group_name, get_gws_cache_path)
 
 
 logger = logging.getLogger(__name__)
@@ -53,3 +55,13 @@ def get_bridge_authors():
     append_netids_to_list(get_members_of_group(get_author_group_name()),
                           user_set)
     return user_set
+
+
+def get_member_updates(current_user_set):
+    """
+    return a set of uwnetids
+    """
+    path = get_gws_cache_path()
+    last_user_set = read_gws_cache_file(path)
+    write_gws_cache_file(path, current_user_set)
+    return current_user_set - last_user_set

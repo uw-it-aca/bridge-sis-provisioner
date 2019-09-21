@@ -12,8 +12,9 @@ from sis_provisioner.tests.account_managers import set_db_records
 class TestLoadUserViaBridgeApi(TransactionTestCase):
 
     def test_load_from_gws_to_bridge(self):
-        set_db_records()
-        call_command('sync_accounts', 'gws')
+        with self.settings(BRIDGE_GWS_CACHE='/tmp/gwsusermc'):
+            set_db_records()
+            call_command('sync_accounts', 'gws')
 
     def test_load_from_dbemp_to_bridge(self):
         time.sleep(1)

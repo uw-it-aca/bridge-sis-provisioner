@@ -11,6 +11,7 @@ import traceback
 from uw_bridge.models import BridgeUser, BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.uw_account import save_uw_account
+from sis_provisioner.dao.gws import get_member_updates
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
 from sis_provisioner.util.settings import get_total_work_positions_to_load
@@ -30,7 +31,7 @@ class GwsBridgeLoader(Loader):
         self.data_source = "GWS uw_members group"
 
     def fetch_users(self):
-        return list(self.gws_user_set)
+        return list(get_member_updates(self.gws_user_set))
 
     def get_bridge(self):
         return self.worker.bridge
