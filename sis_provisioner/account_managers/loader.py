@@ -25,6 +25,7 @@ class Loader:
         self.data_source = None  # where the user is fetched from
         self.worker = worker
         self.gws_user_set = get_potential_users()  # DataFailureException
+        self.priority_changes_only = False
 
     def load(self):
         self.users_to_process = self.fetch_users()

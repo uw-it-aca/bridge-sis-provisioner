@@ -21,7 +21,7 @@ class ActiveWkrLoader(GwsBridgeLoader):
 
     def __init__(self, worker, clogger=logger):
         super(ActiveWkrLoader, self).__init__(worker, clogger)
-        self.data_source = "DB Active-Workers"
+        self.data_source = "DB active-employees"
 
     def fetch_users(self):
         return get_all_uw_accounts()
@@ -62,7 +62,7 @@ class ActiveWkrLoader(GwsBridgeLoader):
                         # this account will be merged then.
                         continue
 
-                self.take_action(person, priority_changes_only=False)
+                self.take_action(person)
 
     def process_termination(self, uw_acc):
         """

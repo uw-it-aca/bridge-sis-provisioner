@@ -28,7 +28,8 @@ class GwsBridgeLoader(Loader):
 
     def __init__(self, worker, clogger=logger):
         super(GwsBridgeLoader, self).__init__(worker, clogger)
-        self.data_source = "GWS uw_members group"
+        self.data_source = "GWS members"
+        self.priority_changes_only = True
 
     def fetch_users(self):
         return list(get_member_updates(self.gws_user_set))
@@ -51,13 +52,13 @@ class GwsBridgeLoader(Loader):
             self.total_checked_users += 1
             self.take_action(person)
 
-    def take_action(self, person, priority_changes_only=True):
+    def take_action(self, person):
         """
         @param: person is a valid Person object
         """
         try:
             uw_account = save_uw_account(person)
-            if (priority_changes_only and
+            if (self.priority_changes_only and
                     not self.is_priority_change(uw_account)):
                 return
             self.apply_change_to_bridge(uw_account, person)

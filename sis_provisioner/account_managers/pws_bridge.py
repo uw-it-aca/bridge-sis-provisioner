@@ -29,7 +29,7 @@ class PwsBridgeLoader(GwsBridgeLoader):
 
     def __init__(self, worker, clogger=logger):
         super(PwsBridgeLoader, self).__init__(worker, clogger)
-        self.data_source = "GWS uw_members group"
+        self.data_source = "PWS updated users"
 
     def fetch_users(self):
         return get_updated_persons(self.get_changed_since_datetime())
@@ -43,8 +43,8 @@ class PwsBridgeLoader(GwsBridgeLoader):
         the exsiting users
         """
         for person in self.get_users_to_process():
-            if not (self.is_invalid_person(person.uwnetid, person) and
-                    self.in_uw_groups(person.uwnetid)):
+            if (self.is_invalid_person(person.uwnetid, person) or
+                    not self.in_uw_groups(person.uwnetid)):
                 continue
             self.total_checked_users += 1
-            self.take_action(person, priority_changes_only=False)
+            self.take_action(person)
