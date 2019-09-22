@@ -25,4 +25,4 @@ class TestPwsBridgeLoader(TransactionTestCase):
             self.assertEqual(loader.get_restored_count(), 0)
             self.assertEqual(loader.get_netid_changed_count(), 1)
             self.assertEqual(loader.get_updated_count(), 1)
-            self.assertFalse(loader.has_error())
+            self.assertTrue(loader.has_error())
