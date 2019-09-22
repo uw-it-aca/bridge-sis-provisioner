@@ -9,9 +9,9 @@ DJANGO_SETTINGS_MODULE=project.settings
 
 #30 8,15 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_authors
 
-1 16 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_eid
+1 18 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_eid
 
-1 18 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts bridge
+1 20 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts bridge
 
 1 2 * * 6 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts db-emp
 
