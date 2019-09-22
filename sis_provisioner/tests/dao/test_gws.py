@@ -1,6 +1,8 @@
+import fnmatch
+import os
 from django.test import TestCase
 from sis_provisioner.dao import (
-    DataFailureException, read_gws_cache_file)
+    DataFailureException, read_gws_cache_file, write_gws_cache_file)
 from sis_provisioner.dao.gws import (
     get_members_of_group, get_potential_users, get_bridge_authors,
     get_member_updates)
@@ -41,3 +43,8 @@ class TestGwsDao(TestCase):
 
             cache = read_gws_cache_file('/tmp/gwsusers')
             self.assertEqual(new_added, cache)
+
+            # test file rename
+            write_gws_cache_file('/tmp/gwsusers', current_user_set)
+            files = fnmatch.filter(os.listdir('/tmp/'), 'gwsuser*')
+            self.assertEqual(len(files), 2)
