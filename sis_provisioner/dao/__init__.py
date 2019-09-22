@@ -16,8 +16,8 @@ def read_gws_cache_file(path):
                 try:
                     user_set.add(line.rstrip())
                 except Exception as ex:
-                    logger.error("read_file({}, {}): {} ==>{}".format(
-                        file_path, file_name, line, str(ex)))
+                    logger.error("read_file({}) line {} ==>{}".format(
+                        path, line, str(ex)))
     return user_set
 
 
@@ -38,7 +38,7 @@ def write_gws_cache_file(path, user_set):
         try:
             f.write("{}\n".format(netid))
         except Exception as ex:
-            logger.error("{} Write {} to file: {}, Skip!".format(
-                str(ex), netid, path))
+            logger.error("{} write_gws_cache_file({}) Skip {}".format(
+                str(ex), path, netid))
             continue
     f.close()
