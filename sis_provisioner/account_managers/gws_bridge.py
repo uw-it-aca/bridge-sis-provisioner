@@ -28,7 +28,7 @@ class GwsBridgeLoader(Loader):
 
     def __init__(self, worker, clogger=logger):
         super(GwsBridgeLoader, self).__init__(worker, clogger)
-        self.data_source = "GWS members"
+        self.data_source = "Group members"
 
     def fetch_users(self):
         return list(get_member_updates(self.gws_user_set))

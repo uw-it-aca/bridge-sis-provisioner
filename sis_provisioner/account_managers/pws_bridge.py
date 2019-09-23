@@ -29,7 +29,7 @@ class PwsBridgeLoader(GwsBridgeLoader):
 
     def __init__(self, worker, clogger=logger):
         super(PwsBridgeLoader, self).__init__(worker, clogger)
-        self.data_source = "PWS updated users"
+        self.data_source = "Person updates"
 
     def fetch_users(self):
         return get_updated_persons(self.get_changed_since_datetime())

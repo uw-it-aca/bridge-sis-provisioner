@@ -24,7 +24,7 @@ class BridgeChecker(ActiveWkrLoader):
 
     def __init__(self, worker, clogger=logger):
         super(BridgeChecker, self).__init__(worker, clogger)
-        self.data_source = "Bridge"
+        self.data_source = "Bridge daily users"
         self.login_window = get_login_window()
         if self.login_window > 0:
             self.check_time = get_now() - timedelta(days=self.login_window)

@@ -21,7 +21,7 @@ class ActiveWkrLoader(GwsBridgeLoader):
 
     def __init__(self, worker, clogger=logger):
         super(ActiveWkrLoader, self).__init__(worker, clogger)
-        self.data_source = "DB active-employees"
+        self.data_source = "DB employees"
 
     def fetch_users(self):
         return get_all_uw_accounts()
