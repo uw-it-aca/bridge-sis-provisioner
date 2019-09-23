@@ -38,11 +38,12 @@ class TestGwsDao(TestCase):
     def test_gws_cache_file(self):
         with self.settings(BRIDGE_GWS_CACHE='/tmp/gwsusers'):
             current_user_set = get_potential_users()
-            new_added = get_member_updates(current_user_set)
-            self.assertEqual(len(new_added), 7)
+            netids = get_member_updates(current_user_set)
+            self.assertEqual(len(netids), 7)
 
+            # test file read
             cache = read_gws_cache_file('/tmp/gwsusers')
-            self.assertEqual(new_added, cache)
+            self.assertEqual(cache, netids)
 
             # test file rename
             write_gws_cache_file('/tmp/gwsusers', current_user_set)
