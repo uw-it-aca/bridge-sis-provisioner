@@ -1,5 +1,7 @@
 from django.test import TestCase
-from sis_provisioner.dao.pws import get_person, is_prior_netid
+from sis_provisioner.dao import DataFailureException
+from sis_provisioner.dao.pws import (
+    get_person, is_prior_netid, get_updated_persons)
 from sis_provisioner.tests import fdao_pws_override
 
 
@@ -42,3 +44,9 @@ class TestPwsDao(TestCase):
     def test_is_prior_netid(self):
         person = get_person("faculty")
         self.assertTrue(is_prior_netid("tyler", person))
+
+    def test_get_updated_persons(self):
+        persons = get_updated_persons("2019")
+        self.assertEqual(len(persons), 2)
+        self.assertRaises(DataFailureException,
+                          get_updated_persons, "201909")

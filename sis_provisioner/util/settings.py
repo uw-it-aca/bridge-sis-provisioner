@@ -31,3 +31,13 @@ def get_login_window():
     # number of days
     num = getattr(settings, 'BRIDGE_LOGIN_WINDOW', None)
     return int(num) if num else 0
+
+
+def get_person_changed_window():
+    # number of minutes
+    num = getattr(settings, 'BRIDGE_PERSON_CHANGE_WINDOW', None)
+    return int(num) if num else 15
+
+
+def get_gws_cache_path():
+    return getattr(settings, 'BRIDGE_GWS_CACHE', '')
