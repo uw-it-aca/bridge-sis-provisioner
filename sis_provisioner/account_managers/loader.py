@@ -32,6 +32,8 @@ class Loader:
         if self.get_total_count() == 0:
             self.logger.info("Not found users to process, abort!")
             return
+        self.logger.info("PROCESS {} of {}".format(
+            self.get_total_count(), self.data_source))
         self.process_users()
         self.log_status()
 
