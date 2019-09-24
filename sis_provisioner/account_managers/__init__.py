@@ -43,7 +43,7 @@ def get_custom_field_value(bridge_account, field_name):
     cf = bridge_account.get_custom_field(field_name)
     if cf is not None:
         return cf.value
-    return None
+    return ""
 
 
 def get_work_position(hrp_wkr, position_num):

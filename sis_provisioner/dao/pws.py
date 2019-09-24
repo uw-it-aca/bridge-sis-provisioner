@@ -6,7 +6,7 @@ import logging
 import traceback
 from uw_pws import PWS
 from sis_provisioner.dao import DataFailureException, InvalidNetID
-from sis_provisioner.util.log import log_exception
+from sis_provisioner.util.log import log_exception, log_resp_time, Timer
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,23 @@ def get_person(uwnetid):
                           "get_person_by_netid({0}) ".format(uwnetid),
                           traceback.format_exc(chain=False))
     return None
+
+
+def get_updated_persons(changed_since_datetime):
+    """
+    Retrieve the Person object of the current uwnetid for the given netid
+    Raise: DataFailureException if PWS returns a non-404 error
+    """
+    timer = Timer()
+    try:
+        return pws.person_search(changed_since_date=changed_since_datetime)
+    except Exception:
+        log_exception(logger, "get_updated_persons",
+                      traceback.format_exc(chain=False))
+        raise
+    finally:
+        log_resp_time(logger, "get_updated_persons", timer)
+    return []
 
 
 def is_prior_netid(uwnetid, person):

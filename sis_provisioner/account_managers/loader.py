@@ -25,12 +25,15 @@ class Loader:
         self.data_source = None  # where the user is fetched from
         self.worker = worker
         self.gws_user_set = get_potential_users()  # DataFailureException
+        self.priority_changes_only = False
 
     def load(self):
         self.users_to_process = self.fetch_users()
         if self.get_total_count() == 0:
             self.logger.info("Not found users to process, abort!")
             return
+        self.logger.info("PROCESS {} of {}".format(
+            self.get_total_count(), self.data_source))
         self.process_users()
         self.log_status()
 

@@ -11,6 +11,7 @@ import traceback
 from uw_bridge.models import BridgeUser, BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.uw_account import save_uw_account
+from sis_provisioner.dao.gws import get_member_updates
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
 from sis_provisioner.util.settings import get_total_work_positions_to_load
@@ -27,10 +28,10 @@ class GwsBridgeLoader(Loader):
 
     def __init__(self, worker, clogger=logger):
         super(GwsBridgeLoader, self).__init__(worker, clogger)
-        self.data_source = "GWS uw_members group"
+        self.data_source = "Group members"
 
     def fetch_users(self):
-        return list(self.gws_user_set)
+        return list(get_member_updates(self.gws_user_set))
 
     def get_bridge(self):
         return self.worker.bridge
@@ -50,13 +51,13 @@ class GwsBridgeLoader(Loader):
             self.total_checked_users += 1
             self.take_action(person)
 
-    def take_action(self, person, priority_changes_only=True):
+    def take_action(self, person):
         """
         @param: person is a valid Person object
         """
         try:
             uw_account = save_uw_account(person)
-            if (priority_changes_only and
+            if (self.priority_changes_only and
                     not self.is_priority_change(uw_account)):
                 return
             self.apply_change_to_bridge(uw_account, person)
@@ -163,19 +164,19 @@ class GwsBridgeLoader(Loader):
     def regid_not_changed(self, bridge_account, person):
         regid = get_custom_field_value(bridge_account,
                                        BridgeCustomField.REGID_NAME)
-        return regid is not None and regid == person.uwregid
+        return person.uwregid == regid
 
     def eid_not_changed(self, bridge_account, person):
         eid = get_custom_field_value(bridge_account,
                                      BridgeCustomField.EMPLOYEE_ID_NAME)
-        return (person.employee_id is None and eid is None or
-                eid == person.employee_id)
+        return (person.employee_id is None and eid == '' or
+                person.employee_id == eid)
 
     def sid_not_changed(self, bridge_account, person):
         sid = get_custom_field_value(bridge_account,
                                      BridgeCustomField.STUDENT_ID_NAME)
-        return (person.student_number is None and sid is None or
-                sid == person.student_number)
+        return (person.student_number is None and sid == '' or
+                person.student_number == sid)
 
     def pos_data_not_changed(self, bridge_account, hrp_wkr):
         for pos_num in range(get_total_work_positions_to_load()):
@@ -184,7 +185,7 @@ class GwsBridgeLoader(Loader):
                 bri_value = get_custom_field_value(bridge_account,
                                                    pos_field_names[i])
                 hrp_value = GET_POS_ATT_FUNCS[i](hrp_wkr, pos_num)
-                if not (bri_value is None and hrp_value is None or
-                        bri_value == hrp_value):
+                if (hrp_value is not None and hrp_value != bri_value or
+                        hrp_value is None and bri_value != ''):
                     return False
         return True

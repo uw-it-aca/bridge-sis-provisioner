@@ -1,10 +1,18 @@
-
-MAILTO=fanglin@uw.edu
 PYTHONPATH=/data/bridge/live/lib/python3.6/site-packages
 DJANGO_SETTINGS_MODULE=project.settings
-5 7,14 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts gws
-25 8,15 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_authors
-5 9,16 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_eid
-1 17 * * 1,2,3,4 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts bridge
-1 17 * * 5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts db-emp
-1 15 * * 6 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts db-other
+
+1 6,8,10,12,14,16 * * * cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts pws
+
+20 0,4,17,21 * * * cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts pws
+
+1 7,15 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts gws
+
+#1 8,16 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_authors
+
+40 17 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts bridge
+
+1 2 * * 6 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts db-emp
+
+1 4 * * 7 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts db-other
+
+1 7 * * 7 cd /data/bridge/live && source ./bin/activate && python manage.py sync_eid

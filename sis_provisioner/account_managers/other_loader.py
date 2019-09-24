@@ -16,7 +16,8 @@ class OtherUserLoader(ActiveWkrLoader):
 
     def __init__(self, worker, clogger=logger):
         super(OtherUserLoader, self).__init__(worker, clogger)
-        self.data_source = "DB other users"
+        self.data_source = "DB others"
+        self.priority_changes_only = True
 
     def to_check(self, person):
         return not person.is_emp_state_current()
