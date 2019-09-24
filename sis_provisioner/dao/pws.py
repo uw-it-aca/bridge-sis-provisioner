@@ -40,9 +40,10 @@ def get_updated_persons(changed_since_datetime):
     timer = Timer()
     try:
         return pws.person_search(changed_since_date=changed_since_datetime)
-    except DataFailureException as ex:
+    except Exception:
         log_exception(logger, "get_updated_persons",
                       traceback.format_exc(chain=False))
+        raise
     finally:
         log_resp_time(logger, "get_updated_persons", timer)
     return []
