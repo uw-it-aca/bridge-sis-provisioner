@@ -126,6 +126,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
 
     def test_load_gws(self):
         with self.settings(ERRORS_TO_ABORT_LOADER=[],
+                           BRIDGE_USER_WORK_POSITIONS=2,
                            BRIDGE_GWS_CACHE='/tmp/gwsuser2'):
             set_db_records()
             loader = GwsBridgeLoader(BridgeWorker())
@@ -140,41 +141,42 @@ class TestGwsBridgeLoader(TransactionTestCase):
 
     def test_load_abort(self):
         with self.settings(ERRORS_TO_ABORT_LOADER=[500],
+                           BRIDGE_USER_WORK_POSITIONS=2,
                            BRIDGE_GWS_CACHE='/tmp/gwsuser3'):
             set_db_err_records()
             loader = GwsBridgeLoader(BridgeWorker())
             self.assertRaises(DataFailureException, loader.load)
 
     def test_account_not_changed(self):
-        set_db_records()
-        loader = GwsBridgeLoader(BridgeWorker())
-        person = get_person('javerage')
-        hrp_wkr = get_worker(person)
-        bridge_account = loader.worker.get_bridge_user_to_add(person,
-                                                              hrp_wkr)
-        self.assertTrue(
-            loader.account_not_changed(bridge_account, person, hrp_wkr))
-
-        bridge_account = loader.get_bridge().get_user_by_uwnetid(
-            person.uwnetid)
-        self.assertTrue(
-            loader.account_not_changed(bridge_account, person, hrp_wkr))
+        with self.settings(BRIDGE_USER_WORK_POSITIONS=2):
+            set_db_records()
+            loader = GwsBridgeLoader(BridgeWorker())
+            person = get_person('javerage')
+            hrp_wkr = get_worker(person)
+            bridge_account = loader.get_bridge().get_user_by_uwnetid(
+                'javerage')
+            self.assertTrue(
+                loader.account_not_changed(bridge_account, person, hrp_wkr))
 
     def test_field_not_changed(self):
-        loader = GwsBridgeLoader(BridgeWorker())
+        with self.settings(BRIDGE_USER_WORK_POSITIONS=2):
+            loader = GwsBridgeLoader(BridgeWorker())
 
-        person = get_person('javerage')
-        hrp_wkr = get_worker(person)
-        bridge_account = loader.get_bridge().get_user_by_uwnetid('javerage')
-        self.assertTrue(loader.regid_not_changed(bridge_account, person))
-        self.assertTrue(loader.eid_not_changed(bridge_account, person))
-        self.assertTrue(loader.sid_not_changed(bridge_account, person))
-        self.assertTrue(loader.pos_data_not_changed(bridge_account, hrp_wkr))
+            person = get_person('javerage')
+            hrp_wkr = get_worker(person)
+            bridge_account = loader.get_bridge().get_user_by_uwnetid(
+                'javerage')
+            self.assertTrue(loader.regid_not_changed(bridge_account, person))
+            self.assertTrue(loader.eid_not_changed(bridge_account, person))
+            self.assertTrue(loader.sid_not_changed(bridge_account, person))
+            self.assertTrue(loader.pos_data_not_changed(
+                bridge_account, hrp_wkr))
 
-        person = get_person('faculty')
-        hrp_wkr = get_worker(person)
-        bridge_account = loader.get_bridge().get_user_by_uwnetid('tyler')
-        self.assertFalse(loader.regid_not_changed(bridge_account, person))
-        self.assertFalse(loader.eid_not_changed(bridge_account, person))
-        self.assertFalse(loader.sid_not_changed(bridge_account, person))
-        self.assertFalse(loader.pos_data_not_changed(bridge_account, hrp_wkr))
+            person = get_person('faculty')
+            hrp_wkr = get_worker(person)
+            bridge_account = loader.get_bridge().get_user_by_uwnetid('tyler')
+            self.assertFalse(loader.regid_not_changed(bridge_account, person))
+            self.assertFalse(loader.eid_not_changed(bridge_account, person))
+            self.assertFalse(loader.sid_not_changed(bridge_account, person))
+            self.assertFalse(loader.pos_data_not_changed(
+                bridge_account, hrp_wkr))

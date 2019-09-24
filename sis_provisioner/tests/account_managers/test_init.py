@@ -34,12 +34,12 @@ class TestValidUser(TransactionTestCase):
 
     def test_get_custom_field_value(self):
         bridge_acc = BridgeUser(netid='javerage')
-        self.assertIsNone(get_custom_field_value(
-            bridge_acc, BridgeCustomField.REGID_NAME))
+        self.assertEqual(get_custom_field_value(
+            bridge_acc, BridgeCustomField.REGID_NAME), "")
         bridge_acc.custom_fields[BridgeCustomField.REGID_NAME] = \
             new_custom_field(BridgeCustomField.REGID_NAME, "1")
-        self.assertIsNone(get_custom_field_value(
-            bridge_acc, BridgeCustomField.STUDENT_ID_NAME))
+        self.assertEqual(get_custom_field_value(
+            bridge_acc, BridgeCustomField.STUDENT_ID_NAME), "")
         self.assertEqual(get_custom_field_value(
             bridge_acc, BridgeCustomField.REGID_NAME), "1")
 
