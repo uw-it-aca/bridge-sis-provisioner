@@ -1,9 +1,7 @@
 PYTHONPATH=/data/bridge/live/lib/python3.6/site-packages
 DJANGO_SETTINGS_MODULE=project.settings
 
-1 6,8,10,12,14,16 * * * cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts pws
-
-20 0,4,17,21 * * * cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts pws
+1 2,5,8,11,14,17,20,23 * * * cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts pws
 
 1 7,15 * * 1,2,3,4,5 cd /data/bridge/live && source ./bin/activate && python manage.py sync_accounts gws
 
