@@ -23,10 +23,10 @@ class Command(BaseCommand):
                 if bridge_dao.delete_bridge_user(bridge_acc):
                     logger.info("DELETE {}".format(bridge_acc))
 
-            uw_acc = get_by_netid(userid)
-            if uw_acc is not None:
-                uw_acc.set_disable()
-                logger.info("Disabled in DB {}".format(uw_acc))
+                    uw_acc = get_by_netid(userid)
+                    if uw_acc is not None:
+                        uw_acc.set_disable()
+                        logger.info("Disabled in DB {}".format(uw_acc))
 
         except Exception as ex:
             logger.error(str(ex))

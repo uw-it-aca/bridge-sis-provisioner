@@ -14,3 +14,5 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
         call_command('disable_user', "retiree")
         uw_acc = get_by_netid("retiree")
         self.assertTrue(uw_acc.disabled)
+
+        call_command('disable_user', "ellen")
