@@ -11,8 +11,16 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
 
     def test_load_from_gws_to_bridge(self):
         set_db_records()
+
+        # existing user
         call_command('disable_user', "retiree")
         uw_acc = get_by_netid("retiree")
         self.assertTrue(uw_acc.disabled)
-
+        # error when deleting
         call_command('disable_user', "ellen")
+
+        # changed uwnetid
+        call_command('disable_user', "faculty")
+
+        # already disabled
+        call_command('disable_user', "staff")
