@@ -34,8 +34,7 @@ def get_person(uwnetid):
 
 def get_updated_persons(changed_since_datetime):
     """
-    Retrieve the Person object of the current uwnetid for the given netid
-    Raise: DataFailureException if PWS returns a non-404 error
+    Return a list of Person objects
     """
     timer = Timer()
     try:
