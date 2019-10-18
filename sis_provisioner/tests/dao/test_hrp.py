@@ -35,5 +35,7 @@ class TestHrpDao(TestCase):
     def test_get_worker_updates(self):
         worker_refs = get_worker_updates("2019")
         self.assertEqual(len(worker_refs), 2)
+        worker_refs = get_worker_updates("2020")
+        self.assertEqual(len(worker_refs), 0)
         self.assertRaises(DataFailureException,
                           get_worker_updates, "201909")
