@@ -2,7 +2,7 @@ from django.test import TestCase
 from sis_provisioner.tests import fdao_hrp_override, fdao_pws_override
 from sis_provisioner.dao import DataFailureException
 from sis_provisioner.dao.pws import get_person
-from sis_provisioner.dao.hrp import get_worker
+from sis_provisioner.dao.hrp import get_worker, get_worker_updates
 
 
 @fdao_hrp_override
@@ -31,3 +31,11 @@ class TestHrpDao(TestCase):
 
         person = get_person('error500')
         self.assertIsNone(get_worker(person))
+
+    def test_get_worker_updates(self):
+        worker_refs = get_worker_updates("2019")
+        self.assertEqual(len(worker_refs), 2)
+        worker_refs = get_worker_updates("2020")
+        self.assertEqual(len(worker_refs), 0)
+        self.assertRaises(DataFailureException,
+                          get_worker_updates, "201909")
