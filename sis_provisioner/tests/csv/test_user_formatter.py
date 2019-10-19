@@ -16,9 +16,6 @@ override_bridge = override_settings(BRIDGE_USER_WORK_POSITIONS=2)
 @override_bridge
 class TestUserFormatter(TransactionTestCase):
 
-    def setup(self):
-        self.maxDiff = None
-
     def test_get_headers(self):
         headers = get_headers()
         self.assertEqual(len(headers), 25)
