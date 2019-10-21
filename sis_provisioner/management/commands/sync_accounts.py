@@ -7,6 +7,7 @@ from sis_provisioner.account_managers.other_loader import OtherUserLoader
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
+from sis_provisioner.account_managers.hrp_bridge import HrpBridgeLoader
 from sis_provisioner.util.log import log_resp_time, Timer
 
 
@@ -19,8 +20,8 @@ class Command(BaseCommand):
     """
     def add_arguments(self, parser):
         parser.add_argument('data-source',
-                            choices=['gws', 'db-emp',
-                                     'db-other', 'bridge', 'pws'])
+                            choices=['gws', 'db-emp', 'db-other',
+                                     'bridge', 'hrp', 'pws'])
 
     def handle(self, *args, **options):
         timer = Timer()
@@ -38,6 +39,8 @@ class Command(BaseCommand):
             loader = BridgeChecker(workr)
         elif source == 'pws':
             loader = PwsBridgeLoader(workr)
+        elif source == 'hrp':
+            loader = HrpBridgeLoader(workr)
         else:
             logger.info("Invalid data source, abort!")
             return
