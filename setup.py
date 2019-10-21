@@ -22,7 +22,6 @@ setup(
     install_requires = [
         'Django>=2.0.13,<2.1',
         'python-dateutil',
-        'ordereddict',
         'UW-RestClients-Core>=1.2.1,<2.0',
         'UW-RestClients-PWS>=2.1,<3.0',
         'UW-RestClients-GWS>=2.2.4,<3.0',
