@@ -49,7 +49,7 @@
     "ActiveStatusDate":"2017-10-06T07:00:00.000Z",
     "EmployeeStatus":"Active",
     "EmployeeStatusCode":"A",
-    "EndEmploymentDate":"2019-06-14T07:00:00.000Z",
+    "EndEmploymentDate":null,
     "EstimatedLastDayOfLeave":null,
     "FirstDayOfLeave":null,
     "FirstDayOfWork":"2017-10-06T07:00:00.000Z",
