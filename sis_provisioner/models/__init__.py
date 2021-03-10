@@ -119,6 +119,9 @@ class UwAccount(models.Model):
                 (self.prev_netid is None and other.prev_netid is None or
                  self.prev_netid == other.prev_netid))
 
+    def __hash__(self):
+        return hash(self.netid)
+
     def __str__(self):
         return json.dumps(self.json_data(), default=str)
 
