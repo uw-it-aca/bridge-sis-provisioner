@@ -1,4 +1,5 @@
 from .base_settings import *
+from google.oauth2 import service_account
 import os
 
 INSTALLED_APPS += [
@@ -20,19 +21,18 @@ if os.getenv('BRIDGE_ENV') in RESTCLIENTS_DEFAULT_ENVS:
 
 if os.getenv('ENV', 'localdev') == 'localdev':
     DEBUG = True
-    BRIDGE_IMPORT_CSV_ROOT = os.path.join(BASE_DIR, 'fl_test')
-    BRIDGE_IMPORT_USER_FILENAME = 'busers'
+    BRIDGE_AUTHOR_GROUP_NAME = 'u_bridgeap_authors'
     BRIDGE_IMPORT_USER_FILE_SIZE = 3
-    ERRORS_TO_ABORT_LOADER = []
-    BRIDGE_AUTHOR_GROUP_NAME = "u_bridgeap_authors"
     BRIDGE_LOGIN_WINDOW = 0
+    ERRORS_TO_ABORT_LOADER = []
     RESTCLIENTS_DAO_CACHE_CLASS = None
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    MEDIA_ROOT = os.getenv('IMPORT_CSV_ROOT', '/data')
 else:
-    BRIDGE_IMPORT_CSV_ROOT = '/data/csv'
     BRIDGE_GWS_CACHE = '/data/gws_users'
     BRIDGE_IMPORT_USER_FILE_SIZE = 20000
     BRIDGE_USER_WORK_POSITIONS = 2
-    BRIDGE_AUTHOR_GROUP_NAME = "u_bridgeap_prod_author"
+    BRIDGE_AUTHOR_GROUP_NAME = os.getenv('AUTHOR_GROUP', "u_bridgeap_prod_author")
     BRIDGE_LOGIN_WINDOW = 1
     BRIDGE_PERSON_CHANGE_WINDOW = 200
     BRIDGE_WORKER_CHANGE_WINDOW = 1500
@@ -40,6 +40,12 @@ else:
     TIMING_LOG_ENABLED = True
     ERRORS_TO_ABORT_LOADER = [401, 403, 500, 502, 503]
     RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_PROJECT_ID = os.getenv('STORAGE_PROJECT_ID', '')
+    GS_BUCKET_NAME = os.getenv('STORAGE_BUCKET_NAME', '')
+    GS_LOCATION = os.path.join(os.getenv('IMPORT_CSV_ROOT', ''))
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        '/gcs/credentials.json')
 
 CACHES = {
     'default': {

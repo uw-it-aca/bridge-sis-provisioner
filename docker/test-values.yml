@@ -26,6 +26,9 @@ memcached:
   replicaCount: 1
   updateStrategy:
     type: RollingUpdate
+gcsCredentials:
+  mounted: true
+  secretName: test.bridge.uw.edu-gcs-credentials
 repo: bridge-sis-provisioner
 instance: test
 image:
@@ -74,7 +77,6 @@ environmentVariables:
   - name: HRPWS_POOL_SIZE
     value: "5"
 
-
 externalSecrets:
   enabled: true
   secrets:
@@ -87,13 +89,22 @@ externalSecrets:
           property: bridge-auth-key
         - name: bridge-auth-secret
           property: bridge-auth-secret
+        - name: storage-project-id
+          property: storage-project-id
+        - name: storage-bucket-name
+          property: storage-bucket-name
     - name: test.bridge.uw.edu-sql-secrets
-      externalKey: axdd/kv/data/bridge/test/sql-secrets
+      externalKey: axdd/kv/data/bridge/shared/sql-secrets
       data:
         - name: username
           property: username
         - name: password
           property: password
+    - name: test.bridge.uw.edu-gcs-credentials
+      externalKey: axdd/kv/data/bridge/shared/gcs-credentials
+      data:
+        - name: credentials.json
+          property: credentials.json
     - name: test.bridge.uw.edu-uwca-certs
       externalKey: axdd/kv/data/bridge/test/uwca-certs
       data:
@@ -115,3 +126,11 @@ environmentVariablesSecrets:
     name: BRIDGE_BASIC_AUTH_SECRET
     secretName: test.bridge.uw.edu-secrets
     secretKey: bridge-auth-secret
+  storageBucketName:
+    name: STORAGE_BUCKET_NAME
+    secretName: test.bridge.uw.edu-secrets
+    secretKey: storage-bucket-name
+  storageProjectId:
+    name: STORAGE_PROJECT_ID
+    secretName: test.bridge.uw.edu-shared-secrets
+    secretKey: storage-project-id
