@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 """
 The BridgeWorker class will apply actions on the user account in Bridge
 via the Bridge APIs.

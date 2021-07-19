@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 """
 This class will load all the Bridge authors, check against gws author group
 1. Delete former authors

@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import logging
 import traceback
 from sis_provisioner.dao.uw_account import get_all_uw_accounts
