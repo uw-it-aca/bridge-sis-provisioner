@@ -1,4 +1,4 @@
-FROM gcr.io/uwit-mci-axdd/django-container:1.3.0 as app-container
+FROM gcr.io/uwit-mci-axdd/django-container:1.3.3 as app-container
 
 USER root
 
@@ -21,7 +21,7 @@ ADD --chown=acait:acait docker/ project/
 
 #RUN . /app/bin/activate && python manage.py test
 
-FROM gcr.io/uwit-mci-axdd/django-test-container:1.3.0 as app-test-container
+FROM gcr.io/uwit-mci-axdd/django-test-container:1.3.3 as app-test-container
 
 COPY --from=app-container /app/ /app/
 COPY --from=app-container /static/ /static/
