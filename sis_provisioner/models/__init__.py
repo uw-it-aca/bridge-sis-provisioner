@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from django.db import models
 from datetime import timedelta
@@ -118,6 +121,9 @@ class UwAccount(models.Model):
         return (self.netid == other.netid and
                 (self.prev_netid is None and other.prev_netid is None or
                  self.prev_netid == other.prev_netid))
+
+    def __hash__(self):
+        return hash(self.netid)
 
     def __str__(self):
         return json.dumps(self.json_data(), default=str)

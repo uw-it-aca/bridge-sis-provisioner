@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.test import TransactionTestCase
 from sis_provisioner.dao.hrp import get_worker_updates
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker

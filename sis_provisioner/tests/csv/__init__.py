@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.test.utils import override_settings
 from sis_provisioner.tests import (
     fdao_pws_override, fdao_hrp_override, fdao_bridge_override)

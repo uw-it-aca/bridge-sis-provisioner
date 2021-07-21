@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import logging
 import traceback
 from sis_provisioner.dao.uw_account import get_all_uw_accounts
@@ -6,19 +9,7 @@ from sis_provisioner.csv.user_writer import make_import_user_csv_files
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.util.settings import get_csv_file_path_prefix
 
-
 logger = logging.getLogger(__name__)
-
-
-def get_file_path():
-    path_prefix = get_csv_file_path_prefix()
-    try:
-        return get_filepath(path_prefix)
-    except Exception:
-        log_exception(logger,
-                      "Cannot create CSV dir %s" % path_prefix,
-                      traceback.format_exc())
-        raise
 
 
 class CsvMaker:
@@ -30,7 +21,7 @@ class CsvMaker:
         @param: loader an account_managers.loader subclass object
         """
         self.file_wrote = False
-        self.filepath = get_file_path()
+        self.filepath = get_filepath(path_prefix=get_csv_file_path_prefix())
 
     def fetch_users(self):
         return get_all_uw_accounts()

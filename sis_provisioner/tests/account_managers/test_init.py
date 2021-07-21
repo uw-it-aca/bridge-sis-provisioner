@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.test import TransactionTestCase
 from uw_bridge.models import BridgeCustomField, BridgeUser
 from uw_hrp.models import SupervisoryOrganization

@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.test import TestCase
 from sis_provisioner.tests import fdao_hrp_override, fdao_pws_override
 from sis_provisioner.dao import DataFailureException
