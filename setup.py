@@ -30,7 +30,6 @@ setup(
         'UW-RestClients-GWS~=2.3',
         'uw-restclients-hrp~=1.2',
         'uw-restclients-bridge~=1.5',
-        'UW-RestClients-Django-Utils~=2.3',
     ],
     license='Apache License, Version 2.0',
     description='An Django application that provisions UW users to Bridge',
