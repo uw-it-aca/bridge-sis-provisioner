@@ -29,16 +29,18 @@ class TerminateUser(GwsBridgeLoader):
             person = get_person(netid)
             if self.is_invalid_person(netid, person):
                 continue
-            self.total_checked_users += 1
-            uw_acc = save_uw_account(person, create=False)
-            uwnetid = uw_acc.netid
-            if (not uw_acc.disabled and
-                    not uw_acc.has_terminate_date()):
 
-                if not self.in_uw_groups(uwnetid):
-                    logger.info(
-                        "{0} has left UW, schedule terminate".format(uw_acc))
-                    uw_acc.set_terminate_date(graceful=True)
+            uw_acc = save_uw_account(person, create=False)
+            if not uw_acc or uw_acc.disabled or uw_acc.has_terminate_date():
+                continue
+
+            # existing active user
+            self.total_checked_users += 1
+            uwnetid = uw_acc.netid
+            if not self.in_uw_groups(uwnetid):
+                logger.info(
+                    "{} has left UW, schedule terminate".format(uw_acc))
+                uw_acc.set_terminate_date(graceful=True)
 
             if uw_acc.netid_changed():
                 try:
