@@ -34,7 +34,7 @@ class TerminateUser(GwsBridgeLoader):
             if not uw_acc or uw_acc.disabled or uw_acc.has_terminate_date():
                 continue
 
-            # existing active user
+            # existing active user to mark terminate
             self.total_checked_users += 1
             uwnetid = uw_acc.netid
             if not self.in_uw_groups(uwnetid):
