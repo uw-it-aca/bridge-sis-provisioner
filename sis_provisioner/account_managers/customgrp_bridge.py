@@ -1,9 +1,10 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 """
-This class will validate all non-employee user accounts in the database
-against GWS groups and PWS person.
-1. If the user is no longer in the specified GWS groups, schedule terminate.
-2. If uw account passed the grace period for termination, disable it.
-3. Update active accounts.
+This class will validate custom group members
+1. If the user is not in DB, add to Bridge
+2. Update active accounts.
 """
 
 import logging
