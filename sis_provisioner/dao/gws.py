@@ -23,8 +23,10 @@ def get_members_of_group(group_id):
     except: DataFailureException
     """
     timer = Timer()
-    action = "get_effective_members({0})".format(group_id)
+    action = "get_members_of_group({0})".format(group_id)
     try:
+        if group_id.startswith("uw_"):
+            return gws.get_members(group_id)
         return gws.get_effective_members(group_id)
     finally:
         log_resp_time(logger, action, timer)
