@@ -46,10 +46,12 @@ class TestGwsDao(TestCase):
 
     def test_get_member_changes(self):
         changes = _get_member_changes("uw_member", 1626215400)
-        self.assertEqual(len(changes), 2)
-        self.assertEqual(changes[1].member_uwnetid, "added")
-        self.assertTrue(changes[1].is_add_member)
-        self.assertEqual(changes[0].member_uwnetid, "tyler")
+        self.assertEqual(len(changes), 3)
+        self.assertEqual(changes[2].member_uwnetid, "added")
+        self.assertTrue(changes[2].is_add_member)
+        self.assertEqual(changes[1].member_uwnetid, "retiree")
+        self.assertTrue(changes[1].is_delete_member)
+        self.assertEqual(changes[0].member_uwnetid, "leftuw")
         self.assertTrue(changes[0].is_delete_member)
 
     @freeze_time("2021-07-20 18:30:00", tz_offset=-7)
@@ -63,8 +65,9 @@ class TestGwsDao(TestCase):
         users_added, users_deleted = get_changed_members('uw_member', 12)
         self.assertEqual(len(users_added), 1)
         self.assertTrue("added" in users_added)
-        self.assertEqual(len(users_deleted), 1)
-        self.assertTrue("tyler" in users_deleted)
+        self.assertEqual(len(users_deleted), 2)
+        self.assertTrue("retiree" in users_deleted)
+        self.assertTrue("leftuw" in users_deleted)
 
         users_added, users_deleted = get_changed_members('uw_affiliate', 7)
         self.assertEqual(len(users_added), 0)
@@ -81,5 +84,6 @@ class TestGwsDao(TestCase):
            return_value=1626215400, spec=True)
     def test_get_deleted_members(self, mock_fn):
         netid_set = get_deleted_members(7)
-        self.assertEqual(len(netid_set), 1)
-        self.assertTrue("tyler" in netid_set)
+        self.assertEqual(len(netid_set), 2)
+        self.assertTrue("retiree" in netid_set)
+        self.assertTrue("leftuw" in netid_set)

@@ -19,7 +19,13 @@
         "timestamp":1626193233239,
         "actAs":"",
         "activity":"membership",
-        "description":"delete member: 'tyler'"
+        "description":"delete member: 'retiree'"
+      },
+      {
+        "timestamp":1626193233230,
+        "actAs":"",
+        "activity":"membership",
+        "description":"delete member: 'leftuw'"
       }
     ]
 }
