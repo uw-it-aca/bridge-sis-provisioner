@@ -8,6 +8,7 @@ from sis_provisioner.account_managers.bridge_checker import BridgeChecker
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
 from sis_provisioner.account_managers.hrp_bridge import HrpBridgeLoader
+from sis_provisioner.account_managers.customgrp_bridge import CustomGroupLoader
 from sis_provisioner.util.log import log_resp_time, Timer
 
 
@@ -21,7 +22,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('data-source',
                             choices=['gws', 'db-emp', 'db-other',
-                                     'bridge', 'hrp', 'pws'])
+                                     'bridge', 'hrp', 'pws', 'customg'])
 
     def handle(self, *args, **options):
         timer = Timer()
@@ -31,6 +32,8 @@ class Command(BaseCommand):
         workr = BridgeWorker()
         if source == 'gws':
             loader = GwsBridgeLoader(workr)
+        elif source == 'customg':
+            loader = CustomGroupLoader(workr)
         elif source == 'db-emp':
             loader = ActiveWkrLoader(workr)
         elif source == 'db-other':

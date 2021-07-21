@@ -33,6 +33,18 @@ def get_login_window():
     return int(num) if num else 0
 
 
+def get_group_member_add_window():
+    # number of hours
+    num = getattr(settings, 'BRIDGE_GMEMBER_ADD_WINDOW', None)
+    return int(num) if num else 24
+
+
+def get_group_member_del_window():
+    # number of days
+    num = getattr(settings, 'BRIDGE_GMEMBER_DEL_WINDOW', None)
+    return int(num) if num else 7
+
+
 def get_person_changed_window():
     # number of minutes
     num = getattr(settings, 'BRIDGE_PERSON_CHANGE_WINDOW', None)
@@ -43,7 +55,3 @@ def get_worker_changed_window():
     # number of minutes
     num = getattr(settings, 'BRIDGE_WORKER_CHANGE_WINDOW', None)
     return int(num) if num else 15
-
-
-def get_gws_cache_path():
-    return getattr(settings, 'BRIDGE_GWS_CACHE', '')

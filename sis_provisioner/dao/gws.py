@@ -3,16 +3,17 @@ The functions here interact with uw_gws
 """
 
 import logging
-from sis_provisioner.dao import (
-    DataFailureException, read_gws_cache_file, write_gws_cache_file)
+from datetime import datetime, timedelta
+from sis_provisioner.models import get_now
+from sis_provisioner.dao import DataFailureException
 from uw_gws import GWS
 from sis_provisioner.util.log import log_resp_time, Timer
-from sis_provisioner.util.settings import (
-    get_author_group_name, get_gws_cache_path)
+from sis_provisioner.util.settings import get_author_group_name
 
 
 logger = logging.getLogger(__name__)
-UW_GROUPS = ["uw_member", "uw_affiliate", "u_bridgeap_tempusers"]
+UW_GROUPS = ["uw_member", "uw_affiliate"]
+CUSTOM_GROUP = "u_bridgeap_tempusers"
 gws = GWS()
 
 
@@ -22,7 +23,7 @@ def get_members_of_group(group_id):
     except: DataFailureException
     """
     timer = Timer()
-    action = "get_effective_members('{0}')".format(group_id)
+    action = "get_effective_members({0})".format(group_id)
     try:
         return gws.get_effective_members(group_id)
     finally:
@@ -33,9 +34,8 @@ def get_members_of_group(group_id):
 def append_netids_to_list(members, user_set):
     if members is not None and len(members) > 0:
         for gm in members:
-            if gm.is_uwnetid() and gm.name is not None and len(gm.name) > 0:
-                if gm.name not in user_set:
-                    user_set.add(gm.name)
+            if gm.is_uwnetid() and gm.name is not None and len(gm.name):
+                user_set.add(gm.name)
 
 
 def get_potential_users():
@@ -44,24 +44,105 @@ def get_potential_users():
     """
     timer = Timer()
     user_set = set()
+    UW_GROUPS.append(CUSTOM_GROUP)
     for gr in UW_GROUPS:
         append_netids_to_list(get_members_of_group(gr), user_set)
     log_resp_time(logger, "get_potential_users", timer)
     return user_set
 
 
-def get_bridge_authors():
-    user_set = set()
-    append_netids_to_list(get_members_of_group(get_author_group_name()),
-                          user_set)
-    return user_set
-
-
-def get_member_updates(current_user_set):
+def get_additional_users():
     """
     return a set of uwnetids
     """
-    path = get_gws_cache_path()
-    last_user_set = read_gws_cache_file(path)
-    write_gws_cache_file(path, current_user_set)
-    return current_user_set - last_user_set
+    user_set = set()
+    append_netids_to_list(get_members_of_group(CUSTOM_GROUP), user_set)
+    return user_set
+
+
+def get_bridge_authors():
+    user_set = set()
+    append_netids_to_list(
+        get_members_of_group(get_author_group_name()), user_set)
+    return user_set
+
+
+def _get_member_changes(group_id, start_timestamp):
+    """
+    Returns a list of uwnetids of the added within the given duration
+    start_timestamp: in seconds
+    except: DataFailureException
+    """
+    timer = Timer()
+    action = "get_group_history({}, {})".format(group_id, start_timestamp)
+    try:
+        return gws.get_group_history(
+            group_id, activity="membership", start=start_timestamp)
+    finally:
+        log_resp_time(logger, action, timer)
+    return None
+
+
+def _get_start_timestamp(duration):
+    dt = get_now() - timedelta(minutes=duration)
+    return int(dt.timestamp())
+
+
+def get_changed_members(group_id, duration):
+    """
+    Returns a list of uwnetids of the added within the given duration
+    duration: in minutes
+    except: DataFailureException
+    """
+    users_added = set()
+    users_deleted = set()
+    changes = _get_member_changes(group_id, _get_start_timestamp(duration))
+    if changes:
+        for c in changes:
+            if c.is_add_member():
+                if c.member_uwnetid in users_deleted:
+                    users_deleted.remove(c.member_uwnetid)
+                else:
+                    users_added.add(c.member_uwnetid)
+            elif c.is_delete_member():
+                if c.member_uwnetid in users_added:
+                    users_added.remove(c.member_uwnetid)
+                else:
+                    users_deleted.add(c.member_uwnetid)
+    return users_added, users_deleted
+
+
+def get_added_members(duration):
+    """
+    duration: in hours
+    return a set of uwnetids
+    except: DataFailureException
+    """
+    timer = Timer()
+    user_set = set()
+    for gr in UW_GROUPS:
+        try:
+            users_added, users_deleted = get_changed_members(gr, duration * 60)
+            user_set = user_set.union(users_added)
+        except DataFailureException as ex:
+            logger.error(ex)
+    log_resp_time(logger, "get_added_members", timer)
+    return user_set
+
+
+def get_deleted_members(duration):
+    """
+    duration: in days
+    return a set of uwnetids
+    """
+    timer = Timer()
+    user_set = set()
+    for gr in UW_GROUPS:
+        try:
+            users_added, users_deleted = get_changed_members(
+                gr, duration * 24 * 60)
+            user_set = user_set.union(users_deleted)
+        except DataFailureException as ex:
+            logger.error(ex)
+    log_resp_time(logger, "get_deleted_members", timer)
+    return user_set

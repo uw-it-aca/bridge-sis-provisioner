@@ -1,11 +1,15 @@
-import fnmatch
-import os
+from datetime import datetime
 from django.test import TestCase
+from unittest.mock import patch
+from freezegun import freeze_time
+import datetime
+from uw_gws.models import GroupHistory
 from sis_provisioner.dao import (
     DataFailureException, read_gws_cache_file, write_gws_cache_file)
 from sis_provisioner.dao.gws import (
     get_members_of_group, get_potential_users, get_bridge_authors,
-    get_member_updates)
+    get_additional_users, _get_member_changes, _get_start_timestamp,
+    get_changed_members, get_added_members, get_deleted_members)
 from sis_provisioner.tests import fdao_gws_override
 
 
@@ -26,6 +30,11 @@ class TestGwsDao(TestCase):
         self.assertTrue("error500" in user_set)
         self.assertTrue("staff" in user_set)
 
+    def test_get_additional_users(self):
+        user_set = get_additional_users()
+        self.assertEqual(len(user_set), 1)
+        self.assertTrue("not_in_pws" in user_set)
+
     def test_get_bridge_authors(self):
         user_set = get_bridge_authors()
         self.assertEqual(len(user_set), 5)
@@ -35,17 +44,42 @@ class TestGwsDao(TestCase):
         self.assertTrue("error500" in user_set)
         self.assertTrue("not_in_pws" in user_set)
 
-    def test_gws_cache_file(self):
-        with self.settings(BRIDGE_GWS_CACHE='/tmp/gwsusers'):
-            current_user_set = get_potential_users()
-            netids = get_member_updates(current_user_set)
-            self.assertEqual(len(netids), 7)
+    def test_get_member_changes(self):
+        changes = _get_member_changes("uw_member", 1626215400)
+        self.assertEqual(len(changes), 2)
+        self.assertEqual(changes[1].member_uwnetid, "added")
+        self.assertTrue(changes[1].is_add_member)
+        self.assertEqual(changes[0].member_uwnetid, "tyler")
+        self.assertTrue(changes[0].is_delete_member)
 
-            # test file read
-            cache = read_gws_cache_file('/tmp/gwsusers')
-            self.assertEqual(cache, netids)
+    @freeze_time("2021-07-20 18:30:00", tz_offset=-7)
+    def test_get_start_timestamp(self):
+        ts = _get_start_timestamp(60)
+        self.assertEqual(ts, 1626777000)
 
-            # test file rename
-            write_gws_cache_file('/tmp/gwsusers', current_user_set)
-            files = fnmatch.filter(os.listdir('/tmp/'), 'gwsuser*')
-            self.assertEqual(len(files), 2)
+    @patch('sis_provisioner.dao.gws._get_start_timestamp',
+           return_value=1626215400, spec=True)
+    def test_get_changed_members(self, mock_fn):
+        users_added, users_deleted = get_changed_members('uw_member', 12)
+        self.assertEqual(len(users_added), 1)
+        self.assertTrue("added" in users_added)
+        self.assertEqual(len(users_deleted), 1)
+        self.assertTrue("tyler" in users_deleted)
+
+        users_added, users_deleted = get_changed_members('uw_affiliate', 7)
+        self.assertEqual(len(users_added), 0)
+        self.assertEqual(len(users_deleted), 0)
+
+    @patch('sis_provisioner.dao.gws._get_start_timestamp',
+           return_value=1626215400, spec=True)
+    def test_get_added_members(self, mock_fn):
+        netid_set = get_added_members(12)
+        self.assertEqual(len(netid_set), 1)
+        self.assertTrue("added" in netid_set)
+            
+    @patch('sis_provisioner.dao.gws._get_start_timestamp',
+           return_value=1626215400, spec=True)
+    def test_get_deleted_members(self, mock_fn):
+        netid_set = get_deleted_members(7)
+        self.assertEqual(len(netid_set), 1)
+        self.assertTrue("tyler" in netid_set)
