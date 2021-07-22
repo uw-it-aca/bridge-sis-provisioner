@@ -20,10 +20,7 @@ class HrpBridgeLoader(GwsBridgeLoader):
         self.data_source = "HRP updates"
 
     def fetch_users(self):
-        return get_worker_updates(self.get_changed_since_datetime())
-
-    def get_changed_since_datetime(self):
-        return datetime.now() - timedelta(minutes=get_worker_changed_window())
+        return get_worker_updates(get_worker_changed_window())
 
     def process_users(self):
         for worker_ref in self.get_users_to_process():

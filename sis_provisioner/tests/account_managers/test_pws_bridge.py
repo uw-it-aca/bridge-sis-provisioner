@@ -1,4 +1,5 @@
 from django.test import TransactionTestCase
+from freezegun import freeze_time
 from sis_provisioner.dao.pws import get_updated_persons
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
@@ -12,12 +13,14 @@ from sis_provisioner.tests.account_managers import set_db_records
 @fdao_pws_override
 class TestPwsBridgeLoader(TransactionTestCase):
 
+    @freeze_time("2019-09-01 20:30:00")
     def test_load_pws(self):
         with self.settings(ERRORS_TO_ABORT_LOADER=[],
-                           BRIDGE_PERSON_CHANGE_WINDOW=10):
+                           BRIDGE_PERSON_CHANGE_WINDOW=60):
             set_db_records()
             loader = PwsBridgeLoader(BridgeWorker())
-            loader.users_to_process = get_updated_persons("2019")
+            loader.users_to_process = loader.fetch_users()
+            self.assertEqual(len(loader.users_to_process), 2)
             loader.process_users()
             self.assertEqual(loader.get_total_count(), 2)
             self.assertEqual(loader.get_total_checked_users(), 2)

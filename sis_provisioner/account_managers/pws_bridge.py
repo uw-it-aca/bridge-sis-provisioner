@@ -2,7 +2,6 @@
 This class will update user account upon the changes in PWS
 """
 
-from datetime import datetime, timedelta
 import logging
 from sis_provisioner.dao.pws import get_updated_persons
 from sis_provisioner.util.settings import get_person_changed_window
@@ -18,10 +17,7 @@ class PwsBridgeLoader(GwsBridgeLoader):
         self.data_source = "Person updates"
 
     def fetch_users(self):
-        return get_updated_persons(self.get_changed_since_datetime())
-
-    def get_changed_since_datetime(self):
-        return datetime.now() - timedelta(minutes=get_person_changed_window())
+        return get_updated_persons(get_person_changed_window())
 
     def process_users(self):
         for person in self.get_users_to_process():

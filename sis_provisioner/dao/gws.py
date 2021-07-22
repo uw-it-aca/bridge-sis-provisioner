@@ -3,9 +3,8 @@ The functions here interact with uw_gws
 """
 
 import logging
-from datetime import datetime, timedelta
 from sis_provisioner.models import get_now
-from sis_provisioner.dao import DataFailureException
+from sis_provisioner.dao import DataFailureException, get_dt_from_now
 from uw_gws import GWS
 from sis_provisioner.util.log import log_resp_time, Timer
 from sis_provisioner.util.settings import get_author_group_name
@@ -46,8 +45,8 @@ def get_potential_users():
     """
     timer = Timer()
     user_set = set()
-    UW_GROUPS.append(CUSTOM_GROUP)
-    for gr in UW_GROUPS:
+    groups = [CUSTOM_GROUP]
+    for gr in groups + UW_GROUPS:
         append_netids_to_list(get_members_of_group(gr), user_set)
     log_resp_time(logger, "get_potential_users", timer)
     return user_set
@@ -86,8 +85,7 @@ def _get_member_changes(group_id, start_timestamp):
 
 
 def _get_start_timestamp(duration):
-    dt = get_now() - timedelta(minutes=duration)
-    return int(dt.timestamp())
+    return int(get_dt_from_now(duration).timestamp())
 
 
 def get_changed_members(group_id, duration):
@@ -116,15 +114,14 @@ def get_changed_members(group_id, duration):
 
 def get_added_members(duration):
     """
-    duration: in hours
+    duration: in minutes
     return a set of uwnetids
-    except: DataFailureException
     """
     timer = Timer()
     user_set = set()
     for gr in UW_GROUPS:
         try:
-            users_added, users_deleted = get_changed_members(gr, duration * 60)
+            users_added, users_deleted = get_changed_members(gr, duration)
             user_set = user_set.union(users_added)
         except DataFailureException as ex:
             logger.error(ex)
@@ -134,15 +131,14 @@ def get_added_members(duration):
 
 def get_deleted_members(duration):
     """
-    duration: in days
+    duration: in minutes
     return a set of uwnetids
     """
     timer = Timer()
     user_set = set()
     for gr in UW_GROUPS:
         try:
-            users_added, users_deleted = get_changed_members(
-                gr, duration * 24 * 60)
+            users_added, users_deleted = get_changed_members(gr, duration)
             user_set = user_set.union(users_deleted)
         except DataFailureException as ex:
             logger.error(ex)

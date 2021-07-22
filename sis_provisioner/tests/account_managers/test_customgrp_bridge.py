@@ -3,6 +3,7 @@ from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.customgrp_bridge import CustomGroupLoader
 from sis_provisioner.tests import fdao_gws_override
 
+
 @fdao_gws_override
 class TestCustomGroupLoader(TransactionTestCase):
 

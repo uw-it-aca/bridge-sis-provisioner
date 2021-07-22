@@ -9,7 +9,7 @@ FOUR_HOURS = 60 * 60 * 4
 
 class BridgeAccountCache(RestclientPymemcacheClient):
 
-    def get_cache_expiration_time(self, service, url, status=None): 
+    def get_cache_expiration_time(self, service, url, status=None):
         if "bridge" == service:
             if re.match(r"^/api/author/users/", url) is not None:
                 return FIVE_SECONDS

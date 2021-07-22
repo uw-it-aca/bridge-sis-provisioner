@@ -1,6 +1,3 @@
-# Copyright 2021 UW-IT, University of Washington
-# SPDX-License-Identifier: Apache-2.0
-
 """
 This class will validate custom group members
 1. If the user is not in DB, add to Bridge

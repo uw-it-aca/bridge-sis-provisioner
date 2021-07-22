@@ -1,11 +1,20 @@
-from datetime import datetime
+from datetime import timedelta
 import logging
 import os
 from restclients_core.exceptions import (
     DataFailureException, InvalidNetID, InvalidRegID)
+from sis_provisioner.models import get_now
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_dt_from_now(duration):
+    return get_now() - timedelta(minutes=duration)
+
+
+def changed_since_str(duration):
+    return get_dt_from_now(duration).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def read_gws_cache_file(path):
@@ -23,7 +32,7 @@ def read_gws_cache_file(path):
 
 def rename_file(path):
     if os.path.isfile(path):
-        rname = "{}.{}".format(path, datetime.now().strftime("%Y%m%d.%H%M"))
+        rname = "{}.{}".format(path, get_now().strftime("%Y%m%d.%H%M"))
         os.rename(path, rname)
 
 

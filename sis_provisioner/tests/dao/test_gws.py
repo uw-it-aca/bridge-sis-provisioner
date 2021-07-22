@@ -1,8 +1,6 @@
-from datetime import datetime
 from django.test import TestCase
 from unittest.mock import patch
 from freezegun import freeze_time
-import datetime
 from uw_gws.models import GroupHistory
 from sis_provisioner.dao import (
     DataFailureException, read_gws_cache_file, write_gws_cache_file)
@@ -79,7 +77,7 @@ class TestGwsDao(TestCase):
         netid_set = get_added_members(12)
         self.assertEqual(len(netid_set), 1)
         self.assertTrue("added" in netid_set)
-            
+
     @patch('sis_provisioner.dao.gws._get_start_timestamp',
            return_value=1626215400, spec=True)
     def test_get_deleted_members(self, mock_fn):
