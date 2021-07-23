@@ -27,17 +27,17 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
             set_db_records()
             call_command('sync_accounts', 'gws')
 
-    def test_load_from_dbemp_to_bridge(self):
+    def test_load_from_customg_to_bridge(self):
         time.sleep(1)
         set_db_records()
         call_command('sync_accounts', 'customg')
 
-    def test_load_from_dbemp_to_bridge(self):
+    def test_load_from_dbacc_to_bridge(self):
         time.sleep(1)
         set_db_records()
         call_command('sync_accounts', 'db-acc')
 
-    def test_load_from_dbother_to_bridge(self):
+    def test_load_from_delete_to_bridge(self):
         time.sleep(1)
         set_db_records()
         call_command('sync_accounts', 'delete')

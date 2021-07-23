@@ -5,8 +5,7 @@ from django.test import TestCase
 from unittest.mock import patch
 from freezegun import freeze_time
 from uw_gws.models import GroupHistory
-from sis_provisioner.dao import (
-    DataFailureException, read_gws_cache_file, write_gws_cache_file)
+from sis_provisioner.dao import DataFailureException
 from sis_provisioner.dao.gws import (
     get_members_of_group, get_potential_users, get_bridge_authors,
     get_additional_users, _get_member_changes, _get_start_timestamp,
