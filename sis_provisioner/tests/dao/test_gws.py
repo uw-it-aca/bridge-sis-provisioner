@@ -81,6 +81,10 @@ class TestGwsDao(TestCase):
         self.assertEqual(len(netid_set), 1)
         self.assertTrue("added" in netid_set)
 
+    def test_get_added_members_err(self):
+        netid_set = get_added_members(12)
+        self.assertEqual(len(netid_set), 0)
+
     @patch('sis_provisioner.dao.gws._get_start_timestamp',
            return_value=1626215400, spec=True)
     def test_get_deleted_members(self, mock_fn):
@@ -88,3 +92,7 @@ class TestGwsDao(TestCase):
         self.assertEqual(len(netid_set), 2)
         self.assertTrue("retiree" in netid_set)
         self.assertTrue("leftuw" in netid_set)
+
+    def test_get_deleted_members_err(self):
+        netid_set = get_deleted_members(7)
+        self.assertEqual(len(netid_set), 0)
