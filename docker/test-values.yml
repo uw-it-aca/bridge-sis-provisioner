@@ -57,18 +57,22 @@ environmentVariables:
     value: PROD
   - name: GWS_TIMEOUT
     value: "90"
+  - name: GWS_POOL_SIZE
+    value: "5"
 
   - name: PWS_ENV
     value: EVAL
   - name: PWS_TIMEOUT
     value: "90"
+  - name: PWS_POOL_SIZE
+    value: "5"
 
   - name: BRIDGE_ENV
     value: EVAL
   - name: BRIDGE_TIMEOUT
     value: "90"
   - name: BRIDGE_POOL_SIZE
-    value: "30"
+    value: "5"
 
   - name: HRPWS_ENV
     value: EVAL
@@ -76,6 +80,27 @@ environmentVariables:
     value: "90"
   - name: HRPWS_POOL_SIZE
     value: "5"
+
+  - name: AUTHOR_GROUP
+    value: "u_bridgeap_test_author"
+
+  - name: CHECK_ALL_ACCOUNTS
+    value: False
+
+  - name: LOGIN_WINDOW
+    value: 7
+
+  - name: GMEMBER_ADD_WINDOW
+    value: 1470
+
+  - name: GMEMBER_DEL_WINDOW
+    value: 10080
+
+  - name: PERSON_CHANGE_WINDOW
+    value: 1470
+
+  - name: WORKER_CHANGE_WINDOW
+    value: 1470
 
 externalSecrets:
   enabled: true
