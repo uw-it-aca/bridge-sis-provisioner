@@ -35,7 +35,7 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
     def test_load_from_dbemp_to_bridge(self):
         time.sleep(1)
         set_db_records()
-        call_command('sync_accounts', 'db-emp')
+        call_command('sync_accounts', 'db-acc')
 
     def test_load_from_dbother_to_bridge(self):
         time.sleep(1)

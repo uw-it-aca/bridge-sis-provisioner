@@ -17,13 +17,13 @@ from sis_provisioner.dao.pws import get_person, is_prior_netid
 from sis_provisioner.dao.uw_account import get_by_netid, save_uw_account
 from sis_provisioner.util.log import log_resp_time, Timer
 from sis_provisioner.util.settings import get_login_window
-from sis_provisioner.account_managers.emp_loader import ActiveWkrLoader
+from sis_provisioner.account_managers.acc_checker import UserAccountChecker
 
 
 logger = logging.getLogger(__name__)
 
 
-class BridgeChecker(ActiveWkrLoader):
+class BridgeChecker(UserAccountChecker):
 
     def __init__(self, worker, clogger=logger):
         super(BridgeChecker, self).__init__(worker, clogger)
