@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.test import TestCase
 from django.conf import settings
 from sis_provisioner.util.settings import (
@@ -5,7 +8,7 @@ from sis_provisioner.util.settings import (
     get_csv_file_name_prefix, get_total_work_positions_to_load,
     get_author_group_name, get_login_window, get_person_changed_window,
     get_worker_changed_window, get_group_member_add_window,
-    get_group_member_del_window)
+    get_group_member_del_window, check_all_accounts)
 
 CSV_ROOT = "/tmp/fl_test"
 
@@ -57,3 +60,8 @@ class TestSetting(TestCase):
     def test_get_group_member_del_window(self):
         with self.settings(BRIDGE_GMEMBER_DEL_WINDOW=8):
             self.assertEqual(get_group_member_del_window(), 8)
+
+    def test_get_group_member_del_window(self):
+        self.assertFalse(check_all_accounts())
+        with self.settings(CHECK_ALL_ACCOUNTS=True):
+            self.assertTrue(check_all_accounts())

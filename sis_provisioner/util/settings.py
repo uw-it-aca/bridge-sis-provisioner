@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.conf import settings
 
 
@@ -54,3 +57,7 @@ def get_worker_changed_window():
     # number of minutes
     num = getattr(settings, 'BRIDGE_WORKER_CHANGE_WINDOW', None)
     return int(num) if num else 1470  # 24.5 hr
+
+
+def check_all_accounts():
+    return getattr(settings, 'CHECK_ALL_ACCOUNTS', False)

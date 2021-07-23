@@ -1,17 +1,18 @@
-import os
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import re
-import shutil
+import os
 from django.conf import settings
 from django.test import TransactionTestCase
 from django.test.utils import override_settings
-from sis_provisioner.csv.writer import get_file_path, CsvMaker
+from django.core.files.storage import default_storage
+from sis_provisioner.csv.writer import get_filepath, CsvMaker
 from sis_provisioner.tests.csv import (
     fdao_pws_override, fdao_hrp_override, set_db_records)
 
 
-CSV_ROOT = "/tmp/fl_test"
-PATTERN = CSV_ROOT + r"/[2-9]\d{7}-\d{6}"
-override_csv_root = override_settings(BRIDGE_IMPORT_CSV_ROOT=CSV_ROOT)
+PATTERN = r"^\d{8}-\d{6}-\d{6}$"
 USER_FILENAME = 'busrs'
 override_user_filename = override_settings(
     BRIDGE_IMPORT_USER_FILENAME=USER_FILENAME)
@@ -20,32 +21,29 @@ override_bridge = override_settings(BRIDGE_USER_WORK_POSITIONS=2)
 
 @fdao_pws_override
 @fdao_hrp_override
-@override_csv_root
 @override_user_filename
 @override_bridge
 class TestCsvWriter(TransactionTestCase):
 
-    def test_get_file_path(self):
-        fp = get_file_path()
+    def test_get_filepath(self):
+        fp = get_filepath()
         self.assertIsNotNone(fp)
         self.assertTrue(re.match(PATTERN, fp))
-        self.assertTrue(os.path.exists(fp))
-        os.rmdir(fp)
+        self.assertFalse(default_storage.exists(fp))
+        default_storage.delete(fp)
 
-    def test_get_file_path_exce(self):
-        with self.settings(BRIDGE_IMPORT_CSV_ROOT="/usr"):
-            self.assertRaises(OSError, get_file_path)
-
+    @override_settings(BRIDGE_IMPORT_USER_FILE_SIZE=3)
     def test_load_user_csv_file(self):
-        with self.settings(BRIDGE_IMPORT_USER_FILE_SIZE=3):
-            set_db_records()
-            maker = CsvMaker()
-            fp = maker.filepath
-            self.assertTrue(re.match(PATTERN, fp))
-            number_users_wrote = maker.load_files()
-            self.assertEqual(number_users_wrote, 4)
-            self.assertTrue(os.path.exists(fp + "/busrs1.csv"))
-            self.assertTrue(os.path.exists(fp + "/busrs2.csv"))
-            os.remove(fp + "/busrs1.csv")
-            os.remove(fp + "/busrs2.csv")
-            os.rmdir(fp)
+        set_db_records()
+        maker = CsvMaker()
+        maker.filepath = ""
+        self.assertEqual(len(maker.fetch_users()), 8)
+
+        number_users_wrote = maker.load_files()
+        self.assertEqual(number_users_wrote, 4)
+        self.assertTrue(
+            default_storage.exists(os.path.join(maker.filepath, "busrs1.csv")))
+        self.assertTrue(
+            default_storage.exists(os.path.join(maker.filepath, "busrs2.csv")))
+        default_storage.delete("busrs1.csv")
+        default_storage.delete("busrs2.csv")

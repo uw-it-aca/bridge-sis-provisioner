@@ -1,7 +1,9 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.test import TestCase
 from sis_provisioner.cache import BridgeAccountCache
 from sis_provisioner.tests import fdao_gws_override
-
 
 CACHE = 'sis_provisioner.cache.BridgeAccountCache'
 FIVE_SECONDS = 5

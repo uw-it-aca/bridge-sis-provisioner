@@ -1,27 +1,30 @@
-"""
-This class will validate the active workday user accounts in the database
-against GWS groups and PWS person.
-1. If the user is no longer in the specified GWS groups, schedule terminate.
-2. If uw account passed the grace period for termination, disable it.
-3. Update active accounts.
-"""
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 
 import logging
 import traceback
 from sis_provisioner.dao.pws import get_person, is_prior_netid
 from sis_provisioner.dao.uw_account import (
     get_all_uw_accounts, get_by_netid)
+from sis_provisioner.util.settings import check_all_accounts
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
-
 
 logger = logging.getLogger(__name__)
 
 
 class ActiveWkrLoader(GwsBridgeLoader):
 
+    """
+    This class will validate the user accounts in the database
+    against GWS groups and PWS person.
+    1. Schedule terminate if the user left the groups
+    2. If uw account passed the grace period for termination, disable it
+    3. Update active accounts.
+    """
+
     def __init__(self, worker, clogger=logger):
         super(ActiveWkrLoader, self).__init__(worker, clogger)
-        self.data_source = "DB employees"
+        self.data_source = "Accounts in DB"
 
     def fetch_users(self):
         return get_all_uw_accounts()
@@ -31,7 +34,7 @@ class ActiveWkrLoader(GwsBridgeLoader):
         Check only currently employed faculty, staff, affiliate, and
         student employees.
         """
-        return person.is_emp_state_current()
+        return check_all_accounts() or person.is_emp_state_current()
 
     def process_users(self):
         """

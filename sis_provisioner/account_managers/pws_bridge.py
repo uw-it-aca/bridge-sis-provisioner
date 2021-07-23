@@ -1,6 +1,5 @@
-"""
-This class will update user account upon the changes in PWS
-"""
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 
 import logging
 from sis_provisioner.dao.pws import get_updated_persons
@@ -11,6 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 class PwsBridgeLoader(GwsBridgeLoader):
+
+    """
+    This class will update user account upon the changes in PWS
+    """
 
     def __init__(self, worker, clogger=logger):
         super(PwsBridgeLoader, self).__init__(worker, clogger)

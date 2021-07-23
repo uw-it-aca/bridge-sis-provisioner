@@ -1,8 +1,5 @@
-"""
-This class will process deleted group members,
-mark the user accounts in the database terminated.
-Update netid if it has changed
-"""
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 
 import logging
 import traceback
@@ -16,6 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class TerminateUser(GwsBridgeLoader):
+
+    """
+    This class will process deleted group members,
+    schedule terminate of the user accounts in the database.
+    Update netid if it has changed
+    """
 
     def __init__(self, worker, clogger=logger):
         super(TerminateUser, self).__init__(worker, clogger)

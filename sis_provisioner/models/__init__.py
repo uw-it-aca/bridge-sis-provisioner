@@ -1,9 +1,10 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from django.db import models
 from datetime import datetime, timedelta
 from pytz import timezone
-from nameparser import HumanName
-
 
 GRACE_PERIOD = 180
 

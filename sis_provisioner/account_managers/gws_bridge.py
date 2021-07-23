@@ -1,10 +1,5 @@
-"""
-This class will load all the users in gws uw_member, uw_afiliate groups.
-Check against PWS Person, apply high priority changes.
-1. Add new user account (to DB and Bridge)
-2. Restore and update disabled/terminated account
-3. Update account if uwnetid has changed
-"""
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 
 import logging
 import traceback
@@ -21,11 +16,18 @@ from sis_provisioner.account_managers import (
     GET_POS_ATT_FUNCS, get_supervisor_bridge_id, get_custom_field_value)
 from sis_provisioner.account_managers.loader import Loader
 
-
 logger = logging.getLogger(__name__)
 
 
 class GwsBridgeLoader(Loader):
+
+    """
+    This class will load all the users in gws uw_member, uw_afiliate groups.
+    Check against PWS Person, apply high priority changes.
+    1. Add new user account (to DB and Bridge)
+    2. Restore and update disabled/terminated account
+    3. Update account if uwnetid has changed
+    """
 
     def __init__(self, worker, clogger=logger):
         super(GwsBridgeLoader, self).__init__(worker, clogger)

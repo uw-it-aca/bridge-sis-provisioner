@@ -1,6 +1,5 @@
-"""
-This class will update user account upon the changes in HRP
-"""
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 
 from datetime import datetime, timedelta
 import logging
@@ -14,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 class HrpBridgeLoader(GwsBridgeLoader):
+
+    """
+    This class will update user account upon the changes in HRP
+    """
 
     def __init__(self, worker, clogger=logger):
         super(HrpBridgeLoader, self).__init__(worker, clogger)
