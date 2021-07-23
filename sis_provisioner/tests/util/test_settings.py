@@ -63,5 +63,5 @@ class TestSetting(TestCase):
 
     def test_get_group_member_del_window(self):
         self.assertFalse(check_all_accounts())
-        with self.settings(CHECK_ALL_ACCOUNTS=True):
+        with self.settings(BRIDGE_CHECK_ALL_ACCOUNTS=True):
             self.assertTrue(check_all_accounts())

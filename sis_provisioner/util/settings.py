@@ -60,4 +60,4 @@ def get_worker_changed_window():
 
 
 def check_all_accounts():
-    return getattr(settings, 'CHECK_ALL_ACCOUNTS', False)
+    return getattr(settings, 'BRIDGE_CHECK_ALL_ACCOUNTS', False)

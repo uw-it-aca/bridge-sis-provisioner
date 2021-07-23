@@ -1,14 +1,6 @@
 # Copyright 2021 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-This class will sync the daily active users in bridge,
-for those having a validate pws person, make sure it has a record in DB.
-1. Add missing uw accounts into Db (manually added in Bridge).
-2. If the bridge account has more than one records in DB, purge.
-3. Update existing account.
-"""
-
 from datetime import timedelta
 import logging
 import traceback
@@ -19,11 +11,18 @@ from sis_provisioner.util.log import log_resp_time, Timer
 from sis_provisioner.util.settings import get_login_window
 from sis_provisioner.account_managers.acc_checker import UserAccountChecker
 
-
 logger = logging.getLogger(__name__)
 
 
 class BridgeChecker(UserAccountChecker):
+
+    """
+    This class will sync the daily active users in bridge,
+    for those having a validate pws person, make sure it has a record in DB.
+    1. Add missing uw accounts into Db (manually added in Bridge).
+    2. If the bridge account has more than one records in DB, purge.
+    3. Update existing account.
+    """
 
     def __init__(self, worker, clogger=logger):
         super(BridgeChecker, self).__init__(worker, clogger)
