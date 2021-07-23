@@ -39,7 +39,6 @@ else:
     BRIDGE_PERSON_CHANGE_WINDOW = os.getenv('PERSON_CHANGE_WINDOW')
     BRIDGE_WORKER_CHANGE_WINDOW = os.getenv('WORKER_CHANGE_WINDOW')
     RESTCLIENTS_DISABLE_THREADING = True
-    TIMING_LOG_ENABLED = True
     ERRORS_TO_ABORT_LOADER = [401, 403, 500, 502, 503]
     RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
