@@ -7,7 +7,8 @@ This module interacts with hrpws restclient for employee appointments
 
 import logging
 import traceback
-from sis_provisioner.dao import DataFailureException, InvalidRegID
+from sis_provisioner.dao import (
+    DataFailureException, InvalidRegID, changed_since_str)
 from uw_hrp.worker import get_worker_by_regid, worker_search
 from sis_provisioner.util.log import log_exception, log_resp_time, Timer
 
@@ -32,13 +33,14 @@ def get_worker(person):
     return None
 
 
-def get_worker_updates(changed_since_datetime):
+def get_worker_updates(duration):
     """
+    duration: time range in minutes
     Return a list of WorkerRef objects
     """
     timer = Timer()
     try:
-        return worker_search(changed_since=changed_since_datetime)
+        return worker_search(changed_since=changed_since_str(duration))
     except Exception:
         log_exception(logger, "get_worker_updates",
                       traceback.format_exc(chain=False))

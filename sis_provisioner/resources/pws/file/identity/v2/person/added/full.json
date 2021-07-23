@@ -1,0 +1,41 @@
+{
+"DisplayName":"Added Staff",
+"EduPersonAffiliations":["member",
+                         "staff",
+                         "employee"],
+"IsTestEntity":false,
+"PreferredFirstName":"Added",
+"PreferredMiddleName":null,
+"PreferredSurname":"Staff",
+"PriorUWNetIDs":[],
+"PriorUWRegIDs":[],
+"RegisteredFirstMiddleName":"Added James",
+"RegisteredName":"Added Staff",
+"RegisteredSurname":"Staff",
+"RepositoryTimeStamp":"2/12/2021 1:06:11 AM",
+"UIDNumber":"100001",
+"UWNetID":"added",
+"UWRegID":"10000000000000000000000000000002",
+"WhitepagesPublish":true,
+"PersonAffiliations":{
+    "EmployeePersonAffiliation":{
+        "EmployeeID":"100000001",
+        "EmployeeAffiliationState":"current",
+        "EmployeeWhitePages":{
+            "Addresses":[],
+            "EmailAddresses":["added@uw.edu"],
+            "Faxes":["+1 206 543-1234"],
+            "Mobiles":[],
+            "Name":"Staff, Added",
+            "Pagers":[],
+            "Phones":["+1 206 616-0001"],
+            "Positions":[
+                {"EWPDept":"UW-IT",
+                 "EWPTitle":"Web Computing Specialist (E S 8)",
+                 "Primary":true}],
+            "PublishInDirectory":true,
+            "TouchDials":[],
+            "VoiceMails":[]},
+        "HomeDepartment":"UW-IT",
+        "MailStop":"356540"}
+}}

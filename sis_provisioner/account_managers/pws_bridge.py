@@ -1,11 +1,6 @@
 # Copyright 2021 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-This class will update user account upon the changes in PWS
-"""
-
-from datetime import datetime, timedelta
 import logging
 from sis_provisioner.dao.pws import get_updated_persons
 from sis_provisioner.util.settings import get_person_changed_window
@@ -16,15 +11,16 @@ logger = logging.getLogger(__name__)
 
 class PwsBridgeLoader(GwsBridgeLoader):
 
+    """
+    This class will update user account upon the changes in PWS
+    """
+
     def __init__(self, worker, clogger=logger):
         super(PwsBridgeLoader, self).__init__(worker, clogger)
         self.data_source = "Person updates"
 
     def fetch_users(self):
-        return get_updated_persons(self.get_changed_since_datetime())
-
-    def get_changed_since_datetime(self):
-        return datetime.now() - timedelta(minutes=get_person_changed_window())
+        return get_updated_persons(get_person_changed_window())
 
     def process_users(self):
         for person in self.get_users_to_process():

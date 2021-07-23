@@ -5,12 +5,13 @@ import logging
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
-from sis_provisioner.account_managers.emp_loader import ActiveWkrLoader
-from sis_provisioner.account_managers.other_loader import OtherUserLoader
+from sis_provisioner.account_managers.acc_checker import UserAccountChecker
+from sis_provisioner.account_managers.terminate import TerminateUser
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
 from sis_provisioner.account_managers.hrp_bridge import HrpBridgeLoader
+from sis_provisioner.account_managers.customgrp_bridge import CustomGroupLoader
 from sis_provisioner.util.log import log_resp_time, Timer
 
 
@@ -23,8 +24,8 @@ class Command(BaseCommand):
     """
     def add_arguments(self, parser):
         parser.add_argument('data-source',
-                            choices=['gws', 'db-emp', 'db-other',
-                                     'bridge', 'hrp', 'pws'])
+                            choices=['gws', 'db-acc', 'delete',
+                                     'bridge', 'hrp', 'pws', 'customg'])
 
     def handle(self, *args, **options):
         timer = Timer()
@@ -34,10 +35,12 @@ class Command(BaseCommand):
         workr = BridgeWorker()
         if source == 'gws':
             loader = GwsBridgeLoader(workr)
-        elif source == 'db-emp':
-            loader = ActiveWkrLoader(workr)
-        elif source == 'db-other':
-            loader = OtherUserLoader(workr)
+        elif source == 'customg':
+            loader = CustomGroupLoader(workr)
+        elif source == 'db-acc':
+            loader = UserAccountChecker(workr)
+        elif source == 'delete':
+            loader = TerminateUser(workr)
         elif source == 'bridge':
             loader = BridgeChecker(workr)
         elif source == 'pws':

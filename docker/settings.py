@@ -29,15 +29,16 @@ if os.getenv('ENV', 'localdev') == 'localdev':
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_ROOT = os.getenv('IMPORT_CSV_ROOT', '/data')
 else:
-    BRIDGE_GWS_CACHE = '/data/gws_users'
     BRIDGE_IMPORT_USER_FILE_SIZE = 20000
     BRIDGE_USER_WORK_POSITIONS = 2
-    BRIDGE_AUTHOR_GROUP_NAME = os.getenv('AUTHOR_GROUP', "u_bridgeap_prod_author")
-    BRIDGE_LOGIN_WINDOW = 1
-    BRIDGE_PERSON_CHANGE_WINDOW = 200
-    BRIDGE_WORKER_CHANGE_WINDOW = 1500
+    BRIDGE_AUTHOR_GROUP_NAME = os.getenv('AUTHOR_GROUP')
+    BRIDGE_CHECK_ALL_ACCOUNTS = os.getenv('CHECK_ALL_ACCOUNTS')
+    BRIDGE_LOGIN_WINDOW = os.getenv('LOGIN_WINDOW', 1)
+    BRIDGE_GMEMBER_ADD_WINDOW = os.getenv('GMEMBER_ADD_WINDOW')
+    BRIDGE_GMEMBER_DEL_WINDOW = os.getenv('GMEMBER_DEL_WINDOW')
+    BRIDGE_PERSON_CHANGE_WINDOW = os.getenv('PERSON_CHANGE_WINDOW')
+    BRIDGE_WORKER_CHANGE_WINDOW = os.getenv('WORKER_CHANGE_WINDOW')
     RESTCLIENTS_DISABLE_THREADING = True
-    TIMING_LOG_ENABLED = True
     ERRORS_TO_ABORT_LOADER = [401, 403, 500, 502, 503]
     RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
@@ -52,7 +53,47 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': '/data/cache',
         'OPTIONS': {
-            'MAX_ENTRIES': 200000
+            'MAX_ENTRIES': 650000 if os.getenv('ENV', '') == 'prod' else 200000
+        }
+    }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'stdout_stream': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelno < logging.WARN
+        },
+        'stderr_stream': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelno > logging.INFO
+        }
+    },
+    'formatters': {
+        'std': {
+            'format': '%(name)s %(levelname)-4s %(asctime)s %(message)s',
+        },
+    },
+    'handlers': {
+        'stdout': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'filters': ['stdout_stream'],
+            'formatter': 'std',
+        },
+        'stderr': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stderr,
+            'filters': ['stderr_stream'],
+            'formatter': 'std',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['stdout', 'stderr'],
+            'level': 'INFO' if os.getenv('ENV', 'test') == 'prod' else 'DEBUG'
         }
     }
 }

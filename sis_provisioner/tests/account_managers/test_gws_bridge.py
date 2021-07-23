@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
+from unittest.mock import patch
 from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.pws import get_person
@@ -13,6 +14,10 @@ from sis_provisioner.tests import (
 from sis_provisioner.tests.dao import get_mock_bridge_user
 from sis_provisioner.tests.account_managers import (
     set_uw_account, set_db_records, set_db_err_records)
+
+
+users = ['affiemp', 'error500', 'faculty', 'javerage',
+         'not_in_pws', 'retiree', 'staff']
 
 
 @fdao_bridge_override
@@ -29,14 +34,14 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertTrue(loader.del_bridge_account(retiree))
         self.assertEqual(loader.get_deleted_count(), 1)
 
-    def test_fetch_users(self):
-        with self.settings(BRIDGE_GWS_CACHE='/tmp/gwsuser1'):
+    @patch('sis_provisioner.dao.gws._get_start_timestamp',
+           return_value=1626215400, spec=True)
+    def test_fetch_users(self, mock_fn):
+        with self.settings(BRIDGE_GMEMBER_ADD_WINDOW=12):
             loader = GwsBridgeLoader(BridgeWorker())
             user_list = loader.fetch_users()
-            self.assertEqual(len(user_list), 7)
-            self.assertEqual(sorted(user_list),
-                             ['affiemp', 'error500', 'faculty', 'javerage',
-                              'not_in_pws', 'retiree', 'staff'])
+            self.assertEqual(len(user_list), 1)
+            self.assertEqual(user_list, ['added'])
 
     def test_is_priority_change(self):
         loader = GwsBridgeLoader(BridgeWorker())
@@ -127,10 +132,11 @@ class TestGwsBridgeLoader(TransactionTestCase):
         self.assertEqual(loader.get_netid_changed_count(), 2)
         self.assertEqual(loader.get_updated_count(), 3)
 
-    def test_load_gws(self):
+    @patch.object(GwsBridgeLoader, 'fetch_users',
+                  return_value=users, spec=True)
+    def test_load_gws(self, mock_fn):
         with self.settings(ERRORS_TO_ABORT_LOADER=[],
-                           BRIDGE_USER_WORK_POSITIONS=2,
-                           BRIDGE_GWS_CACHE='/tmp/gwsuser2'):
+                           BRIDGE_USER_WORK_POSITIONS=2):
             set_db_records()
             loader = GwsBridgeLoader(BridgeWorker())
             loader.load()
@@ -142,13 +148,14 @@ class TestGwsBridgeLoader(TransactionTestCase):
             self.assertEqual(loader.get_updated_count(), 3)
             self.assertTrue(loader.has_error())
 
-    def test_load_abort(self):
+    @patch.object(GwsBridgeLoader, 'fetch_users',
+                  return_value=[], spec=True)
+    def test_load_abort(self, mock_fn):
         with self.settings(ERRORS_TO_ABORT_LOADER=[500],
-                           BRIDGE_USER_WORK_POSITIONS=2,
-                           BRIDGE_GWS_CACHE='/tmp/gwsuser3'):
-            set_db_err_records()
+                           BRIDGE_USER_WORK_POSITIONS=2):
             loader = GwsBridgeLoader(BridgeWorker())
-            self.assertRaises(DataFailureException, loader.load)
+            loader.load()
+            self.assertEqual(loader.get_total_count(), 0)
 
     def test_account_not_changed(self):
         with self.settings(BRIDGE_USER_WORK_POSITIONS=2):

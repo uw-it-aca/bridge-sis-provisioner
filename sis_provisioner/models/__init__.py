@@ -3,24 +3,21 @@
 
 import json
 from django.db import models
-from datetime import timedelta
-from django.utils import timezone
-from nameparser import HumanName
-
+from datetime import datetime, timedelta
+from pytz import timezone
 
 GRACE_PERIOD = 180
 
 
-def datetime_to_str(d_obj):
-    if d_obj is not None:
-        return d_obj.strftime("%Y-%m-%d %H:%M:%S")  # +00:00
-    return None
+def datetime_to_str(dt):
+    return (
+        dt.isoformat() if dt is not None and isinstance(dt, datetime)
+        else None)
 
 
 def get_now():
-    # return time-zone-aware datetime objects in UTC time.
-    # Enable time zone support with USE_TZ=True in settings
-    return timezone.now()
+    # return time-zone-aware datetime object
+    return datetime.now(timezone("US/Pacific"))
 
 
 class UwAccount(models.Model):
@@ -111,7 +108,7 @@ class UwAccount(models.Model):
             "prev_netid": self.prev_netid,
             "disabled": self.disabled,
             "last_updated": datetime_to_str(self.last_updated),
-            "terminate_at": self.terminate_at,
+            "terminate_at": datetime_to_str(self.terminate_at),
             }
 
     def __init__(self, *args, **kwargs):
@@ -123,7 +120,7 @@ class UwAccount(models.Model):
                  self.prev_netid == other.prev_netid))
 
     def __hash__(self):
-        return hash(self.netid)
+        return super().__hash__()
 
     def __str__(self):
         return json.dumps(self.json_data(), default=str)

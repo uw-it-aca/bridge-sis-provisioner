@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TestCase
+from freezegun import freeze_time
 from sis_provisioner.tests import fdao_hrp_override, fdao_pws_override
 from sis_provisioner.dao import DataFailureException
 from sis_provisioner.dao.pws import get_person
@@ -35,10 +36,11 @@ class TestHrpDao(TestCase):
         person = get_person('error500')
         self.assertIsNone(get_worker(person))
 
+    @freeze_time("2019-09-01 10:30:00")
     def test_get_worker_updates(self):
-        worker_refs = get_worker_updates("2019")
+        worker_refs = get_worker_updates(30)
         self.assertEqual(len(worker_refs), 2)
-        worker_refs = get_worker_updates("2020")
-        self.assertEqual(len(worker_refs), 0)
+
+    def test_get_worker_updates_err(self):
         self.assertRaises(DataFailureException,
-                          get_worker_updates, "201909")
+                          get_worker_updates, 30)

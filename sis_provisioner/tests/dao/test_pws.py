@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TestCase
+from freezegun import freeze_time
 from sis_provisioner.dao import DataFailureException
 from sis_provisioner.dao.pws import (
     get_person, is_prior_netid, get_updated_persons)
@@ -48,8 +49,12 @@ class TestPwsDao(TestCase):
         person = get_person("faculty")
         self.assertTrue(is_prior_netid("tyler", person))
 
+    @freeze_time("2019-09-01 20:30:00")
     def test_get_updated_persons(self):
-        persons = get_updated_persons("2019")
+        persons = get_updated_persons(60)
         self.assertEqual(len(persons), 2)
+        self.assertEqual(persons[0].uwnetid, "javerage")
+        self.assertEqual(persons[1].uwnetid, "faculty")
+
         self.assertRaises(DataFailureException,
-                          get_updated_persons, "201909")
+                          get_updated_persons, 30)

@@ -1,40 +1,40 @@
 # Copyright 2021 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-This class will load all the users in gws uw_member, uw_afiliate groups.
-Check against PWS Person, apply high priority changes.
-1. Add new user account (to DB and Bridge)
-2. Restore and update disabled/terminated account
-3. Update account if uwnetid has changed
-"""
-
 import logging
 import traceback
 from uw_bridge.models import BridgeUser, BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.uw_account import save_uw_account
-from sis_provisioner.dao.gws import get_member_updates
+from sis_provisioner.dao.gws import get_added_members
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
-from sis_provisioner.util.settings import get_total_work_positions_to_load
+from sis_provisioner.util.settings import (
+    get_total_work_positions_to_load, get_group_member_add_window)
 from sis_provisioner.account_managers import (
     get_full_name, get_email, get_job_title, normalize_name,
     GET_POS_ATT_FUNCS, get_supervisor_bridge_id, get_custom_field_value)
 from sis_provisioner.account_managers.loader import Loader
-
 
 logger = logging.getLogger(__name__)
 
 
 class GwsBridgeLoader(Loader):
 
+    """
+    This class will load all the users in gws uw_member, uw_afiliate groups.
+    Check against PWS Person, apply high priority changes.
+    1. Add new user account (to DB and Bridge)
+    2. Restore and update disabled/terminated account
+    3. Update account if uwnetid has changed
+    """
+
     def __init__(self, worker, clogger=logger):
         super(GwsBridgeLoader, self).__init__(worker, clogger)
-        self.data_source = "Group members"
+        self.data_source = "Group new members"
 
     def fetch_users(self):
-        return list(get_member_updates(self.gws_user_set))
+        return list(get_added_members(get_group_member_add_window()))
 
     def get_bridge(self):
         return self.worker.bridge
