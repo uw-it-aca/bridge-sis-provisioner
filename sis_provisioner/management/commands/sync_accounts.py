@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
-from sis_provisioner.account_managers.emp_loader import ActiveWkrLoader
+from sis_provisioner.account_managers.acc_checker import UserAccountChecker
 from sis_provisioner.account_managers.terminate import TerminateUser
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
@@ -24,7 +24,7 @@ class Command(BaseCommand):
     """
     def add_arguments(self, parser):
         parser.add_argument('data-source',
-                            choices=['gws', 'db-emp', 'delete',
+                            choices=['gws', 'db-acc', 'delete',
                                      'bridge', 'hrp', 'pws', 'customg'])
 
     def handle(self, *args, **options):
@@ -37,8 +37,8 @@ class Command(BaseCommand):
             loader = GwsBridgeLoader(workr)
         elif source == 'customg':
             loader = CustomGroupLoader(workr)
-        elif source == 'db-emp':
-            loader = ActiveWkrLoader(workr)
+        elif source == 'db-acc':
+            loader = UserAccountChecker(workr)
         elif source == 'delete':
             loader = TerminateUser(workr)
         elif source == 'bridge':

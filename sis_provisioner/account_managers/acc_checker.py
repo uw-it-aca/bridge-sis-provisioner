@@ -12,7 +12,7 @@ from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 logger = logging.getLogger(__name__)
 
 
-class ActiveWkrLoader(GwsBridgeLoader):
+class UserAccountChecker(GwsBridgeLoader):
 
     """
     This class will validate the user accounts in the database
@@ -23,7 +23,7 @@ class ActiveWkrLoader(GwsBridgeLoader):
     """
 
     def __init__(self, worker, clogger=logger):
-        super(ActiveWkrLoader, self).__init__(worker, clogger)
+        super(UserAccountChecker, self).__init__(worker, clogger)
         self.data_source = "Accounts in DB"
 
     def fetch_users(self):
