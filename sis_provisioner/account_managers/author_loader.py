@@ -41,7 +41,7 @@ class AuthorChecker(GwsBridgeLoader):
         # 2. add new authors
         for netid in list(self.cur_author_set - existing_bri_authors):
             self.total_checked_users += 1
-            if self.known_user(netid) is False:
+            if not self.known_user(netid) or not self.in_uw_groups(netid):
                 continue
             self.add_author_role(netid)
 
