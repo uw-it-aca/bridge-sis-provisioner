@@ -3,6 +3,7 @@
 
 import logging
 from datetime import datetime
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.account_managers.acc_checker import UserAccountChecker
@@ -13,6 +14,7 @@ from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
 from sis_provisioner.account_managers.hrp_bridge import HrpBridgeLoader
 from sis_provisioner.account_managers.customgrp_bridge import CustomGroupLoader
 from sis_provisioner.util.log import log_resp_time, Timer
+from sis_provisioner.util.settings import get_cronjob_sender
 
 
 logger = logging.getLogger("bridge_provisioner_commands")
@@ -30,7 +32,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         timer = Timer()
         logger.info("Start at {0}".format(datetime.now()))
-
+        sender = get_cronjob_sender()
         source = options['data-source']
         workr = BridgeWorker()
         if source == 'gws':
@@ -53,7 +55,9 @@ class Command(BaseCommand):
         try:
             loader.load()
         except Exception as ex:
-            logger.error(str(ex))
+            logger.error(ex)
+            send_mail("Check source: {}".format(source),
+                      "{}".format(ex), sender, [sender])
 
         log_resp_time(logger, "Load users", timer)
 
@@ -72,4 +76,7 @@ class Command(BaseCommand):
             loader.get_updated_count()))
 
         if loader.has_error():
-            logger.error("Errors: {0}".format(loader.get_error_report()))
+            err = loader.get_error_report()
+            logger.error("Errors: {0}".format(err))
+            send_mail("Check source: {}".format(source),
+                      err, sender, [sender])

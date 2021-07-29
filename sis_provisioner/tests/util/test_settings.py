@@ -8,7 +8,7 @@ from sis_provisioner.util.settings import (
     get_csv_file_name_prefix, get_total_work_positions_to_load,
     get_author_group_name, get_login_window, get_person_changed_window,
     get_worker_changed_window, get_group_member_add_window,
-    get_group_member_del_window, check_all_accounts)
+    get_group_member_del_window, check_all_accounts, get_cronjob_sender)
 
 CSV_ROOT = "/tmp/fl_test"
 
@@ -65,3 +65,7 @@ class TestSetting(TestCase):
         self.assertFalse(check_all_accounts())
         with self.settings(BRIDGE_CHECK_ALL_ACCOUNTS=True):
             self.assertTrue(check_all_accounts())
+
+    def test_get_cronjob_sender(self):
+        with self.settings(BRIDGE_CRON_SENDER='x'):
+            self.assertEqual(get_cronjob_sender(), 'x')

@@ -61,3 +61,7 @@ def get_worker_changed_window():
 
 def check_all_accounts():
     return getattr(settings, 'BRIDGE_CHECK_ALL_ACCOUNTS', False)
+
+
+def get_cronjob_sender():
+    return getattr(settings, 'BRIDGE_CRON_SENDER', 'cron')
