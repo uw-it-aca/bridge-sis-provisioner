@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.conf import settings
 
 
@@ -33,17 +36,32 @@ def get_login_window():
     return int(num) if num else 0
 
 
+def get_group_member_add_window():
+    num = getattr(settings, 'BRIDGE_GMEMBER_ADD_WINDOW', None)
+    return int(num) if num else 750  # 12.5 hr
+
+
+def get_group_member_del_window():
+    # number of days
+    num = getattr(settings, 'BRIDGE_GMEMBER_DEL_WINDOW', None)
+    return int(num) if num else 1470  # 24.5 hr
+
+
 def get_person_changed_window():
     # number of minutes
     num = getattr(settings, 'BRIDGE_PERSON_CHANGE_WINDOW', None)
-    return int(num) if num else 15
+    return int(num) if num else 390  # 6 hr
 
 
 def get_worker_changed_window():
     # number of minutes
     num = getattr(settings, 'BRIDGE_WORKER_CHANGE_WINDOW', None)
-    return int(num) if num else 15
+    return int(num) if num else 1470  # 24.5 hr
 
 
-def get_gws_cache_path():
-    return getattr(settings, 'BRIDGE_GWS_CACHE', '')
+def check_all_accounts():
+    return getattr(settings, 'BRIDGE_CHECK_ALL_ACCOUNTS', False)
+
+
+def get_cronjob_sender():
+    return getattr(settings, 'BRIDGE_CRON_SENDER', 'cron')

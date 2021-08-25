@@ -1,0 +1,166 @@
+deployment:
+  enabled: false
+
+service:
+  enabled: false
+
+lifecycle:
+  enabled: false
+
+ingress:
+  enabled: false
+
+securityPolicy:
+  enabled: true
+
+externalService:
+  enabled: true
+  name: bridge-db-service
+  type: ClusterIP
+  serviceAddress: 172.18.0.198
+  servicePort: 3306
+database:
+  engine: mysql
+  name: bridge_test
+  hostname: bridge-db-service
+  secretName: test.bridge.uw.edu-sql-secrets
+
+memcached:
+  enabled: true
+  replicaCount: 1
+  updateStrategy:
+    type: RollingUpdate
+
+gcsCredentials:
+  mounted: true
+  secretName: test.bridge.uw.edu-gcs-credentials
+repo: bridge-sis-provisioner
+instance: test
+image:
+  repository: gcr.io/uwit-mci-axdd/bridge
+  tag: IMAGE_TAG
+certs:
+  mounted: true
+  certPath: /certs/bridge.uw.edu-uwca.cert
+  keyPath: /certs/bridge.uw.edu-uwca.key
+  secretName: test.bridge.uw.edu-uwca-certs
+
+cronjob:
+  enabled: false
+
+environmentVariables:
+  - name: ENV
+    value: test
+
+  - name: GWS_ENV
+    value: PROD
+  - name: GWS_TIMEOUT
+    value: "90"
+  - name: GWS_POOL_SIZE
+    value: "5"
+
+  - name: PWS_ENV
+    value: EVAL
+  - name: PWS_TIMEOUT
+    value: "90"
+  - name: PWS_POOL_SIZE
+    value: "5"
+
+  - name: BRIDGE_ENV
+    value: EVAL
+  - name: BRIDGE_TIMEOUT
+    value: "90"
+  - name: BRIDGE_POOL_SIZE
+    value: "5"
+
+  - name: HRPWS_ENV
+    value: EVAL
+  - name: HRPWS_TIMEOUT
+    value: "90"
+  - name: HRPWS_POOL_SIZE
+    value: "5"
+
+  - name: AUTHOR_GROUP
+    value: "u_bridgeap_test_author"
+
+  - name: CHECK_ALL_ACCOUNTS
+    value: False
+
+  - name: LOGIN_WINDOW
+    value: 7
+
+  - name: GMEMBER_ADD_WINDOW
+    value: 1470
+
+  - name: GMEMBER_DEL_WINDOW
+    value: 10080
+
+  - name: PERSON_CHANGE_WINDOW
+    value: 1470
+
+  - name: WORKER_CHANGE_WINDOW
+    value: 1470
+
+externalSecrets:
+  enabled: true
+  secrets:
+    - name: test.bridge.uw.edu-secrets
+      externalKey: axdd/kv/data/bridge/test/secrets
+      data:
+        - name: django-secret
+          property: django-secret
+        - name: bridge-auth-key
+          property: bridge-auth-key
+        - name: bridge-auth-secret
+          property: bridge-auth-secret
+        - name: storage-project-id
+          property: storage-project-id
+        - name: storage-bucket-name
+          property: storage-bucket-name
+        - name: cronjob_sender
+          property: cronjob_sender
+    - name: test.bridge.uw.edu-sql-secrets
+      externalKey: axdd/kv/data/bridge/shared/sql-secrets
+      data:
+        - name: username
+          property: username
+        - name: password
+          property: password
+    - name: test.bridge.uw.edu-gcs-credentials
+      externalKey: axdd/kv/data/bridge/shared/gcs-credentials
+      data:
+        - name: credentials.json
+          property: credentials.json
+    - name: test.bridge.uw.edu-uwca-certs
+      externalKey: axdd/kv/data/bridge/test/uwca-certs
+      data:
+        - name: test.bridge.uw.edu-uwca.cert
+          property: test.bridge.uw.edu-uwca.cert
+        - name: test.bridge.uw.edu-uwca.key
+          property: test.bridge.uw.edu-uwca.key
+
+environmentVariablesSecrets:
+  djangoSecret:
+    name: DJANGO_SECRET
+    secretName: test.bridge.uw.edu-secrets
+    secretKey: django-secret
+  bridgeAuthKey:
+    name: BRIDGE_BASIC_AUTH_KEY
+    secretName: test.bridge.uw.edu-secrets
+    secretKey: bridge-auth-key
+  bridgeAuthSecret:
+    name: BRIDGE_BASIC_AUTH_SECRET
+    secretName: test.bridge.uw.edu-secrets
+    secretKey: bridge-auth-secret
+  storageBucketName:
+    name: STORAGE_BUCKET_NAME
+    secretName: test.bridge.uw.edu-secrets
+    secretKey: storage-bucket-name
+  cronjobSender:
+    name: BRIDGE_CRON_SENDER
+    secretName: test.bridge.uw.edu-shared-secrets
+    secretKey: cronjob_sender
+  storageProjectId:
+    name: STORAGE_PROJECT_ID
+    secretName: test.bridge.uw.edu-shared-secrets
+    secretKey: storage-project-id

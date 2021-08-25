@@ -1,14 +1,20 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import logging
 from datetime import datetime
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
-from sis_provisioner.account_managers.emp_loader import ActiveWkrLoader
-from sis_provisioner.account_managers.other_loader import OtherUserLoader
+from sis_provisioner.account_managers.acc_checker import UserAccountChecker
+from sis_provisioner.account_managers.terminate import TerminateUser
 from sis_provisioner.account_managers.bridge_checker import BridgeChecker
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
 from sis_provisioner.account_managers.hrp_bridge import HrpBridgeLoader
+from sis_provisioner.account_managers.customgrp_bridge import CustomGroupLoader
 from sis_provisioner.util.log import log_resp_time, Timer
+from sis_provisioner.util.settings import get_cronjob_sender
 
 
 logger = logging.getLogger("bridge_provisioner_commands")
@@ -20,21 +26,23 @@ class Command(BaseCommand):
     """
     def add_arguments(self, parser):
         parser.add_argument('data-source',
-                            choices=['gws', 'db-emp', 'db-other',
-                                     'bridge', 'hrp', 'pws'])
+                            choices=['gws', 'db-acc', 'delete',
+                                     'bridge', 'hrp', 'pws', 'customg'])
 
     def handle(self, *args, **options):
         timer = Timer()
         logger.info("Start at {0}".format(datetime.now()))
-
+        sender = get_cronjob_sender()
         source = options['data-source']
         workr = BridgeWorker()
         if source == 'gws':
             loader = GwsBridgeLoader(workr)
-        elif source == 'db-emp':
-            loader = ActiveWkrLoader(workr)
-        elif source == 'db-other':
-            loader = OtherUserLoader(workr)
+        elif source == 'customg':
+            loader = CustomGroupLoader(workr)
+        elif source == 'db-acc':
+            loader = UserAccountChecker(workr)
+        elif source == 'delete':
+            loader = TerminateUser(workr)
         elif source == 'bridge':
             loader = BridgeChecker(workr)
         elif source == 'pws':
@@ -47,7 +55,9 @@ class Command(BaseCommand):
         try:
             loader.load()
         except Exception as ex:
-            logger.error(str(ex))
+            logger.error(ex)
+            send_mail("Check source: {}".format(source),
+                      "{}".format(ex), sender, [sender])
 
         log_resp_time(logger, "Load users", timer)
 
@@ -66,4 +76,7 @@ class Command(BaseCommand):
             loader.get_updated_count()))
 
         if loader.has_error():
-            logger.error("Errors: {0}".format(loader.get_error_report()))
+            err = loader.get_error_report()
+            logger.error("Errors: {0}".format(err))
+            send_mail("Check source: {}".format(source),
+                      err, sender, [sender])

@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from sis_provisioner.models import UwAccount, get_now
 from sis_provisioner.tests.dao import new_custom_field
 

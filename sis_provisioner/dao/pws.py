@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 """
 This module encapsulates the interactions with the uw_pws,
 """
@@ -5,7 +8,8 @@ This module encapsulates the interactions with the uw_pws,
 import logging
 import traceback
 from uw_pws import PWS
-from sis_provisioner.dao import DataFailureException, InvalidNetID
+from sis_provisioner.dao import (
+    DataFailureException, InvalidNetID, changed_since_str)
 from sis_provisioner.util.log import log_exception, log_resp_time, Timer
 
 
@@ -32,13 +36,15 @@ def get_person(uwnetid):
     return None
 
 
-def get_updated_persons(changed_since_datetime):
+def get_updated_persons(duration):
     """
+    duration: time range in minutes
     Return a list of Person objects
     """
     timer = Timer()
     try:
-        return pws.person_search(changed_since_date=changed_since_datetime)
+        return pws.person_search(
+            changed_since_date=changed_since_str(duration))
     except Exception:
         log_exception(logger, "get_updated_persons",
                       traceback.format_exc(chain=False))
