@@ -1,15 +1,18 @@
+deployment:
+  enabled: false
+
+service:
+  enabled: false
+
+lifecycle:
+  enabled: false
+
 ingress:
   enabled: false
-lifecycle:
-  enabled: true
-  preStop:
-    enabled: true
-affinity:
-  podsSpanNodes: true
-readiness:
-  enabled: true
+
 securityPolicy:
   enabled: true
+
 externalService:
   enabled: true
   name: bridge-db-service
@@ -21,11 +24,13 @@ database:
   name: bridge_test
   hostname: bridge-db-service
   secretName: test.bridge.uw.edu-sql-secrets
+
 memcached:
   enabled: true
   replicaCount: 1
   updateStrategy:
     type: RollingUpdate
+
 gcsCredentials:
   mounted: true
   secretName: test.bridge.uw.edu-gcs-credentials
@@ -46,12 +51,6 @@ cronjob:
 environmentVariables:
   - name: ENV
     value: test
-
-  - name: CLUSTER_CNAME
-    value: test.bridge.uw.edu
-
-  - name: SESSION_BACKEND
-    value: MEMCACHED
 
   - name: GWS_ENV
     value: PROD
