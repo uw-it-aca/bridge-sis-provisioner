@@ -3,9 +3,11 @@
 
 import logging
 from datetime import datetime
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.eid_loader import load
 from sis_provisioner.util.log import log_resp_time, Timer
+from sis_provisioner.util.settings import get_cronjob_sender
 
 
 logger = logging.getLogger("bridge_provisioner_commands")
@@ -21,9 +23,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         timer = Timer()
         logger.info("Start at {0}".format(datetime.now()))
+        sender = get_cronjob_sender()
         try:
             logger.info(load())
         except Exception as ex:
-            logger.error(str(ex))
+            logger.error(ex)
+            send_mail("Load user EIDs", "{}".format(ex), sender, [sender])
         finally:
             log_resp_time(logger, "Load user EIDs", timer)

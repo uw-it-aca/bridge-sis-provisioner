@@ -11,7 +11,7 @@ import logging
 import traceback
 from sis_provisioner.dao.gws import get_bridge_authors
 from sis_provisioner.dao.pws import get_person
-from sis_provisioner.dao.uw_account import save_uw_account
+from sis_provisioner.dao.uw_account import save_uw_account, UwAccount
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 logger = logging.getLogger(__name__)
@@ -41,9 +41,12 @@ class AuthorChecker(GwsBridgeLoader):
         # 2. add new authors
         for netid in list(self.cur_author_set - existing_bri_authors):
             self.total_checked_users += 1
-            if self.in_uw_groups(netid) is False:
+            if not self.known_user(netid) or not self.in_uw_groups(netid):
                 continue
             self.add_author_role(netid)
+
+    def known_user(self, uwnetid):
+        return uwnetid and UwAccount.exists(uwnetid)
 
     def add_author_role(self, netid):
         action = "SET AUTHOR on {0}".format(netid)

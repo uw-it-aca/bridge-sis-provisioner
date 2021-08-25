@@ -117,6 +117,8 @@ externalSecrets:
           property: storage-project-id
         - name: storage-bucket-name
           property: storage-bucket-name
+        - name: cronjob_sender
+          property: cronjob_sender
     - name: test.bridge.uw.edu-sql-secrets
       externalKey: axdd/kv/data/bridge/shared/sql-secrets
       data:
@@ -154,6 +156,10 @@ environmentVariablesSecrets:
     name: STORAGE_BUCKET_NAME
     secretName: test.bridge.uw.edu-secrets
     secretKey: storage-bucket-name
+  cronjobSender:
+    name: BRIDGE_CRON_SENDER
+    secretName: test.bridge.uw.edu-shared-secrets
+    secretKey: cronjob_sender
   storageProjectId:
     name: STORAGE_PROJECT_ID
     secretName: test.bridge.uw.edu-shared-secrets
