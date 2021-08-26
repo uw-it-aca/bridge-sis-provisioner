@@ -116,10 +116,13 @@ externalSecrets:
           property: bridge-auth-key
         - name: bridge-auth-secret
           property: bridge-auth-secret
-        - name: storage-project-id
-          property: storage-project-id
         - name: storage-bucket-name
           property: storage-bucket-name
+    - name: test.bridge.uw.edu-shared-secrets
+      externalKey: axdd/kv/data/bridge/shared/secrets
+      data:
+        - name: storage-project-id
+          property: storage-project-id
         - name: cronjob-email-sender
           property: cronjob-email-sender
     - name: test.bridge.uw.edu-sql-secrets
