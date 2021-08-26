@@ -46,7 +46,12 @@ certs:
   secretName: test.bridge.uw.edu-uwca-certs
 
 cronjob:
-  enabled: false
+  enabled: true
+  jobs:
+  - name: daily-active-users
+      schedule: "1 1 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "bridge"]
 
 environmentVariables:
   - name: ENV
@@ -117,8 +122,8 @@ externalSecrets:
           property: storage-project-id
         - name: storage-bucket-name
           property: storage-bucket-name
-        - name: cronjob_sender
-          property: cronjob_sender
+        - name: cronjob-email-sender
+          property: cronjob-email-sender
     - name: test.bridge.uw.edu-sql-secrets
       externalKey: axdd/kv/data/bridge/shared/sql-secrets
       data:
@@ -159,7 +164,7 @@ environmentVariablesSecrets:
   cronjobSender:
     name: BRIDGE_CRON_SENDER
     secretName: test.bridge.uw.edu-shared-secrets
-    secretKey: cronjob_sender
+    secretKey: cronjob-email-sender
   storageProjectId:
     name: STORAGE_PROJECT_ID
     secretName: test.bridge.uw.edu-shared-secrets
