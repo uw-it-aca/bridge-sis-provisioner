@@ -87,22 +87,22 @@ environmentVariables:
     value: "u_bridgeap_test_author"
 
   - name: CHECK_ALL_ACCOUNTS
-    value: False
+    value: "False"
 
   - name: LOGIN_WINDOW
-    value: 7
+    value: "7"
 
   - name: GMEMBER_ADD_WINDOW
-    value: 1470
+    value: "1470"
 
   - name: GMEMBER_DEL_WINDOW
-    value: 10080
+    value: "10080"
 
   - name: PERSON_CHANGE_WINDOW
-    value: 1470
+    value: "1470"
 
   - name: WORKER_CHANGE_WINDOW
-    value: 1470
+    value: "1470"
 
 externalSecrets:
   enabled: true
