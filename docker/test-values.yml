@@ -1,15 +1,13 @@
-deployment:
-  enabled: false
-
-service:
-  enabled: false
-
-lifecycle:
-  enabled: false
-
 ingress:
   enabled: false
-
+lifecycle:
+  enabled: true
+  preStop:
+    enabled: true
+affinity:
+  podsSpanNodes: true
+readiness:
+  enabled: true
 securityPolicy:
   enabled: true
 
@@ -48,10 +46,10 @@ certs:
 cronjob:
   enabled: true
   jobs:
-  - name: daily-active-users
-    schedule: "1 1 * * *"
-    command: ["/scripts/management_command.sh"]
-    args: ["sync_accounts", "bridge"]
+    - name: daily-active-users
+      schedule: "1 1 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "bridge"]
 
 environmentVariables:
   - name: ENV
