@@ -55,6 +55,12 @@ environmentVariables:
   - name: ENV
     value: test
 
+  - name: CLUSTER_CNAME
+    value: test.bridge.uw.edu
+
+  - name: SESSION_BACKEND
+    value: MEMCACHED
+
   - name: GWS_ENV
     value: PROD
   - name: GWS_TIMEOUT
