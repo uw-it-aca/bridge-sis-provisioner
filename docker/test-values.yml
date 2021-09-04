@@ -39,8 +39,8 @@ image:
   tag: IMAGE_TAG
 certs:
   mounted: true
-  certPath: /certs/bridge.uw.edu-uwca.cert
-  keyPath: /certs/bridge.uw.edu-uwca.key
+  certPath: /certs/test.bridge.uw.edu-uwca.cert
+  keyPath: /certs/test.bridge.uw.edu-uwca.key
   secretName: test.bridge.uw.edu-uwca-certs
 
 cronjob:
