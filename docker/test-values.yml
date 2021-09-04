@@ -64,28 +64,28 @@ environmentVariables:
   - name: GWS_ENV
     value: PROD
   - name: GWS_TIMEOUT
-    value: "90"
+    value: "600"
   - name: GWS_POOL_SIZE
     value: "5"
 
   - name: PWS_ENV
     value: EVAL
   - name: PWS_TIMEOUT
-    value: "90"
+    value: "600"
   - name: PWS_POOL_SIZE
     value: "5"
 
   - name: BRIDGE_ENV
     value: EVAL
   - name: BRIDGE_TIMEOUT
-    value: "90"
+    value: "600"
   - name: BRIDGE_POOL_SIZE
     value: "5"
 
   - name: HRPWS_ENV
     value: EVAL
   - name: HRPWS_TIMEOUT
-    value: "90"
+    value: "600"
   - name: HRPWS_POOL_SIZE
     value: "5"
 

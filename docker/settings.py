@@ -5,7 +5,7 @@ import os
 INSTALLED_APPS += [
     'sis_provisioner.apps.BridgeProvisionerConfig',
 ]
-
+RESTCLIENTS_DEFAULT_CONNECT_TIMEOUT = 300
 if os.getenv('BRIDGE_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_BRIDGE_DAO_CLASS = 'Live'
     RESTCLIENTS_BRIDGE_TIMEOUT = os.getenv(
