@@ -1,10 +1,14 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.test import TestCase
 from django.conf import settings
 from sis_provisioner.util.settings import (
     errors_to_abort_loader, get_csv_file_path_prefix, get_csv_file_size,
     get_csv_file_name_prefix, get_total_work_positions_to_load,
     get_author_group_name, get_login_window, get_person_changed_window,
-    get_worker_changed_window, get_gws_cache_path)
+    get_worker_changed_window, get_group_member_add_window,
+    get_group_member_del_window, check_all_accounts, get_cronjob_sender)
 
 CSV_ROOT = "/tmp/fl_test"
 
@@ -49,6 +53,19 @@ class TestSetting(TestCase):
         with self.settings(BRIDGE_WORKER_CHANGE_WINDOW=60):
             self.assertEqual(get_worker_changed_window(), 60)
 
-    def test_get_gws_cache_path(self):
-        with self.settings(BRIDGE_GWS_CACHE='kkk'):
-            self.assertEqual(get_gws_cache_path(), "kkk")
+    def test_get_group_member_add_window(self):
+        with self.settings(BRIDGE_GMEMBER_ADD_WINDOW=10):
+            self.assertEqual(get_group_member_add_window(), 10)
+
+    def test_get_group_member_del_window(self):
+        with self.settings(BRIDGE_GMEMBER_DEL_WINDOW=8):
+            self.assertEqual(get_group_member_del_window(), 8)
+
+    def test_get_group_member_del_window(self):
+        self.assertFalse(check_all_accounts())
+        with self.settings(BRIDGE_CHECK_ALL_ACCOUNTS=True):
+            self.assertTrue(check_all_accounts())
+
+    def test_get_cronjob_sender(self):
+        with self.settings(BRIDGE_CRON_SENDER='x'):
+            self.assertEqual(get_cronjob_sender(), 'x')

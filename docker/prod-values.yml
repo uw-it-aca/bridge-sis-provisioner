@@ -1,0 +1,206 @@
+ingress:
+  enabled: false
+lifecycle:
+  enabled: true
+  preStop:
+    enabled: true
+affinity:
+  podsSpanNodes: true
+readiness:
+  enabled: true
+securityPolicy:
+  enabled: true
+
+externalService:
+  enabled: true
+  name: bridge-db-service
+  type: ClusterIP
+  serviceAddress: 172.18.0.198
+  servicePort: 3306
+database:
+  engine: mysql
+  name: bridge_prod
+  hostname: bridge-db-service
+  secretName: admin.bridge.uw.edu-sql-secrets
+
+memcached:
+  enabled: true
+  replicaCount: 1
+  updateStrategy:
+    type: RollingUpdate
+
+gcsCredentials:
+  mounted: true
+  secretName: admin.bridge.uw.edu-gcs-credentials
+repo: bridge
+instance: prod
+image:
+  repository: gcr.io/uwit-mci-axdd/bridge
+  tag: IMAGE_TAG
+certs:
+  mounted: true
+  certPath: /certs/admin.bridge.uw.edu-uwca.cert
+  keyPath: /certs/admin.bridge.uw.edu-uwca.key
+  secretName: admin.bridge.uw.edu-uwca-certs
+
+cronjob:
+  enabled: true
+  jobs:
+    - name: add-new-users
+      schedule: "1 12 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "gws"]
+    - name: person-updates
+      schedule: "1 10,22 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "pws"]
+    - name: daily-active-users
+      schedule: "1 1 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "bridge"]
+    - name: hrp-updates
+      schedule: "1 3 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "hrp"]
+    - name: custom-groups
+      schedule: "1 17,19,21,23 * * 1-5"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "customg"]
+    - name: terminate-users
+      schedule: "1 9 * * 6"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "delete"]
+    - name: db-accounts
+      schedule: "1 14 * * 6"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "db-acc"]
+    - name: sync-eid
+      schedule: "1 5 * * 0"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_eid"]
+
+environmentVariables:
+  - name: ENV
+    value: prod
+
+  - name: CLUSTER_CNAME
+    value: admin.bridge.uw.edu
+
+  - name: SESSION_BACKEND
+    value: MEMCACHED
+
+  - name: GWS_ENV
+    value: PROD
+  - name: GWS_TIMEOUT
+    value: "600"
+  - name: GWS_POOL_SIZE
+    value: "5"
+
+  - name: PWS_ENV
+    value: EVAL
+  - name: PWS_TIMEOUT
+    value: "600"
+  - name: PWS_POOL_SIZE
+    value: "5"
+
+  - name: BRIDGE_ENV
+    value: EVAL
+  - name: BRIDGE_TIMEOUT
+    value: "600"
+  - name: BRIDGE_POOL_SIZE
+    value: "5"
+
+  - name: HRPWS_ENV
+    value: EVAL
+  - name: HRPWS_TIMEOUT
+    value: "600"
+  - name: HRPWS_POOL_SIZE
+    value: "5"
+
+  - name: AUTHOR_GROUP
+    value: "u_bridgeap_prod_author"
+
+  - name: CHECK_ALL_ACCOUNTS
+    value: "True"
+
+  - name: LOGIN_WINDOW
+    value: "1"
+
+  - name: GMEMBER_ADD_WINDOW
+    value: "1470"
+
+  - name: GMEMBER_DEL_WINDOW
+    value: "10080"
+
+  - name: PERSON_CHANGE_WINDOW
+    value: "750"
+
+  - name: WORKER_CHANGE_WINDOW
+    value: "1470"
+
+externalSecrets:
+  enabled: true
+  secrets:
+    - name: admin.bridge.uw.edu-secrets
+      externalKey: axdd/kv/data/bridge/prod/secrets
+      data:
+        - name: django-secret
+          property: django-secret
+        - name: bridge-auth-key
+          property: bridge-auth-key
+        - name: bridge-auth-secret
+          property: bridge-auth-secret
+        - name: storage-bucket-name
+          property: storage-bucket-name
+    - name: admin.bridge.uw.edu-shared-secrets
+      externalKey: axdd/kv/data/bridge/shared/secrets
+      data:
+        - name: storage-project-id
+          property: storage-project-id
+        - name: cronjob-email-sender
+          property: cronjob-email-sender
+    - name: admin.bridge.uw.edu-sql-secrets
+      externalKey: axdd/kv/data/bridge/shared/sql-secrets
+      data:
+        - name: username
+          property: username
+        - name: password
+          property: password
+    - name: admin.bridge.uw.edu-gcs-credentials
+      externalKey: axdd/kv/data/bridge/shared/gcs-credentials
+      data:
+        - name: credentials.json
+          property: credentials.json
+    - name: admin.bridge.uw.edu-uwca-certs
+      externalKey: axdd/kv/data/bridge/prod/uwca-certs
+      data:
+        - name: admin.bridge.uw.edu-uwca.cert
+          property: admin.bridge.uw.edu-uwca.cert
+        - name: admin.bridge.uw.edu-uwca.key
+          property: admin.bridge.uw.edu-uwca.key
+
+environmentVariablesSecrets:
+  djangoSecret:
+    name: DJANGO_SECRET
+    secretName: admin.bridge.uw.edu-secrets
+    secretKey: django-secret
+  bridgeAuthKey:
+    name: BRIDGE_BASIC_AUTH_KEY
+    secretName: admin.bridge.uw.edu-secrets
+    secretKey: bridge-auth-key
+  bridgeAuthSecret:
+    name: BRIDGE_BASIC_AUTH_SECRET
+    secretName: admin.bridge.uw.edu-secrets
+    secretKey: bridge-auth-secret
+  storageBucketName:
+    name: STORAGE_BUCKET_NAME
+    secretName: admin.bridge.uw.edu-secrets
+    secretKey: storage-bucket-name
+  cronjobSender:
+    name: BRIDGE_CRON_SENDER
+    secretName: admin.bridge.uw.edu-shared-secrets
+    secretKey: cronjob-email-sender
+  storageProjectId:
+    name: STORAGE_PROJECT_ID
+    secretName: admin.bridge.uw.edu-shared-secrets
+    secretKey: storage-project-id

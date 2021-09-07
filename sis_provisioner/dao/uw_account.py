@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 """
 This module interacts with the uw bridge user table in the app's database
 """
@@ -71,7 +74,7 @@ def get_by_netid(uwnetid):
     return None
 
 
-def save_uw_account(person):
+def save_uw_account(person, create=True):
     """
     :param person: Valid user
     @return 1. the UwAccount object of the account to keep
@@ -79,10 +82,10 @@ def save_uw_account(person):
     """
     uw_account = UwAccount.get_uw_acc(person.uwnetid,
                                       person.prior_uwnetids,
-                                      create=True)
+                                      create=create)
     # check if there is another account of the same user
     prior_acc = None
-    if len(person.prior_uwnetids) > 0:
+    if uw_account and len(person.prior_uwnetids) > 0:
         for prior_netid in person.prior_uwnetids:
             prior_acc = get_by_netid(prior_netid)
             if prior_acc is not None:

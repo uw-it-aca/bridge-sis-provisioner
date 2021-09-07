@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import logging
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
@@ -5,7 +8,7 @@ from sis_provisioner.dao.bridge import BridgeUsers
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import get_by_netid, save_uw_account
 
-logger = logging.getLogger("bridge_provisioner_commands")
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):

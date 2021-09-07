@@ -1,13 +1,17 @@
-"""
-The Worker is an abstract class for applying actions
-on the user account in Bridge.
-"""
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
 
 from abc import ABCMeta, abstractmethod
 from sis_provisioner.util.log import log_exception
 
 
 class Worker:
+
+    """
+    The Worker is an abstract class for applying actions
+    on the user account in Bridge.
+    """
+
     __metaclass__ = ABCMeta
 
     def __init__(self, logger):

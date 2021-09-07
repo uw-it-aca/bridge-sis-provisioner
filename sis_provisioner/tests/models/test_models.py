@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from django.test import TransactionTestCase
 from datetime import timedelta, datetime
@@ -69,7 +72,7 @@ class TestModels(TransactionTestCase):
 
     def test_datetime_to_str(self):
         dt = datetime(2017, 12, 5, 15, 3, 1)
-        self.assertEqual(datetime_to_str(dt), "2017-12-05 15:03:01")
+        self.assertEqual(datetime_to_str(dt), "2017-12-05T15:03:01")
         self.assertIsNone(datetime_to_str(None))
 
     def test_class_method(self):

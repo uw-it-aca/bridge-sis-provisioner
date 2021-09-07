@@ -1,5 +1,8 @@
-import os
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.test import TransactionTestCase
 from django.test.utils import override_settings
 from sis_provisioner.csv.user_writer import (
@@ -29,7 +32,7 @@ class TestUserWriter(TransactionTestCase):
     def test_make_import_user_csv_files(self):
         with self.settings(BRIDGE_IMPORT_USER_FILENAME="blah",
                            BRIDGE_IMPORT_USER_FILE_SIZE=1):
-            file_path = "/tmp"
+            file_path = ""
             user_number = make_import_user_csv_files(None,
                                                      file_path)
             self.assertEqual(user_number, 0)
@@ -38,14 +41,14 @@ class TestUserWriter(TransactionTestCase):
                                                      file_path)
 
             self.assertEqual(user_number, 2)
-            self.verify_file_content("/tmp/blah1.csv", "Library")
-            self.verify_file_content("/tmp/blah2.csv", "UW Benefits Office")
+            self.verify_file_content("blah1.csv", "Library")
+            self.verify_file_content("blah2.csv", "UW Benefits Office")
 
     def verify_file_content(self, fp, home_dept):
         try:
-            fo = open(fp)
+            fo = default_storage.open(fp, mode="r")
             result = fo.read()
             self.assertTrue(home_dept in result)
         finally:
-            os.remove(fp)
-            self.assertFalse(os.path.exists(fp))
+            default_storage.delete(fp)
+            self.assertFalse(default_storage.exists(fp))
