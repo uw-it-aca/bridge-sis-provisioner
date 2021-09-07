@@ -42,7 +42,7 @@ def get_group_member_add_window():
 
 
 def get_group_member_del_window():
-    # number of days
+    # number of minutes
     num = getattr(settings, 'BRIDGE_GMEMBER_DEL_WINDOW', None)
     return int(num) if num else 1470  # 24.5 hr
 
@@ -50,7 +50,7 @@ def get_group_member_del_window():
 def get_person_changed_window():
     # number of minutes
     num = getattr(settings, 'BRIDGE_PERSON_CHANGE_WINDOW', None)
-    return int(num) if num else 390  # 6 hr
+    return int(num) if num else 750  # 12.5 hr
 
 
 def get_worker_changed_window():
