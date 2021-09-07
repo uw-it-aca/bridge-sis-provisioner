@@ -6,11 +6,9 @@ from freezegun import freeze_time
 from sis_provisioner.dao.pws import get_updated_persons
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
-from sis_provisioner.models import get_now
 from sis_provisioner.tests import (
     fdao_pws_override, fdao_gws_override, fdao_bridge_override)
-from sis_provisioner.tests.account_managers import (
-    set_db_records, set_uw_account)
+from sis_provisioner.tests.account_managers import set_db_records
 
 
 @fdao_bridge_override
@@ -34,13 +32,3 @@ class TestPwsBridgeLoader(TransactionTestCase):
             self.assertEqual(loader.get_netid_changed_count(), 1)
             self.assertEqual(loader.get_updated_count(), 1)
             self.assertTrue(loader.has_error())
-
-    def test_is_to_skip(self):
-        loader = PwsBridgeLoader(BridgeWorker())
-        uw_acc = set_uw_account("leftuw")
-        uw_acc.terminate_at = get_now()
-        self.assertTrue(loader.is_to_skip(uw_acc))
-
-        uw_acc = set_uw_account("staff")
-        uw_acc.disabled = True
-        self.assertTrue(loader.is_to_skip(uw_acc))

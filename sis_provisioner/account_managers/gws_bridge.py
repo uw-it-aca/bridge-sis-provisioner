@@ -58,20 +58,12 @@ class GwsBridgeLoader(Loader):
         """
         try:
             uw_account = save_uw_account(person)
-            if (self.is_to_skip(uw_account)):
-                return
             self.apply_change_to_bridge(uw_account, person)
 
         except Exception as ex:
             self.handle_exception(
                 "Failed priority change on {0} ".format(person.uwnetid),
                 ex, traceback)
-
-    def is_to_skip(self, uw_account):
-        """
-        Given the user appears in GWS groups now
-        """
-        return False
 
     def apply_change_to_bridge(self, uw_account, person):
         """

@@ -29,10 +29,3 @@ class PwsBridgeLoader(GwsBridgeLoader):
                 continue
             self.total_checked_users += 1
             self.take_action(person)
-
-    def is_to_skip(self, uw_account):
-        """
-        Given the user appears in GWS groups now
-        """
-        return (uw_account.disabled or
-                uw_account.has_terminate_date())

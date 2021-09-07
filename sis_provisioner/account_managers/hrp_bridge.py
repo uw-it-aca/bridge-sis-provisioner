@@ -7,12 +7,12 @@ from sis_provisioner.dao.hrp import get_worker_updates
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import save_uw_account
 from sis_provisioner.util.settings import get_worker_changed_window
-from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
+from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
 
 logger = logging.getLogger(__name__)
 
 
-class HrpBridgeLoader(GwsBridgeLoader):
+class HrpBridgeLoader(PwsBridgeLoader):
 
     """
     This class will update user account upon the changes in HRP
