@@ -50,6 +50,10 @@ cronjob:
       schedule: "1 1 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
+    - name: sync-authors
+      schedule: "1 11 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_authors"]
 
 environmentVariables:
   - name: ENV
