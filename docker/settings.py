@@ -41,23 +41,18 @@ else:
     BRIDGE_CRON_SENDER = os.getenv('BRIDGE_CRON_SENDER', '')
     RESTCLIENTS_DISABLE_THREADING = True
     ERRORS_TO_ABORT_LOADER = [401, 403, 500, 502, 503]
-    RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
+
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     GS_PROJECT_ID = os.getenv('STORAGE_PROJECT_ID', '')
     GS_BUCKET_NAME = os.getenv('STORAGE_BUCKET_NAME', '')
     GS_LOCATION = os.path.join(os.getenv('IMPORT_CSV_ROOT', ''))
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
         '/gcs/credentials.json')
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/data/cache',
-        'OPTIONS': {
-            'MAX_ENTRIES': 650000 if os.getenv('ENV', '') == 'prod' else 200000
-        }
-    }
-}
+if os.getenv("ENV", '') == "localdev":
+        DEBUG = True
+        MEMCACHED_SERVERS = ['localhost:11211']
+    else:
+        RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
 
 LOGGING['formatters'] = {
     'std': {
