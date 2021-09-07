@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class PwsBridgeLoader(GwsBridgeLoader):
 
     """
-    This class will update user account upon the changes in PWS
+    This class will update active user accounts upon their changes in PWS
     """
 
     def __init__(self, worker, clogger=logger):
