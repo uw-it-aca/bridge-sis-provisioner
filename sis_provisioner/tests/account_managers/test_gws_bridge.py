@@ -6,7 +6,6 @@ from unittest.mock import patch
 from restclients_core.exceptions import DataFailureException
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.pws import get_person
-from sis_provisioner.models import UwAccount, get_now
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.tests import (
@@ -42,23 +41,6 @@ class TestGwsBridgeLoader(TransactionTestCase):
             user_list = loader.fetch_users()
             self.assertEqual(len(user_list), 1)
             self.assertEqual(user_list, ['added'])
-
-    def test_is_priority_change(self):
-        loader = GwsBridgeLoader(BridgeWorker())
-        uw_acc = UwAccount.objects.create(netid="affiemp")
-        self.assertTrue(loader.is_priority_change(uw_acc))
-
-        uw_acc = set_uw_account("faculty")
-        uw_acc.prev_netid = "tyler"
-        self.assertTrue(loader.is_priority_change(uw_acc))
-
-        uw_acc = set_uw_account("leftuw")
-        uw_acc.terminate_at = get_now()
-        self.assertTrue(loader.is_priority_change(uw_acc))
-
-        uw_acc = set_uw_account("staff")
-        uw_acc.disabled = True
-        self.assertTrue(loader.is_priority_change(uw_acc))
 
     def test_match_bridge_account(self):
         # 500 error
