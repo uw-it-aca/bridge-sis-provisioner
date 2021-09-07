@@ -22,11 +22,9 @@ logger = logging.getLogger(__name__)
 class GwsBridgeLoader(Loader):
 
     """
-    This class will load all the users in gws uw_member, uw_afiliate groups.
-    Check against PWS Person, apply high priority changes.
-    1. Add new user account (to DB and Bridge)
+    This class will load new users in gws uw_member, uw_afiliate groups.
+    1. Add new user account to DB and Bridge
     2. Restore and update disabled/terminated account
-    3. Update account if uwnetid has changed
     """
 
     def __init__(self, worker, clogger=logger):

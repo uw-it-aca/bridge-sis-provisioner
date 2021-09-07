@@ -29,7 +29,7 @@ if os.getenv('ENV', 'localdev') == 'localdev':
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_ROOT = os.getenv('IMPORT_CSV_ROOT', '/data')
 else:
-    BRIDGE_IMPORT_USER_FILE_SIZE = 20000
+    RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
     BRIDGE_USER_WORK_POSITIONS = 2
     BRIDGE_AUTHOR_GROUP_NAME = os.getenv('AUTHOR_GROUP')
     BRIDGE_CHECK_ALL_ACCOUNTS = os.getenv('CHECK_ALL_ACCOUNTS')
@@ -48,11 +48,6 @@ else:
     GS_LOCATION = os.path.join(os.getenv('IMPORT_CSV_ROOT', ''))
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
         '/gcs/credentials.json')
-if os.getenv("ENV", '') == "localdev":
-        DEBUG = True
-        MEMCACHED_SERVERS = ['localhost:11211']
-    else:
-        RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
 
 LOGGING['formatters'] = {
     'std': {
