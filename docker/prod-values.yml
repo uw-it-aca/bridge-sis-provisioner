@@ -15,7 +15,7 @@ externalService:
   enabled: true
   name: bridge-db-service
   type: ClusterIP
-  serviceAddress: ???
+  serviceAddress: 172.18.0.198
   servicePort: 3306
 database:
   engine: mysql
@@ -67,7 +67,7 @@ cronjob:
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "customg"]
     - name: terminate-users
-      schedule: "1 13 * * 6"
+      schedule: "1 9 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "delete"]
     - name: db-accounts
