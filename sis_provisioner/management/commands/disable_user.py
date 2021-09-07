@@ -8,7 +8,7 @@ from sis_provisioner.dao.bridge import BridgeUsers
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import get_by_netid, save_uw_account
 
-logger = logging.getLogger("bridge_provisioner_commands")
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):

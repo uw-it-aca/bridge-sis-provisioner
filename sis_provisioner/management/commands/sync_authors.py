@@ -11,7 +11,7 @@ from sis_provisioner.util.log import log_resp_time, Timer
 from sis_provisioner.util.settings import get_cronjob_sender
 
 
-logger = logging.getLogger("bridge_provisioner_commands")
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
