@@ -50,22 +50,22 @@ cronjob:
       schedule: "1 12 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "gws"]
-    #- name: person-updates
-    #  schedule: "1 10,22 * * *"
-    #  command: ["/scripts/management_command.sh"]
-    #  args: ["sync_accounts", "pws"]
-    #- name: daily-active-users
-    #  schedule: "1 1 * * *"
-    #  command: ["/scripts/management_command.sh"]
-    #  args: ["sync_accounts", "bridge"]
-    #- name: hrp-updates
-    #  schedule: "1 3 * * *"
-    #  command: ["/scripts/management_command.sh"]
-    #  args: ["sync_accounts", "hrp"]
-    #- name: custom-groups
-    #  schedule: "1 17,19,21,23 * * 1-5"
-    #  command: ["/scripts/management_command.sh"]
-    #  args: ["sync_accounts", "customg"]
+    - name: person-updates
+      schedule: "1 10,22 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "pws"]
+    - name: daily-active-users
+      schedule: "1 1 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "bridge"]
+    - name: hrp-updates
+      schedule: "1 3 * * *"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "hrp"]
+    - name: custom-groups
+      schedule: "1 17,19,21,23 * * 1-5"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "customg"]
     - name: terminate-users
       schedule: "1 9 * * 6"
       command: ["/scripts/management_command.sh"]
@@ -97,21 +97,21 @@ environmentVariables:
     value: "5"
 
   - name: PWS_ENV
-    value: EVAL
+    value: PROD
   - name: PWS_TIMEOUT
     value: "600"
   - name: PWS_POOL_SIZE
     value: "5"
 
   - name: BRIDGE_ENV
-    value: EVAL
+    value: PROD
   - name: BRIDGE_TIMEOUT
     value: "600"
   - name: BRIDGE_POOL_SIZE
     value: "5"
 
   - name: HRPWS_ENV
-    value: EVAL
+    value: PROD
   - name: HRPWS_TIMEOUT
     value: "600"
   - name: HRPWS_POOL_SIZE
