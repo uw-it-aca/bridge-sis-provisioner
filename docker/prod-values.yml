@@ -55,7 +55,7 @@ cronjob:
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "pws"]
     - name: daily-active-users
-      schedule: "1 1 * * *"
+      schedule: "1 1 * * 1-5"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
     - name: hrp-updates
