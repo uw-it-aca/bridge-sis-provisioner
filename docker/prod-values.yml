@@ -60,7 +60,7 @@ cronjob:
           memory: 768Mi
         requests:
           cpu: 50m
-          memory: 512Mi
+          memory: 256Mi
     - name: daily-active-users
       schedule: "1 1 * * *"
       command: ["/scripts/management_command.sh"]
