@@ -54,8 +54,15 @@ cronjob:
       schedule: "1 10,22 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "pws"]
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 768Mi
+        requests:
+          cpu: 50m
+          memory: 512Mi
     - name: daily-active-users
-      schedule: "1 1 * * 1-5"
+      schedule: "1 1 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
       resources:
