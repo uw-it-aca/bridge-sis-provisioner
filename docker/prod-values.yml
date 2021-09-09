@@ -68,10 +68,10 @@ cronjob:
       resources:
         limits:
           cpu: 1000m
-          memory: 1024Mi
+          memory: 2560Mi
         requests:
           cpu: 50m
-          memory: 768Mi
+          memory: 1536Mi
     - name: hrp-updates
       schedule: "1 3 * * *"
       command: ["/scripts/management_command.sh"]
@@ -91,10 +91,10 @@ cronjob:
       resources:
         limits:
           cpu: 1000m
-          memory: 1024Mi
+          memory: 1536Mi
         requests:
           cpu: 50m
-          memory: 512Mi
+          memory: 768Mi
     - name: sync-eid
       schedule: "1 5 * * 0"
       command: ["/scripts/management_command.sh"]
