@@ -47,9 +47,16 @@ cronjob:
   enabled: true
   jobs:
     - name: add-new-users
-      schedule: "1 11 * * *"
+      schedule: "1 12 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "gws"]
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1536Mi
+        requests:
+          cpu: 50m
+          memory: 512Mi
     - name: person-updates
       schedule: "1 10,22 * * *"
       command: ["/scripts/management_command.sh"]
@@ -57,10 +64,10 @@ cronjob:
       resources:
         limits:
           cpu: 1000m
-          memory: 768Mi
+          memory: 1536Mi
         requests:
           cpu: 50m
-          memory: 256Mi
+          memory: 512Mi
     - name: daily-active-users
       schedule: "1 1 * * *"
       command: ["/scripts/management_command.sh"]
