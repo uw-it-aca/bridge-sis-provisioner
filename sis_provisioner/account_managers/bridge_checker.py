@@ -26,7 +26,7 @@ class BridgeChecker(UserAccountChecker):
 
     def __init__(self, worker, clogger=logger):
         super(BridgeChecker, self).__init__(worker, clogger)
-        self.data_source = "Bridge daily users"
+        self.data_source = "Accounts in Bridge"
         self.login_window = get_login_window()
         if self.login_window > 0:
             self.check_time = get_now() - timedelta(days=self.login_window)
@@ -52,7 +52,7 @@ class BridgeChecker(UserAccountChecker):
             if self.not_accessed(bridge_acc):
                 continue
 
-            logger.info("Validate {0}".format(bridge_acc))
+            logger.debug("Validate {0}".format(bridge_acc))
             uwnetid = bridge_acc.netid
             bridge_id = bridge_acc.bridge_id
 
