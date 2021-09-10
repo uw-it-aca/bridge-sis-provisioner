@@ -31,6 +31,7 @@ def set_db_records():
     leftuw.set_ids(200, None)
 
     testid = set_uw_account("testid")
+    # IsTestEntity, invalid_person
 
 
 def set_db_err_records():

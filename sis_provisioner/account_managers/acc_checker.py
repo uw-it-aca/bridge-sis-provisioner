@@ -43,31 +43,31 @@ class UserAccountChecker(GwsBridgeLoader):
         update those changed.
         """
         for uw_acc in self.get_users_to_process():
-            self.logger.debug("Validate DB record {0}".format(uw_acc))
-
+            self.logger.debug("Validate {0}".format(uw_acc))
+            self.total_checked_users += 1
             person = get_person(uw_acc.netid)
-            if (self.is_invalid_person(uw_acc.netid, person) or
-                    not self.to_check(person)):
+
+            if (self.is_invalid_person(uw_acc.netid, person) and
+                    not uw_acc.disabled):
+                self.process_termination(uw_acc)
                 continue
 
-            self.total_checked_users += 1
+            if (not self.in_uw_groups(person.uwnetid) and
+                    not uw_acc.disabled):
+                self.process_termination(uw_acc)
+                continue
 
-            if not uw_acc.disabled:
-                if uw_acc.netid == person.uwnetid:
-                    # netid not changed
-                    if self.in_uw_groups(person.uwnetid) is False:
-                        self.process_termination(uw_acc)
-                        continue
-            else:
-                if self.in_uw_groups(person.uwnetid) is False:
-                    # remain disabled
+            if (self.in_uw_groups(person.uwnetid) and
+                    uw_acc.disabled and
+                    uw_acc.netid == person.uwnetid):
+                bridge_acc = self.worker.restore_user(uw_acc)
+                if bridge_acc is None:
+                    self.add_error("Failed to restore {0}".format(uw_acc))
                     continue
-                if uw_acc.netid == person.uwnetid:
-                    bridge_acc = self.worker.restore_user(uw_acc)
-                    if bridge_acc is None:
-                        self.add_error("Failed to restore {0}".format(uw_acc))
-                        continue
-                    uw_acc.set_ids(bridge_acc.bridge_id, person.employee_id)
+                uw_acc.set_ids(bridge_acc.bridge_id, person.employee_id)
+
+            if not self.to_check(person):
+                continue
 
             if is_prior_netid(uw_acc.netid, person):
                 cur_uw_acc = get_by_netid(person.uwnetid)
