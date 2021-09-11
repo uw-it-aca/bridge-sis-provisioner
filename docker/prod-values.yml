@@ -149,7 +149,7 @@ environmentVariables:
     value: "u_bridgeap_prod_author"
 
   - name: CHECK_ALL_ACCOUNTS
-    value: "True"
+    value: "False"
 
   - name: LOGIN_WINDOW
     value: "1"

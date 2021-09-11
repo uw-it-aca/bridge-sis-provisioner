@@ -19,7 +19,8 @@ class UserAccountChecker(GwsBridgeLoader):
     against GWS groups and PWS person.
     1. Schedule terminate if the user left the groups
     2. If uw account passed the grace period for termination, disable it
-    3. Update active accounts.
+    3. Restore account
+    4. Update active accounts.
     """
 
     def __init__(self, worker, clogger=logger):
@@ -42,30 +43,41 @@ class UserAccountChecker(GwsBridgeLoader):
         update those changed.
         """
         for uw_acc in self.get_users_to_process():
-            self.logger.debug("Validate DB record {0}".format(uw_acc))
-            uwnetid = uw_acc.netid
-            person = get_person(uwnetid)
-            if (self.is_invalid_person(uwnetid, person) or
-                    not self.to_check(person)):
+            self.logger.debug("Validate {0}".format(uw_acc))
+            self.total_checked_users += 1
+            person = get_person(uw_acc.netid)
+
+            if (self.is_invalid_person(uw_acc.netid, person) and
+                    not uw_acc.disabled):
+                self.process_termination(uw_acc)
                 continue
 
-            if not uw_acc.disabled:
-                self.total_checked_users += 1
+            if (not self.in_uw_groups(person.uwnetid) and
+                    not uw_acc.disabled):
+                self.process_termination(uw_acc)
+                continue
 
-                if uwnetid == person.uwnetid:
-                    if self.in_uw_groups(person.uwnetid) is False:
-                        self.process_termination(uw_acc)
-                        continue
+            if (self.in_uw_groups(person.uwnetid) and
+                    uw_acc.disabled and
+                    uw_acc.netid == person.uwnetid):
+                bridge_acc = self.worker.restore_user(uw_acc)
+                if bridge_acc is None:
+                    self.add_error("Failed to restore {0}".format(uw_acc))
+                    continue
+                uw_acc.set_ids(bridge_acc.bridge_id, person.employee_id)
 
-                if is_prior_netid(uwnetid, person):
-                    cur_uw_acc = get_by_netid(person.uwnetid)
-                    if (cur_uw_acc is not None and
-                            cur_uw_acc.bridge_id != uw_acc.bridge_id):
-                        # the current netid has another account in DB,
-                        # this account will be merged then.
-                        continue
+            if not self.to_check(person):
+                continue
 
-                self.take_action(person)
+            if is_prior_netid(uw_acc.netid, person):
+                cur_uw_acc = get_by_netid(person.uwnetid)
+                if (cur_uw_acc is not None and
+                        cur_uw_acc.bridge_id != uw_acc.bridge_id):
+                    # the current netid has another account in DB,
+                    # this account will be merged then.
+                    continue
+
+            self.take_action(person)
 
     def process_termination(self, uw_acc):
         """

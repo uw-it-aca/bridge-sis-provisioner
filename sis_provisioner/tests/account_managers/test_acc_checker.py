@@ -60,17 +60,23 @@ class TestUserAccountChecker(TransactionTestCase):
 
     def test_update(self):
         set_db_records()
+        alumni = set_uw_account("alumni")
+        alumni.set_disable()
         loader = UserAccountChecker(BridgeWorker())
         loader.load()
-        self.assertEqual(loader.get_total_count(), 7)
-        self.assertEqual(loader.get_total_checked_users(), 4)
+        self.assertEqual(loader.get_total_count(), 8)
+        self.assertEqual(loader.get_total_checked_users(), 8)
         self.assertEqual(loader.get_new_user_count(), 0)
         self.assertEqual(loader.get_netid_changed_count(), 2)
         self.assertEqual(loader.get_deleted_count(), 1)
-        self.assertEqual(loader.get_restored_count(), 0)
+        self.assertEqual(loader.get_restored_count(), 1)
         self.assertEqual(loader.get_updated_count(), 2)
-        self.assertFalse(loader.has_error())
-        # UserAccountChecker won't resttore staff
+        self.assertTrue(loader.has_error())
+
+        alumni = UwAccount.get("alumni")
+        self.assertTrue(alumni.disabled)
+        testid = UwAccount.get("testid")
+        self.assertTrue(testid.has_terminate_date())
 
     def test_errors(self):
         set_db_err_records()
