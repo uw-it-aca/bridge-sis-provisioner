@@ -47,14 +47,13 @@ class UserAccountChecker(GwsBridgeLoader):
             self.total_checked_users += 1
             person = get_person(uw_acc.netid)
 
-            if (self.is_invalid_person(uw_acc.netid, person) and
-                    not uw_acc.disabled):
-                self.process_termination(uw_acc)
+            if person is None:
+                # Skip this account in case PWS unavailable
                 continue
 
-            if (not self.in_uw_groups(person.uwnetid) and
-                    not uw_acc.disabled):
-                self.process_termination(uw_acc)
+            if person.is_test_entity:
+                if not uw_acc.disabled:
+                    self.process_termination(uw_acc)
                 continue
 
             if (self.in_uw_groups(person.uwnetid) and
