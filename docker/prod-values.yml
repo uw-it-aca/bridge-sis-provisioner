@@ -69,7 +69,7 @@ cronjob:
           cpu: 50m
           memory: 512Mi
     - name: daily-active-users
-      schedule: "1 1 * * *"
+      schedule: "1 1 * * 2-6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
       resources:
