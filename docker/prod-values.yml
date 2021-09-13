@@ -69,13 +69,13 @@ cronjob:
           cpu: 50m
           memory: 512Mi
     - name: daily-active-users
-      schedule: "1 1 * * *"
+      schedule: "1 1 * * 2-6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
       resources:
         limits:
           cpu: 1000m
-          memory: 2560Mi
+          memory: 2048Mi
         requests:
           cpu: 50m
           memory: 1536Mi
@@ -122,28 +122,28 @@ environmentVariables:
   - name: GWS_TIMEOUT
     value: "600"
   - name: GWS_POOL_SIZE
-    value: "5"
+    value: "10"
 
   - name: PWS_ENV
     value: PROD
   - name: PWS_TIMEOUT
     value: "600"
   - name: PWS_POOL_SIZE
-    value: "5"
+    value: "30"
 
   - name: BRIDGE_ENV
     value: PROD
   - name: BRIDGE_TIMEOUT
     value: "600"
   - name: BRIDGE_POOL_SIZE
-    value: "5"
+    value: "30"
 
   - name: HRPWS_ENV
     value: PROD
   - name: HRPWS_TIMEOUT
     value: "600"
   - name: HRPWS_POOL_SIZE
-    value: "5"
+    value: "30"
 
   - name: AUTHOR_GROUP
     value: "u_bridgeap_prod_author"
