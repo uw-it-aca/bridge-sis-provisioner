@@ -129,21 +129,21 @@ environmentVariables:
   - name: PWS_TIMEOUT
     value: "600"
   - name: PWS_POOL_SIZE
-    value: "10"
+    value: "30"
 
   - name: BRIDGE_ENV
     value: PROD
   - name: BRIDGE_TIMEOUT
     value: "600"
   - name: BRIDGE_POOL_SIZE
-    value: "10"
+    value: "30"
 
   - name: HRPWS_ENV
     value: PROD
   - name: HRPWS_TIMEOUT
     value: "600"
   - name: HRPWS_POOL_SIZE
-    value: "10"
+    value: "30"
 
   - name: AUTHOR_GROUP
     value: "u_bridgeap_prod_author"
