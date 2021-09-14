@@ -17,9 +17,15 @@ class Command(BaseCommand):
     Load users into Bridge
     """
     def add_arguments(self, parser):
-        pass
+        parser.add_argument(
+            "-n", "--noop", action="store_true", dest="noop",
+            default=False,
+            help="No operation")
 
     def handle(self, *args, **options):
+        if options.get('noop'):
+            return
+
         timer = Timer()
         logger.info("Start at {0}".format(datetime.now()))
         sender = get_cronjob_sender()
