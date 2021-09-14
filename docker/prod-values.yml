@@ -106,6 +106,13 @@ cronjob:
       schedule: "1 5 * * 0"
       command: ["/scripts/management_command.sh"]
       args: ["sync_eid"]
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1536Mi
+        requests:
+          cpu: 50m
+          memory: 768Mi
 
 environmentVariables:
   - name: ENV
