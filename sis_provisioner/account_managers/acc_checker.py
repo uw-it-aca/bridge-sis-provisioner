@@ -67,7 +67,6 @@ class UserAccountChecker(GwsBridgeLoader):
                     continue
                 uw_acc.set_ids(bridge_acc.bridge_id, person.employee_id)
 
-
             if is_prior_netid(uw_acc.netid, person):
                 cur_uw_acc = get_by_netid(person.uwnetid)
                 if (cur_uw_acc is not None and
