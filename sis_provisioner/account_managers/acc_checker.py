@@ -51,22 +51,22 @@ class UserAccountChecker(GwsBridgeLoader):
                 # Skip this account in case PWS unavailable
                 continue
 
-            if person.is_test_entity:
-                if not uw_acc.disabled:
+            if (not self.in_uw_groups(person.uwnetid) or
+                    person.is_test_entity):
+                if not (uw_acc.disabled or uw_acc.has_terminate_date()):
                     self.process_termination(uw_acc)
                 continue
 
-            if (self.in_uw_groups(person.uwnetid) and
-                    uw_acc.disabled and
-                    uw_acc.netid == person.uwnetid):
+            if not self.to_check(person):
+                continue
+
+            if uw_acc.disabled and uw_acc.netid == person.uwnetid:
                 bridge_acc = self.worker.restore_user(uw_acc)
                 if bridge_acc is None:
                     self.add_error("Failed to restore {0}".format(uw_acc))
                     continue
                 uw_acc.set_ids(bridge_acc.bridge_id, person.employee_id)
 
-            if not self.to_check(person):
-                continue
 
             if is_prior_netid(uw_acc.netid, person):
                 cur_uw_acc = get_by_netid(person.uwnetid)
