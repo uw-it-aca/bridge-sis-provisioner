@@ -48,8 +48,8 @@ def get_potential_users():
     """
     timer = Timer()
     user_set = set()
-    groups = [CUSTOM_GROUP]
-    for gr in groups + UW_GROUPS:
+    groups = [CUSTOM_GROUP] + UW_GROUPS
+    for gr in groups:
         append_netids_to_list(get_members_of_group(gr), user_set)
     log_resp_time(logger, "get_potential_users", timer)
     return user_set
