@@ -98,7 +98,7 @@ cronjob:
       resources:
         limits:
           cpu: 1000m
-          memory: 1536Mi
+          memory: 1024Mi
         requests:
           cpu: 50m
           memory: 768Mi
@@ -109,7 +109,7 @@ cronjob:
       resources:
         limits:
           cpu: 1000m
-          memory: 1536Mi
+          memory: 1024Mi
         requests:
           cpu: 50m
           memory: 768Mi
