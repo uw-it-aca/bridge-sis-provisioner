@@ -25,7 +25,7 @@ database:
 
 memcached:
   enabled: true
-  replicaCount: 1
+  replicaCount: 2
   updateStrategy:
     type: RollingUpdate
 
@@ -98,18 +98,18 @@ cronjob:
       resources:
         limits:
           cpu: 1000m
-          memory: 1536Mi
+          memory: 1024Mi
         requests:
           cpu: 50m
           memory: 768Mi
     - name: sync-eid
-      schedule: "1 5 * * 0"
+      schedule: "1 5 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_eid"]
       resources:
         limits:
           cpu: 1000m
-          memory: 1536Mi
+          memory: 1024Mi
         requests:
           cpu: 50m
           memory: 768Mi

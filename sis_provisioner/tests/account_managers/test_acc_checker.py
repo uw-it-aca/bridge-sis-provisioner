@@ -23,6 +23,7 @@ class TestUserAccountChecker(TransactionTestCase):
         uw_acc = set_uw_account("leftuw")
         uw_acc.set_bridge_id(200)
         loader = UserAccountChecker(BridgeWorker())
+        self.assertFalse(loader.in_uw_groups("leftuw"))
         loader.process_termination(uw_acc)
         self.assertEqual(loader.get_deleted_count(), 0)
         uw_acc1 = UwAccount.get("leftuw")
