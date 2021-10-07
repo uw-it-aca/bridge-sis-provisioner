@@ -45,7 +45,7 @@ class TestGwsDao(TestCase):
         self.assertTrue("not_in_pws" in user_set)
 
     def test_get_member_changes(self):
-        changes = _get_member_changes("uw_member", 1626215400)
+        changes = _get_member_changes("uw_employee", 1626215400)
         self.assertEqual(len(changes), 3)
         self.assertEqual(changes[2].member_uwnetid, "added")
         self.assertTrue(changes[2].is_add_member)
@@ -62,14 +62,15 @@ class TestGwsDao(TestCase):
     @patch('sis_provisioner.dao.gws._get_start_timestamp',
            return_value=1626215400, spec=True)
     def test_get_changed_members(self, mock_fn):
-        users_added, users_deleted = get_changed_members('uw_member', 12)
+        users_added, users_deleted = get_changed_members('uw_employee', 12)
         self.assertEqual(len(users_added), 1)
         self.assertTrue("added" in users_added)
         self.assertEqual(len(users_deleted), 2)
         self.assertTrue("retiree" in users_deleted)
         self.assertTrue("leftuw" in users_deleted)
 
-        users_added, users_deleted = get_changed_members('uw_affiliate', 7)
+        users_added, users_deleted = get_changed_members(
+            'uw_affiliation_affiliate-employee', 7)
         self.assertEqual(len(users_added), 0)
         self.assertEqual(len(users_deleted), 0)
 

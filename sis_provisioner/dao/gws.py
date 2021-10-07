@@ -14,7 +14,13 @@ from sis_provisioner.util.settings import get_author_group_name
 
 
 logger = logging.getLogger(__name__)
-UW_GROUPS = ["uw_member", "uw_affiliate"]
+UW_GROUPS = [
+    "uw_employee",
+    "uw_affiliation_affiliate-employee",
+    "uw_affiliation_uw-medicine-workforce",
+    "uw_affiliation_uw-medicine-affiliate",
+    "uw_affiliation_wwami-medical-resident"
+    ]
 CUSTOM_GROUP = "u_bridgeap_tempusers"
 gws = GWS()
 
