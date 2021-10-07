@@ -6,9 +6,9 @@
     "resourceType": "members",
     "version": "v3.0",
     "regid": "956ad2f5bd7844ae862016b2999e9e06",
-    "id": "uw_member",
+    "id": "uw_employee",
     "type": "effective",
-    "selfRef": "https://groups.uw.edu/group_sws/v3/group/uw_member/effective_member",
+    "selfRef": "https://groups.uw.edu/group_sws/v3/group/uw_employee/member",
     "timestamp": 1552943223788
   },
   "data": [
