@@ -52,29 +52,29 @@ cronjob:
       args: ["sync_accounts", "gws"]
       resources:
         limits:
-          cpu: 1000m
-          memory: 1024Mi
+          cpu: 100m
+          memory: 512Mi
         requests:
           cpu: 50m
-          memory: 512Mi
+          memory: 256Mi
     - name: person-updates
       schedule: "1 10,22 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "pws"]
       resources:
         limits:
-          cpu: 1000m
-          memory: 1024Mi
+          cpu: 100m
+          memory: 512Mi
         requests:
           cpu: 50m
-          memory: 512Mi
+          memory: 256Mi
     - name: daily-active-users
       schedule: "1 1 * * 2-6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
       resources:
         limits:
-          cpu: 1000m
+          cpu: 100m
           memory: 2048Mi
         requests:
           cpu: 50m
@@ -83,6 +83,13 @@ cronjob:
       schedule: "1 3 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "hrp"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 256Mi
     - name: custom-groups
       schedule: "1 17,23 * * 1-5"
       command: ["/scripts/management_command.sh"]
@@ -97,7 +104,7 @@ cronjob:
       args: ["sync_accounts", "db-acc"]
       resources:
         limits:
-          cpu: 1000m
+          cpu: 100m
           memory: 1024Mi
         requests:
           cpu: 50m
@@ -108,7 +115,7 @@ cronjob:
       args: ["sync_eid"]
       resources:
         limits:
-          cpu: 1000m
+          cpu: 100m
           memory: 1024Mi
         requests:
           cpu: 50m
