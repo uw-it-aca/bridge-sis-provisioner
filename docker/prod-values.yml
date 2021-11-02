@@ -75,10 +75,10 @@ cronjob:
       resources:
         limits:
           cpu: 100m
-          memory: 2048Mi
+          memory: 1536Mi
         requests:
           cpu: 50m
-          memory: 1536Mi
+          memory: 1280Mi
     - name: hrp-updates
       schedule: "1 3 * * *"
       command: ["/scripts/management_command.sh"]
@@ -94,10 +94,24 @@ cronjob:
       schedule: "1 17,23 * * 1-5"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "customg"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
     - name: terminate-users
       schedule: "1 9 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "delete"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
     - name: db-accounts
       schedule: "1 14 * * 6"
       command: ["/scripts/management_command.sh"]
