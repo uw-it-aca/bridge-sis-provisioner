@@ -126,13 +126,18 @@ class BridgeWorker(Worker):
         :param person: a valid Person object
         :return: a BridgeUser object
         """
-        user = BridgeUser(netid=person.uwnetid,
-                          email=get_email(person),
-                          full_name=get_full_name(person),
-                          first_name=normalize_name(person.first_name),
-                          last_name=normalize_name(person.surname),
-                          job_title=get_job_title(hrp_wkr),
-                          manager_id=get_supervisor_bridge_id(hrp_wkr))
+        user = BridgeUser(
+            netid=person.uwnetid,
+            email=get_email(person),
+            full_name=get_full_name(person),
+            first_name=normalize_name(
+                person.preferred_first_name if person.preferred_first_name
+                else person.first_name),
+            last_name=normalize_name(
+                person.preferred_surname if person.preferred_surname
+                else person.surname),
+            job_title=get_job_title(hrp_wkr),
+            manager_id=get_supervisor_bridge_id(hrp_wkr))
         self.add_custom_field(user,
                               BridgeCustomField.REGID_NAME,
                               person.uwregid)
