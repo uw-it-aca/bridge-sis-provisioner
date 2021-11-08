@@ -140,9 +140,9 @@ class TestBridgeWorker(TransactionTestCase):
                 'full_name': 'Ellen Louise Retiree',
                 'email': 'retiree@uw.edu',
                 'id': 194,
-                'first_name': 'Ellen L',
+                'first_name': 'Ellen',
                 'last_name': 'Retiree',
-                'sortable_name': 'Retiree, Ellen L',
+                'sortable_name': 'Retiree, Ellen',
                 'manager_id': None,
                 'custom_field_values': [
                     {'custom_field_id': '5',
