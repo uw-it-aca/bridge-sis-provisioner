@@ -139,10 +139,11 @@ class GwsBridgeLoader(Loader):
         :param hrp_wkr: a valid Worker object
         :return: True if the attributes have the same values
         """
+        first_name = normalize_name(get_first_name(person))
         return (person.uwnetid == bridge_acc.netid and
                 get_email(person) == bridge_acc.email and
                 get_full_name(person) == bridge_acc.full_name and
-                normalize_name(get_first_name(person)) == bridge_acc.first_name and
+                first_name == bridge_acc.first_name and
                 normalize_name(get_surname(person)) == bridge_acc.last_name and
                 get_job_title(hrp_wkr) == bridge_acc.job_title and
                 get_supervisor_bridge_id(hrp_wkr) == bridge_acc.manager_id and
