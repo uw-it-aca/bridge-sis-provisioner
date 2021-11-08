@@ -12,8 +12,9 @@ from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
 from sis_provisioner.util.settings import (
     get_total_work_positions_to_load, get_group_member_add_window)
 from sis_provisioner.account_managers import (
-    get_full_name, get_email, get_job_title, normalize_name,
-    GET_POS_ATT_FUNCS, get_supervisor_bridge_id, get_custom_field_value)
+    get_email, get_job_title, get_first_name, get_full_name, get_surname,
+    normalize_name, GET_POS_ATT_FUNCS, get_supervisor_bridge_id,
+    get_custom_field_value)
 from sis_provisioner.account_managers.loader import Loader
 
 logger = logging.getLogger(__name__)
@@ -141,8 +142,8 @@ class GwsBridgeLoader(Loader):
         return (person.uwnetid == bridge_acc.netid and
                 get_email(person) == bridge_acc.email and
                 get_full_name(person) == bridge_acc.full_name and
-                normalize_name(person.first_name) == bridge_acc.first_name and
-                normalize_name(person.surname) == bridge_acc.last_name and
+                normalize_name(get_first_name(person)) == bridge_acc.first_name and
+                normalize_name(get_surname(person)) == bridge_acc.last_name and
                 get_job_title(hrp_wkr) == bridge_acc.job_title and
                 get_supervisor_bridge_id(hrp_wkr) == bridge_acc.manager_id and
                 self.regid_not_changed(bridge_acc, person) and

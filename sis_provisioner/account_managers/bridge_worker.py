@@ -13,8 +13,8 @@ from sis_provisioner.dao.bridge import BridgeUsers
 from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
 from sis_provisioner.util.settings import get_total_work_positions_to_load
 from sis_provisioner.account_managers import (
-    get_email, get_full_name, normalize_name, get_job_title,
-    GET_POS_ATT_FUNCS, get_supervisor_bridge_id)
+    get_email, get_first_name, get_full_name, get_surname, normalize_name,
+    get_job_title, GET_POS_ATT_FUNCS, get_supervisor_bridge_id)
 from sis_provisioner.account_managers.worker import Worker
 
 
@@ -130,12 +130,8 @@ class BridgeWorker(Worker):
             netid=person.uwnetid,
             email=get_email(person),
             full_name=get_full_name(person),
-            first_name=normalize_name(
-                person.preferred_first_name if person.preferred_first_name
-                else person.first_name),
-            last_name=normalize_name(
-                person.preferred_surname if person.preferred_surname
-                else person.surname),
+            first_name=normalize_name(get_first_name(person)),
+            last_name=normalize_name(get_surname(person)),
             job_title=get_job_title(hrp_wkr),
             manager_id=get_supervisor_bridge_id(hrp_wkr))
         self.add_custom_field(user,
@@ -171,8 +167,8 @@ class BridgeWorker(Worker):
         bridge_account.netid = person.uwnetid
         bridge_account.email = get_email(person)
         bridge_account.full_name = get_full_name(person)
-        bridge_account.first_name = normalize_name(person.first_name)
-        bridge_account.last_name = normalize_name(person.surname)
+        bridge_account.first_name = normalize_name(get_first_name(person))
+        bridge_account.last_name = normalize_name(get_surname(person))
         bridge_account.job_title = get_job_title(hrp_wkr)
         bridge_account.manager_id = get_supervisor_bridge_id(hrp_wkr)
 

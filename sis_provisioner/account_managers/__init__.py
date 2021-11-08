@@ -21,6 +21,13 @@ def get_email(person):
     return re.sub(r"\.$", "", email_s1, flags=re.IGNORECASE)
 
 
+def get_first_name(person):
+    return (
+        person.preferred_first_name
+        if person.preferred_first_name and len(person.preferred_first_name)
+        else person.first_name)
+
+
 def get_full_name(person):
     if (len(person.display_name) > 0 and
             not person.display_name.isdigit() and
@@ -31,6 +38,13 @@ def get_full_name(person):
     name.capitalize()
     name.string_format = "{first} {last}"
     return str(name)
+
+
+def get_surname(person):
+    return (
+        person.preferred_surname
+        if person.preferred_surname and len(person.preferred_surname)
+        else person.surname)
 
 
 def normalize_name(name):

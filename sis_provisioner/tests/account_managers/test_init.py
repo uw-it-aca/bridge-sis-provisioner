@@ -8,7 +8,8 @@ from uw_hrp.models import Worker
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.account_managers import (
-    get_full_name, get_email, normalize_name, get_job_title, get_work_position,
+    get_first_name, get_full_name, get_surname,
+    get_email, normalize_name, get_job_title, get_work_position,
     GET_POS_ATT_FUNCS, get_custom_field_value, get_supervisor_bridge_id)
 from sis_provisioner.tests.account_managers import (
     new_custom_field, set_db_records)
@@ -16,12 +17,26 @@ from sis_provisioner.tests.account_managers import (
 
 class TestValidUser(TransactionTestCase):
 
+    def test_get_first_name(self):
+        person = get_person('javerage')
+        self.assertEqual(get_first_name(person), "Average")
+
+        person.preferred_first_name = ""
+        self.assertEqual(get_first_name(person), "Average Joseph")
+
     def test_get_full_name(self):
         person = get_person('javerage')
         self.assertEqual(get_full_name(person), "Average Joseph Student")
 
         person.display_name = ""
         self.assertEqual(get_full_name(person), "Average Student")
+
+    def test_get_surname(self):
+        person = get_person('javerage')
+        self.assertEqual(get_surname(person), "Student")
+
+        person.preferred_surname = ""
+        self.assertEqual(get_surname(person), "Student")
 
     def test_get_email(self):
         person = get_person('retiree')
