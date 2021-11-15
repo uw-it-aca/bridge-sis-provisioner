@@ -5,6 +5,7 @@ import logging
 from datetime import datetime
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
+from sis_provisioner.dao import is_using_file_dao
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.account_managers.acc_checker import UserAccountChecker
 from sis_provisioner.account_managers.terminate import TerminateUser
@@ -30,53 +31,60 @@ class Command(BaseCommand):
                                      'bridge', 'hrp', 'pws', 'customg'])
 
     def handle(self, *args, **options):
-        timer = Timer()
+        self.timer = Timer()
         logger.info("Start at {0}".format(datetime.now()))
-        sender = get_cronjob_sender()
-        source = options['data-source']
+        self.sender = get_cronjob_sender()
+        self.source = options['data-source']
         workr = BridgeWorker()
-        if source == 'gws':
-            loader = GwsBridgeLoader(workr)
-        elif source == 'customg':
-            loader = CustomGroupLoader(workr)
-        elif source == 'db-acc':
-            loader = UserAccountChecker(workr)
-        elif source == 'delete':
-            loader = TerminateUser(workr)
-        elif source == 'bridge':
-            loader = BridgeChecker(workr)
-        elif source == 'pws':
-            loader = PwsBridgeLoader(workr)
-        elif source == 'hrp':
-            loader = HrpBridgeLoader(workr)
+        if self.source == 'gws':
+            self.loader = GwsBridgeLoader(workr)
+        elif self.source == 'customg':
+            self.loader = CustomGroupLoader(workr)
+        elif self.source == 'db-acc':
+            self.loader = UserAccountChecker(workr)
+        elif self.source == 'delete':
+            self.loader = TerminateUser(workr)
+        elif self.source == 'bridge':
+            self.loader = BridgeChecker(workr)
+        elif self.source == 'pws':
+            self.loader = PwsBridgeLoader(workr)
+        elif self.source == 'hrp':
+            self.loader = HrpBridgeLoader(workr)
         else:
             logger.info("Invalid data source, abort!")
             return
         try:
-            loader.load()
+            self.loader.load()
+            self.log_msg()
         except Exception as ex:
             logger.error(ex)
-            send_mail("Check source: {}".format(source),
-                      "{}".format(ex), sender, [sender])
+            if not is_using_file_dao():
+                send_mail(
+                    "Check source: {}".format(self.source),
+                    "{}".format(ex), self.sender, [self.sender])
+            raise CommandError(ex)
 
-        log_resp_time(logger, "Load users", timer)
+    def log_msg(self):
+        log_resp_time(logger, "Load users", self.timer)
 
         logger.info("Checked {0:d} users, source: {1}\n".format(
-            loader.get_total_checked_users(), source))
+            self.loader.get_total_checked_users(), self.source))
 
         logger.info("{0:d} new users added\n".format(
-            loader.get_new_user_count()))
+            self.loader.get_new_user_count()))
         logger.info("{0:d} users changed netid\n".format(
-            loader.get_netid_changed_count()))
+            self.loader.get_netid_changed_count()))
         logger.info("{0:d} users deleted\n".format(
-            loader.get_deleted_count()))
+            self.loader.get_deleted_count()))
         logger.info("{0:d} users restored\n".format(
-            loader.get_restored_count()))
+            self.loader.get_restored_count()))
         logger.info("{0:d} users updated\n".format(
-            loader.get_updated_count()))
+            self.loader.get_updated_count()))
 
-        if loader.has_error():
-            err = loader.get_error_report()
+        if self.loader.has_error():
+            err = self.loader.get_error_report()
             logger.error("Errors: {0}".format(err))
-            send_mail("Check source: {}".format(source),
-                      err, sender, [sender])
+            if not is_using_file_dao():
+                send_mail(
+                    "Check source: {}".format(self.source),
+                    err, self.sender, [self.sender])

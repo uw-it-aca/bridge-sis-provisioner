@@ -5,7 +5,7 @@ from django.test import TestCase
 from unittest.mock import patch
 from freezegun import freeze_time
 from uw_gws.models import GroupHistory
-from sis_provisioner.dao import DataFailureException
+from sis_provisioner.dao import DataFailureException, is_using_file_dao
 from sis_provisioner.dao.gws import (
     get_members_of_group, get_potential_users, get_bridge_authors,
     get_additional_users, _get_member_changes, _get_start_timestamp,
@@ -15,6 +15,9 @@ from sis_provisioner.tests import fdao_gws_override
 
 @fdao_gws_override
 class TestGwsDao(TestCase):
+
+    def test_is_using_file_dao(self):
+        self.assertTrue(is_using_file_dao())
 
     def test_get_affiliate(self):
         self.assertRaises(DataFailureException, get_members_of_group, "uw")
