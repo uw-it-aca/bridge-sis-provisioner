@@ -4,10 +4,9 @@
 import time
 from django.test import TransactionTestCase
 from unittest.mock import patch
+from freezegun import freeze_time
 from django.core.management import call_command
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
-from sis_provisioner.tests import (
-    fdao_gws_override, fdao_pws_override, fdao_bridge_override)
 from sis_provisioner.tests.account_managers import set_db_records
 
 
@@ -15,9 +14,6 @@ users = ['affiemp', 'error500', 'faculty', 'javerage',
          'not_in_pws', 'retiree', 'staff']
 
 
-@fdao_gws_override
-@fdao_pws_override
-@fdao_bridge_override
 class TestLoadUserViaBridgeApi(TransactionTestCase):
 
     @patch.object(GwsBridgeLoader, 'fetch_users',
@@ -47,11 +43,13 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
         set_db_records()
         call_command('sync_accounts', 'bridge')
 
+    @freeze_time("2019-09-01 20:30:00")
     def test_load_pws_bridge(self):
         time.sleep(2)
         set_db_records()
         call_command('sync_accounts', 'pws')
 
+    @freeze_time("2019-09-01 10:30:00")
     def test_load_hrp_bridge(self):
         time.sleep(2)
         set_db_records()

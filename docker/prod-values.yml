@@ -264,5 +264,5 @@ environmentVariablesSecrets:
     secretKey: storage-project-id
   emailHost:
     name: EMAIL_HOST
-    secretName: eventcal.uw.edu-secrets
+    secretName: admin.bridge.uw.edu-shared-secrets
     secretKey: email-host

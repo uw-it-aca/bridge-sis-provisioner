@@ -5,6 +5,7 @@ from datetime import timedelta
 import logging
 from restclients_core.exceptions import (
     DataFailureException, InvalidNetID, InvalidRegID)
+from uw_gws import GWS_DAO
 from sis_provisioner.models import get_now
 
 
@@ -17,3 +18,7 @@ def get_dt_from_now(duration):
 
 def changed_since_str(duration):
     return get_dt_from_now(duration).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def is_using_file_dao():
+    return GWS_DAO().get_implementation().is_mock()

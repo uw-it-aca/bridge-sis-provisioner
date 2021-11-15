@@ -1,0 +1,50 @@
+{
+"TotalCount":2,
+"Workers":[
+   {"Href":"/hrp/v2/worker/10000000000000000000000000000005.json",
+    "EmployeeID":"000000005",
+    "EmployeeStatus":"Active",
+    "IsActive":true,
+    "NetID":"faculty",
+    "RegID":"10000000000000000000000000000005",
+    "IsCurrentFaculty":true,
+    "WorkdayPersonType":"Employee",
+    "WorkerPositions":[
+       {"PositionID":"PN-0000000",
+       "PositionTitle":"Lecturer",
+       "PositionEndDate":null,
+       "PositionStartDate":"2019-04-22T00:00:00.000Z",
+       "PositionEffectiveDate":"2019-07-22T07:00:00.000Z",
+       "CostCenter":{
+          "Description":"ASTRONOM",
+          "ID":"149477",
+          "OrganizationCode":"200000000",
+          "OrganizationDescription":"ASTRONOM"},
+       "IsPrimaryPosition":true,
+       "IsFutureDate":false,
+       "JobProfileSummary":{
+          "JobProfileDescription":"Lecturer",
+          "JobProfileID":"20000",
+          "Href":"/hrp/v2/jobProfile/20000.json",
+          "JobCategory":"Faculty",
+          "JobFamilies":[
+            {"JobFamilyName":"01 - Academic Personnel - Faculty - Indefinite and Multi-Year",
+             "JobFamilyID":"0100",
+             "JobFamilySummary":"Academic positions designated as faculty"}
+            ]
+         },
+      "CustomOrganizations":[]}
+    ],
+    "CustomOrganizations":[],
+    "AcademicAppointments":[],
+    "RepositoryTimeStamp":"2019-07-22T17:20:07.353Z"},
+   {"Href":"/hrp/v2/worker/10000000000000000000000000000015.json",
+    "EmployeeID":"000000015",
+    "EmployeeStatus":"Terminated",
+    "IsActive":true,
+    "NetID":"chair",
+    "RegID":"10000000000000000000000000000015",
+    "IsCurrentFaculty":true,
+    "WorkdayPersonType":"Academic Affiliate"}
+   ],
+"Next":null,"Previous":null}
