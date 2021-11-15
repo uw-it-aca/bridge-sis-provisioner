@@ -139,6 +139,8 @@ externalSecrets:
           property: storage-project-id
         - name: cronjob-email-sender
           property: cronjob-email-sender
+        - name: email-host
+          property: email-host
     - name: test.bridge.uw.edu-sql-secrets
       externalKey: axdd/kv/data/bridge/shared/sql-secrets
       data:
@@ -184,3 +186,7 @@ environmentVariablesSecrets:
     name: STORAGE_PROJECT_ID
     secretName: test.bridge.uw.edu-shared-secrets
     secretKey: storage-project-id
+  emailHost:
+    name: EMAIL_HOST
+    secretName: eventcal.uw.edu-secrets
+    secretKey: email-host
