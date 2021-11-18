@@ -50,6 +50,13 @@ cronjob:
       schedule: "1 1 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 1792Mi
+        requests:
+          cpu: 50m
+          memory: 1280Mi
     - name: sync-authors
       schedule: "1 11 * * *"
       command: ["/scripts/management_command.sh"]
