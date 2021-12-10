@@ -19,15 +19,20 @@ def load():
     updated = 0
     for uw_acc in get_all_uw_accounts():
         uwnetid = uw_acc.netid
-        person = get_person(uwnetid)
-        if (person is not None and not person.is_test_entity and
-                person.is_emp_state_current()):
-            total += 1
-            if (uw_acc.employee_id is None or
-                    uw_acc.employee_id != person.employee_id):
-                uw_acc.set_employee_id(person.employee_id)
-                uw_acc.save()
-                updated += 1
+        try:
+            person = get_person(uwnetid)
+            if (person is not None and not person.is_test_entity and
+                    person.is_emp_state_current()):
+                total += 1
+                if (uw_acc.employee_id is None or
+                        uw_acc.employee_id != person.employee_id):
+                    uw_acc.set_employee_id(person.employee_id)
+                    uw_acc.save()
+                    updated += 1
+        except Exception as ex:
+            self.handle_exception(
+                "Udpate the employee_id on {0} ".format(uwnetid),
+                ex, traceback)
     msg = "Updated employee_ids for {0} out of {1} users".format(
         updated, total)
     logger.info(msg)
