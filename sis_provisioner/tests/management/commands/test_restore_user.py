@@ -29,7 +29,6 @@ class TestRestoreUser(TransactionTestCase):
         tyler = set_uw_account("tyler")
         tyler.set_disable()
         bacc = get_bridge_account(tyler)
-        print(bacc)
         call_command('restore_user', "tyler")
         uw_acc = get_by_netid("faculty")
         self.assertFalse(uw_acc.disabled)
