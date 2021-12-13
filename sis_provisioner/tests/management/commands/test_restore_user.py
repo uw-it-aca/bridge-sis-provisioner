@@ -29,7 +29,7 @@ class TestRestoreUser(TransactionTestCase):
         tyler = set_uw_account("tyler")
         tyler.set_disable()
         bacc = get_bridge_account(tyler)
-        self.assertEqual(bacc.netid, "tyler")    
+        self.assertEqual(bacc.netid, "tyler")
 
         call_command('restore_user', "tyler")
         uw_acc = get_by_netid("faculty")
