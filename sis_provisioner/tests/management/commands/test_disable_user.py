@@ -10,9 +10,9 @@ from sis_provisioner.tests.account_managers import set_db_records
 
 
 @fdao_pws_override
-class TestLoadUserViaBridgeApi(TransactionTestCase):
+class TestDisableUser(TransactionTestCase):
 
-    def test_load_from_gws_to_bridge(self):
+    def test_disable_userr(self):
         set_db_records()
 
         # existing user
