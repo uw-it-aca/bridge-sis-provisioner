@@ -25,10 +25,19 @@ class TestRestoreUser(TransactionTestCase):
         # no longer disabled
         call_command('restore_user', "staff")
 
-    def test_restore_user_changed_uwnetid(self):
+    def test_changed_uwnetid(self):
         tyler = set_uw_account("tyler")
         tyler.set_disable()
         bacc = get_bridge_account(tyler)
+        self.assertEqual(bacc.netid, "tyler")    
+
         call_command('restore_user', "tyler")
         uw_acc = get_by_netid("faculty")
         self.assertFalse(uw_acc.disabled)
+
+    def test_no_bridge_account(self): 
+        testid = set_uw_account("testid")
+        testid.set_disable()
+        call_command('restore_user', "testid")
+        uw_acc = get_by_netid("testid")
+        self.assertTrue(uw_acc.disabled)
