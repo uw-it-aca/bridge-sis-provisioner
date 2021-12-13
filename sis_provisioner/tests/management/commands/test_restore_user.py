@@ -35,9 +35,15 @@ class TestRestoreUser(TransactionTestCase):
         uw_acc = get_by_netid("faculty")
         self.assertFalse(uw_acc.disabled)
 
-    def test_no_bridge_account(self): 
+    def test_skip_testid(self):
         testid = set_uw_account("testid")
         testid.set_disable()
         call_command('restore_user', "testid")
         uw_acc = get_by_netid("testid")
         self.assertTrue(uw_acc.disabled)
+
+    def test_errors(self):
+        error500 = set_uw_account("error500")
+        error500.set_ids(250, None)
+        error500.set_disable()
+        call_command('restore_user', "error500")
