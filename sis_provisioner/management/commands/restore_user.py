@@ -23,22 +23,27 @@ class Command(BaseCommand):
         uwnetid = options['uwnetid']
         try:
             person = get_person(uwnetid)
+            if person.is_test_entity:
+                logger.error(
+                    "{} IsTestEntity in PWS, skip!".format(uwnetid))
+                return
+
             uw_acc = save_uw_account(person)
-            logger.info("Matched account in DB {}".format(uw_acc))
+            logger.info("Matched account in DB: {}".format(uw_acc))
 
             bridge_acc = get_bridge_account(uw_acc)
             if bridge_acc is None:
-                logger.error("No BridgeUsers with netid {}".format(person))
+                logger.error("No BridgeUsers of: {}".format(uw_acc))
                 return
 
             if bridge_acc.is_deleted():
                 buser_restored = bridge_dao.restore_bridge_user(uw_acc)
                 logger.info(
-                    "Restored BridgeUsers {}".format(buser_restored))
+                    "Restored BridgeUsers: {}".format(buser_restored))
 
             if uw_acc.disabled:
                 uw_acc.set_restored()
-                logger.info("Restored UwAccount in DB{}".format(uw_acc))
+                logger.info("Restored UwAccount in DB: {}".format(uw_acc))
 
             uw_acc.set_ids(bridge_acc.bridge_id, person.employee_id)
 
