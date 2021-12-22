@@ -44,7 +44,7 @@ certs:
   secretName: test.bridge.uw.edu-uwca-certs
 
 cronjob:
-  enabled: true
+  enabled: false
   jobs:
     - name: daily-active-users
       schedule: "1 1 * * *"
