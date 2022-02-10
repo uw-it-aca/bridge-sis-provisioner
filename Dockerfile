@@ -19,7 +19,7 @@ RUN . /app/bin/activate && pip install mysqlclient
 ADD --chown=acait:acait . /app/
 ADD --chown=acait:acait docker/ project/
 
-FROM gcr.io/uwit-mci-axdd/django-test-container:1.3.3 as app-test-container
+FROM gcr.io/uwit-mci-axdd/django-test-container:1.3.8 as app-test-container
 
 COPY --from=app-container /app/ /app/
 COPY --from=app-container /static/ /static/
