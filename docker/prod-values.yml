@@ -69,7 +69,7 @@ cronjob:
           cpu: 50m
           memory: 256Mi
     - name: hrp-updates
-      schedule: "1 3 * * *"
+      schedule: "1 2 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "hrp"]
       resources:
@@ -91,7 +91,7 @@ cronjob:
           cpu: 50m
           memory: 128Mi
     - name: daily-active-users
-      schedule: "1 4 * * 2-6"
+      schedule: "1 3 * * 2-6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
       resources:
@@ -102,7 +102,7 @@ cronjob:
           cpu: 50m
           memory: 1280Mi
     - name: terminate-users
-      schedule: "1 9 * * 6"
+      schedule: "1 7 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "delete"]
       resources:
@@ -113,7 +113,7 @@ cronjob:
           cpu: 50m
           memory: 128Mi
     - name: sync-eid
-      schedule: "1 12 * * 6"
+      schedule: "30 7 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_eid"]
       resources:
@@ -124,12 +124,12 @@ cronjob:
           cpu: 50m
           memory: 768Mi
     - name: db-accounts
-      schedule: "1 20 * * 6"
+      schedule: "1 19 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 125m
           memory: 1024Mi
         requests:
           cpu: 50m
