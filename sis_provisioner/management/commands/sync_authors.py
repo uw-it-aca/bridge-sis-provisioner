@@ -14,12 +14,17 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     """
-    Load users into Bridge
+    Load authors into Bridge
     """
     def add_arguments(self, parser):
-        pass
+        parser.add_argument(
+            "-n", "--noop", action="store_true", dest="noop", default=False,
+            help="No operation")
 
     def handle(self, *args, **options):
+        if options.get('noop'):
+            return
+
         timer = Timer()
         started = datetime.now()
         loader = AuthorChecker(BridgeWorker())

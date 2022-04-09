@@ -46,25 +46,51 @@ certs:
 cronjob:
   enabled: true
   jobs:
-    - name: daily-active-users
-      schedule: "1 2 * * 2-6"
+    #- name: daily-active-users
+    #  schedule: "1 2 * * 2-6"
+    #  command: ["/scripts/management_command.sh"]
+    #  args: ["sync_accounts", "bridge"]
+    #  resources:
+    #    limits:
+    #      cpu: 100m
+    #      memory: 2048Mi
+    #    requests:
+    #      cpu: 50m
+    #      memory: 2048Mi
+    - name: sync-authors
+      schedule: "1 20 * * 1-5"
       command: ["/scripts/management_command.sh"]
-      args: ["sync_accounts", "bridge"]
+      args: ["sync_authors"]
       resources:
         limits:
           cpu: 100m
-          memory: 1792Mi
+          memory: 512Mi
         requests:
           cpu: 50m
-          memory: 1280Mi
-    - name: sync-authors
-      schedule: "1 20 * * *"
+          memory: 128Mi
+    - name: custom-groups
+      schedule: "1 21 * * 1-5"
       command: ["/scripts/management_command.sh"]
-      args: ["sync_authors"]
-    #- name: custom-groups
-    #  schedule: "1 18 * * 1-5"
-    #  command: ["/scripts/management_command.sh"]
-    #  args: ["sync_accounts", "customg"]
+      args: ["sync_accounts", "customg"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
+    - name: db-accounts
+      schedule: "1 8 * * 6"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "db-acc"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 1024Mi
+        requests:
+          cpu: 50m
+          memory: 768Mi
+    
 
 environmentVariables:
   - name: ENV

@@ -53,7 +53,7 @@ class UserAccountChecker(GwsBridgeLoader):
 
             if (not self.in_uw_groups(person.uwnetid) or
                     person.is_test_entity):
-                if not (uw_acc.disabled or uw_acc.has_terminate_date()):
+                if not uw_acc.disabled:
                     self.process_termination(uw_acc)
                 continue
 
@@ -99,12 +99,7 @@ class UserAccountChecker(GwsBridgeLoader):
         if uw_acc.has_bridge_id():
             bridge_acc2 = self.get_bridge().get_user_by_bridgeid(
                 uw_acc.bridge_id)
-
-            if bridge_acc2 is None:
-                self.add_error("{0} never existed in Bridge!".format(uw_acc))
-                return
-
-            if (bridge_acc1 is not None and
+            if (bridge_acc1 and bridge_acc2 and
                     (bridge_acc1.bridge_id != bridge_acc2.bridge_id or
                      bridge_acc1.netid != bridge_acc2.netid)):
                 self.add_error(
@@ -114,12 +109,13 @@ class UserAccountChecker(GwsBridgeLoader):
         self.execute(uw_acc, bridge_acc1, bridge_acc2)
 
     def execute(self, uw_acc, bridge_acc1, bridge_acc2):
-        if bridge_acc1 is not None:
+        if bridge_acc1 and not bridge_acc1.is_deleted():
             if self.del_bridge_account(bridge_acc1, conditional_del=False):
                 uw_acc.set_disable()
                 self.logger.info("Disabled in DB: {0}".format(uw_acc))
             return
-        if (bridge_acc2 is not None and bridge_acc2.is_deleted and
+        if (bridge_acc1 and bridge_acc1.is_deleted() or
+                bridge_acc2 and bridge_acc2.is_deleted() and
                 uw_acc.netid == bridge_acc2.netid):
             uw_acc.set_disable()
             self.logger.info("Disabled in DB: {0}".format(uw_acc))

@@ -13,4 +13,5 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
 
     def test_load_from_gws_to_bridge(self):
         set_db_records()
+        call_command('sync_eid', '-n')
         call_command('sync_eid')
