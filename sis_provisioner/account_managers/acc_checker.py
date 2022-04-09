@@ -53,7 +53,7 @@ class UserAccountChecker(GwsBridgeLoader):
 
             if (not self.in_uw_groups(person.uwnetid) or
                     person.is_test_entity):
-                if not (uw_acc.disabled or uw_acc.has_terminate_date()):
+                if not uw_acc.disabled:
                     self.process_termination(uw_acc)
                 continue
 
