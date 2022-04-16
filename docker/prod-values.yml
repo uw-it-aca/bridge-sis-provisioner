@@ -124,7 +124,7 @@ cronjob:
           cpu: 50m
           memory: 768Mi
     - name: db-accounts
-      schedule: "1 19 * * 6"
+      schedule: "1 14 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
       resources:
