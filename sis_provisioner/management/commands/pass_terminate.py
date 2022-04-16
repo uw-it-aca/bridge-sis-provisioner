@@ -17,9 +17,9 @@ class Command(BaseCommand):
         total = 0
         for uw_acc in get_all_uw_accounts():
             try:
-             if uw_acc.passed_terminate_date() and not uw_acc.disabled:
-                logger.info(uw_acc)
-                total += 1
+                if uw_acc.passed_terminate_date() and not uw_acc.disabled:
+                    logger.info(uw_acc)
+                    total += 1
 
             except Exception as ex:
                 logger.error(ex)
