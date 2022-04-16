@@ -10,6 +10,7 @@ from sis_provisioner.util.settings import check_all_accounts
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 logger = logging.getLogger(__name__)
+MAX_DELETION = 50000
 
 
 class UserAccountChecker(GwsBridgeLoader):
@@ -26,6 +27,7 @@ class UserAccountChecker(GwsBridgeLoader):
     def __init__(self, worker, clogger=logger):
         super(UserAccountChecker, self).__init__(worker, clogger)
         self.data_source = "Accounts in DB"
+        self.total_deleted = 0
 
     def fetch_users(self):
         return get_all_uw_accounts()
@@ -83,12 +85,13 @@ class UserAccountChecker(GwsBridgeLoader):
         Check the existing users for termination.
         If the user's termination date has been reached, disable user.
         """
-        if uw_acc.has_terminate_date() is False:
+        if not uw_acc.has_terminate_date():
             self.logger.info(
                 "{0} has left UW, schedule terminate".format(uw_acc))
             uw_acc.set_terminate_date(graceful=True)
         else:
-            if uw_acc.passed_terminate_date() and not uw_acc.disabled:
+            if (uw_acc.passed_terminate_date() and not uw_acc.disabled and
+                    self.total_deleted < MAX_DELETION):
                 self.logger.info(
                     "Passed terminate date, delete {0}".format(uw_acc))
                 self.terminate_uw_account(uw_acc)
@@ -106,11 +109,13 @@ class UserAccountChecker(GwsBridgeLoader):
                     "{0} has 2 Bridge accounts {1} {2} <== {3}!".format(
                         uw_acc, bridge_acc1, bridge_acc2, "Abort deletion"))
                 return
+
         self.execute(uw_acc, bridge_acc1, bridge_acc2)
 
     def execute(self, uw_acc, bridge_acc1, bridge_acc2):
         if bridge_acc1 and not bridge_acc1.is_deleted():
             if self.del_bridge_account(bridge_acc1, conditional_del=False):
+                self.total_deleted += 1
                 uw_acc.set_disable()
                 self.logger.info("Disabled in DB: {0}".format(uw_acc))
             return
