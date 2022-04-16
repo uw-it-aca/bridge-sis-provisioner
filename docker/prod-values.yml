@@ -69,7 +69,7 @@ cronjob:
           cpu: 50m
           memory: 256Mi
     - name: hrp-updates
-      schedule: "1 2 * * *"
+      schedule: "1 3 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "hrp"]
       resources:
@@ -91,7 +91,7 @@ cronjob:
           cpu: 50m
           memory: 128Mi
     - name: daily-active-users
-      schedule: "1 3 * * 2-6"
+      schedule: "30 3 * * 2-6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
       resources:
