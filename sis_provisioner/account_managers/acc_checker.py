@@ -10,7 +10,7 @@ from sis_provisioner.util.settings import check_all_accounts
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 logger = logging.getLogger(__name__)
-MAX_DELETION = 50000
+MAX_DELETION = 40000
 
 
 class UserAccountChecker(GwsBridgeLoader):
@@ -86,14 +86,12 @@ class UserAccountChecker(GwsBridgeLoader):
         If the user's termination date has been reached, disable user.
         """
         if not uw_acc.has_terminate_date():
-            self.logger.info(
-                "{0} has left UW, schedule terminate".format(uw_acc))
+            # Left UW, schedule terminate
             uw_acc.set_terminate_date(graceful=True)
         else:
             if (uw_acc.passed_terminate_date() and not uw_acc.disabled and
                     self.total_deleted < MAX_DELETION):
-                self.logger.info(
-                    "Passed terminate date, delete {0}".format(uw_acc))
+                # Passed terminate date, to delete
                 self.terminate_uw_account(uw_acc)
 
     def terminate_uw_account(self, uw_acc):

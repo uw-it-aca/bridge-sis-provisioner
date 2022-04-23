@@ -12,7 +12,7 @@ from sis_provisioner.tests.account_managers import set_db_records
 @fdao_pws_override
 class TestDisableUser(TransactionTestCase):
 
-    def test_disable_userr(self):
+    def test_disable_user(self):
         set_db_records()
 
         # existing user

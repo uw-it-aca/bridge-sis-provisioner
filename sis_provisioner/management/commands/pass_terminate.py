@@ -1,26 +1,27 @@
 # Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-import logging
+from dateutil.parser import parse
+from pytz import timezone
 from django.core.management.base import BaseCommand, CommandError
-from sis_provisioner.dao.uw_account import get_all_uw_accounts
+from sis_provisioner.models import UwAccount
 
-logger = logging.getLogger(__name__)
+TIMEZONE = timezone("US/Pacific")
 
 
 class Command(BaseCommand):
     """
-    List all active users whose terminated date pass due
+    List all active users whose terminated date is before the specified
     """
 
-    def handle(self, *args, **options):
-        total = 0
-        for uw_acc in get_all_uw_accounts():
-            try:
-                if uw_acc.passed_terminate_date() and not uw_acc.disabled:
-                    logger.info(uw_acc)
-                    total += 1
+    def add_arguments(self, parser):
+        parser.add_argument('date-str')  # yyyy-mm-ddThh:mm
 
-            except Exception as ex:
-                logger.error(ex)
-        logger.info("Total: {}".format(total))
+    def handle(self, *args, **options):
+        tdate = TIMEZONE.localize(parse(options['date-str']))
+        try:
+            total = UwAccount.objects.exclude(disabled=True).filter(
+                terminate_at__lt=tdate).count()
+            print("Total users pass terminate date: {}".format(total))
+        except Exception as ex:
+            print(ex)
