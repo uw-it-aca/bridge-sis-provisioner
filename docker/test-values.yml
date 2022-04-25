@@ -39,9 +39,9 @@ image:
   tag: IMAGE_TAG
 certs:
   mounted: true
-  certPath: /certs/test.bridge.uw.edu-uwca.cert
-  keyPath: /certs/test.bridge.uw.edu-uwca.key
-  secretName: test.bridge.uw.edu-uwca-certs
+  certPath: /certs/test.bridge.uw.edu-ic.cert
+  keyPath: /certs/test.bridge.uw.edu-ic.key
+  secretName: test.bridge.uw.edu-ic-certs
 
 cronjob:
   enabled: true
@@ -186,13 +186,13 @@ externalSecrets:
       data:
         - name: credentials.json
           property: credentials.json
-    - name: test.bridge.uw.edu-uwca-certs
-      externalKey: axdd/kv/data/bridge/test/uwca-certs
+    - name: test.bridge.uw.edu-ic-certs
+      externalKey: axdd/kv/data/bridge/test/ic-certs
       data:
-        - name: test.bridge.uw.edu-uwca.cert
-          property: test.bridge.uw.edu-uwca.cert
-        - name: test.bridge.uw.edu-uwca.key
-          property: test.bridge.uw.edu-uwca.key
+        - name: test.bridge.uw.edu-ic.cert
+          property: test.bridge.uw.edu-ic.cert
+        - name: test.bridge.uw.edu-ic.key
+          property: test.bridge.uw.edu-ic.key
 
 environmentVariablesSecrets:
   djangoSecret:
