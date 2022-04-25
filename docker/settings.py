@@ -8,6 +8,9 @@ import os
 INSTALLED_APPS += [
     'sis_provisioner.apps.BridgeProvisionerConfig',
 ]
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_SSL_CERTFILE = os.getenv('CERT_PATH', '')
