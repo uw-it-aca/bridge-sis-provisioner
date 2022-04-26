@@ -9,6 +9,7 @@ import logging
 import traceback
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import get_all_uw_accounts
+from sis_provisioner.util.log import log_exception
 
 
 logger = logging.getLogger(__name__)
@@ -29,10 +30,12 @@ def load():
                     uw_acc.set_employee_id(person.employee_id)
                     uw_acc.save()
                     updated += 1
-        except Exception as ex:
-            self.handle_exception(
+        except Exception:
+            log_exception(
+                logger,
                 "Udpate the employee_id on {0} ".format(uwnetid),
-                ex, traceback)
+                traceback.format_exc(chain=False))
+
     msg = "Updated employee_ids for {0} out of {1} users".format(
         updated, total)
     logger.info(msg)
