@@ -32,11 +32,10 @@ memcached:
 gcsCredentials:
   mounted: true
   secretName: admin.bridge.uw.edu-gcs-credentials
+
 repo: bridge
 instance: prod
-image:
-  repository: gcr.io/uwit-mci-axdd/bridge
-  tag: IMAGE_TAG
+
 certs:
   mounted: true
   certPath: /certs/admin.bridge.uw.edu-ic.cert
@@ -198,7 +197,7 @@ externalSecrets:
   enabled: true
   secrets:
     - name: admin.bridge.uw.edu-secrets
-      externalKey: axdd/kv/data/bridge/prod/secrets
+      externalKey: bridge/prod/secrets
       data:
         - name: django-secret
           property: django-secret
@@ -209,7 +208,7 @@ externalSecrets:
         - name: storage-bucket-name
           property: storage-bucket-name
     - name: admin.bridge.uw.edu-shared-secrets
-      externalKey: axdd/kv/data/bridge/shared/secrets
+      externalKey: bridge/shared/secrets
       data:
         - name: storage-project-id
           property: storage-project-id
@@ -218,19 +217,19 @@ externalSecrets:
         - name: email-host
           property: email-host
     - name: admin.bridge.uw.edu-sql-secrets
-      externalKey: axdd/kv/data/bridge/shared/sql-secrets
+      externalKey: bridge/shared/sql-secrets
       data:
         - name: username
           property: username
         - name: password
           property: password
     - name: admin.bridge.uw.edu-gcs-credentials
-      externalKey: axdd/kv/data/bridge/shared/gcs-credentials
+      externalKey: bridge/shared/gcs-credentials
       data:
         - name: credentials.json
           property: credentials.json
     - name: admin.bridge.uw.edu-ic-certs
-      externalKey: axdd/kv/data/bridge/prod/ic-certs
+      externalKey: bridge/prod/ic-certs
       data:
         - name: admin.bridge.uw.edu-ic.cert
           property: admin.bridge.uw.edu-ic.cert
