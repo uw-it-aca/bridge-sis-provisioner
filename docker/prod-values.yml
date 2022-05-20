@@ -32,11 +32,10 @@ memcached:
 gcsCredentials:
   mounted: true
   secretName: admin.bridge.uw.edu-gcs-credentials
+
 repo: bridge
 instance: prod
-image:
-  repository: gcr.io/uwit-mci-axdd/bridge
-  tag: IMAGE_TAG
+
 certs:
   mounted: true
   certPath: /certs/admin.bridge.uw.edu-ic.cert
