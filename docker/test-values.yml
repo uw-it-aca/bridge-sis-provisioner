@@ -43,7 +43,7 @@ certs:
   secretName: test.bridge.uw.edu-ic-certs
 
 cronjob:
-  enabled: true
+  enabled: false
   jobs:
     #- name: daily-active-users
     #  schedule: "1 2 * * 2-6"
@@ -89,7 +89,6 @@ cronjob:
         requests:
           cpu: 50m
           memory: 768Mi
-    
 
 environmentVariables:
   - name: ENV
