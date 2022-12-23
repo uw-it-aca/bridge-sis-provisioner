@@ -87,6 +87,7 @@ def get_pos_job_class(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
     return pos.job_class if pos else None
 
+
 def get_pos_location(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
     return pos.location if pos else None
