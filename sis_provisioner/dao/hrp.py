@@ -40,7 +40,8 @@ def get_worker_updates(duration):
     """
     timer = Timer()
     try:
-        return person_search(changed_since_date=changed_since_str(duration))
+        return person_search(
+            changed_since_date=changed_since_str(duration, iso=True))
     except Exception:
         log_exception(logger, "get_worker_updates",
                       traceback.format_exc(chain=False))

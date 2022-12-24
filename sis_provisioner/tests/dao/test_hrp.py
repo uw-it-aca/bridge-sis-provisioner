@@ -4,7 +4,7 @@
 from django.test import TestCase
 from freezegun import freeze_time
 from sis_provisioner.tests import fdao_hrp_override, fdao_pws_override
-from sis_provisioner.dao import DataFailureException
+from sis_provisioner.dao import DataFailureException, changed_since_str
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.hrp import get_worker, get_worker_updates
 
@@ -41,6 +41,8 @@ class TestHrpDao(TestCase):
 
     @freeze_time("2019-09-01 10:30:00")
     def test_get_worker_updates(self):
+        self.assertEqual(changed_since_str(
+            30, iso=True), "2019-09-01T03:00:00.000000-0700")
         persons = get_worker_updates(30)
         self.assertEqual(len(persons), 2)
         self.assertEqual(persons[0].primary_manager_id, "100000001")
