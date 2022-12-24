@@ -835,7 +835,7 @@
               },
               "Municipality": "Seattle",
               "PostalCode": "98195-0000",
-              "FormattedAddress": "1705 NE Pacific St&#xa;Seattle, WA 98195-0000&#xa;United States of America",
+              "FormattedAddress": "United States of America",
               "EffectiveDate": "2006-05-16T00:00:00-07:00",
               "Usages": [
                 {

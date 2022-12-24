@@ -51,6 +51,7 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
 
     @freeze_time("2019-09-01 10:30:00")
     def test_load_hrp_bridge(self):
-        time.sleep(2)
-        set_db_records()
-        call_command('sync_accounts', 'hrp')
+        with self.settings(BRIDGE_WORKER_CHANGE_WINDOW=30):
+            time.sleep(2)
+            set_db_records()
+            call_command('sync_accounts', 'hrp')

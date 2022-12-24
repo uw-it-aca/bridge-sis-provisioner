@@ -28,7 +28,7 @@ def get_worker(person):
     except DataFailureException as ex:
         log_exception(
             logger,
-            "Failed to get person for '{0}'".format(person.uwnetid),
+            "Failed to get worker for '{0}'".format(person.uwnetid),
             traceback.format_exc(chain=False))
     return None
 
