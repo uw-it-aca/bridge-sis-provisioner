@@ -16,7 +16,9 @@ def get_dt_from_now(duration):
     return get_now() - timedelta(minutes=duration)
 
 
-def changed_since_str(duration):
+def changed_since_str(duration, iso=False):
+    if iso:
+        return get_dt_from_now(duration).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
     return get_dt_from_now(duration).strftime("%Y-%m-%d %H:%M:%S")
 
 

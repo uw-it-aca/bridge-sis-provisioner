@@ -9,7 +9,7 @@ import logging
 import traceback
 from sis_provisioner.dao import (
     DataFailureException, InvalidRegID, changed_since_str)
-from uw_hrp.worker import get_worker_by_regid, worker_search
+from uw_hrp.person import get_person_by_regid, person_search
 from sis_provisioner.util.log import log_exception, log_resp_time, Timer
 
 
@@ -22,7 +22,7 @@ def get_worker(person):
     """
     try:
         if person.is_emp_state_current():
-            return get_worker_by_regid(person.uwregid)
+            return get_person_by_regid(person.uwregid)
     except InvalidRegID:
         logger.error("'{0}' has invalid uwregid".format(person.uwnetid))
     except DataFailureException as ex:
@@ -40,7 +40,8 @@ def get_worker_updates(duration):
     """
     timer = Timer()
     try:
-        return worker_search(changed_since=changed_since_str(duration))
+        return person_search(
+            changed_since_date=changed_since_str(duration, iso=True))
     except Exception:
         log_exception(logger, "get_worker_updates",
                       traceback.format_exc(chain=False))

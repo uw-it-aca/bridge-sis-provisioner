@@ -65,38 +65,32 @@ def get_custom_field_value(bridge_account, field_name):
 
 def get_work_position(hrp_wkr, position_num):
     """
-    :param position_num: [0..]
+    :param position_num: [0..get_total_work_positions_to_load-1]
     """
-    if hrp_wkr is not None:
+    if hrp_wkr and len(hrp_wkr.worker_details):
+        positions = hrp_wkr.worker_details[0]
         if position_num == 0:
-            if hrp_wkr.primary_position is not None:
-                return hrp_wkr.primary_position
+            return positions.primary_position
         if position_num >= 1:
             index = position_num - 1
-            if len(hrp_wkr.other_active_positions) > index:
-                return hrp_wkr.other_active_positions[index]
+            if len(positions.other_active_positions) > index:
+                return positions.other_active_positions[index]
     return None
 
 
 def get_job_title(hrp_wkr):
     pos = get_work_position(hrp_wkr, 0)
-    if pos is not None:
-        return pos.title
-    return None
+    return pos.job_title if pos else None
 
 
 def get_pos_job_class(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
-    if pos is not None:
-        return pos.ecs_job_cla_code_desc
-    return None
+    return pos.job_class if pos else None
 
 
 def get_pos_location(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
-    if pos is not None:
-        return pos.location
-    return None
+    return pos.location if pos else None
 
 
 def get_pos_job_code(hrp_wkr, position_num):
@@ -108,30 +102,22 @@ def get_pos_job_code(hrp_wkr, position_num):
 
 def get_pos_budget_code(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
-    if pos is not None and pos.supervisory_org is not None:
-        return pos.supervisory_org.budget_code
-    return None
+    return pos.budget_code if pos else None
 
 
 def get_pos_org_code(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
-    if pos is not None and pos.supervisory_org is not None:
-        return pos.supervisory_org.org_code
-    return None
+    return pos.org_code if pos else None
 
 
 def get_pos_org_name(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
-    if pos is not None and pos.supervisory_org is not None:
-        return pos.supervisory_org.org_name
-    return None
+    return pos.org_name if pos else None
 
 
 def get_pos_unit_code(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
-    if pos is not None:
-        return pos.payroll_unit_code
-    return None
+    return pos.org_unit_code if pos else None
 
 
 # make sure the order is consistent with that in
