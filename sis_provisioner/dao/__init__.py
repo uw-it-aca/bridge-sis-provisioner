@@ -20,7 +20,6 @@ def changed_since_str(duration, iso=False):
     if iso:
         return get_dt_from_now(duration).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
     return get_dt_from_now(duration).strftime("%Y-%m-%d %H:%M:%S")
-    
 
 
 def is_using_file_dao():
