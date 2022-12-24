@@ -38,12 +38,14 @@ class TestHrpDao(TestCase):
 
         person = get_person('error500')
         self.assertIsNone(get_worker(person))
-    """
+
     @freeze_time("2019-09-01 10:30:00")
     def test_get_worker_updates(self):
-        worker_refs = get_worker_updates(30)
-        self.assertEqual(len(worker_refs), 2)
-    """
+        persons = get_worker_updates(30)
+        self.assertEqual(len(persons), 2)
+        self.assertEqual(persons[0].primary_manager_id, "100000001")
+        self.assertFalse(persons[1].is_active)
+
     def test_get_worker_updates_err(self):
         self.assertRaises(DataFailureException,
                           get_worker_updates, 30)
