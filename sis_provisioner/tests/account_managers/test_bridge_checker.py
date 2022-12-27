@@ -45,7 +45,7 @@ class TestBridgeUserChecker(TransactionTestCase):
         self.assertEqual(loader.get_deleted_count(), 0)
         self.assertEqual(loader.get_restored_count(), 0)
         self.assertEqual(loader.get_updated_count(), 1)
-        self.assertTrue(loader.has_error())
+        self.assertFalse(loader.has_error())
 
         loader = BridgeChecker(BridgeWorker())
         bri_acc = loader.get_bridge().get_user_by_uwnetid('tyler')
@@ -114,5 +114,5 @@ class TestBridgeUserChecker(TransactionTestCase):
             self.assertEqual(loader.get_deleted_count(), 1)
             self.assertEqual(loader.get_restored_count(), 0)
             self.assertEqual(loader.get_updated_count(), 4)
-            self.assertTrue(len(loader.get_error_report()) > 0)
-            self.assertTrue(loader.has_error())
+            self.assertTrue(len(loader.get_error_report()) == 0)
+            self.assertFalse(loader.has_error())
