@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     """
-    Sync an existing Bridge Account
+    Update an existing Bridge Account
     """
     def add_arguments(self, parser):
         parser.add_argument('uwnetid')
