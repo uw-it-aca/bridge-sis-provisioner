@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+import json
 from django.core.management.base import BaseCommand
+from uw_hrp.models import Person
 from uw_hrp.dao import HRP_DAO
 from uw_bridge.models import BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
@@ -41,6 +43,7 @@ class Command(BaseCommand):
             response = HRP_DAO().getURL(url, {'Accept': 'application/json'})
             logger.info("{0} ==status==> {1}".format(url, response.status))
             logger.info("{0} ==data==> {1}".format(url, response.data))
+            logger.info("HRP Person: {}".format(Person(data=json.loads(response.data))))
 
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {}\n\n".format(hrp_wkr))
