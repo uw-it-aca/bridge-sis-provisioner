@@ -5,7 +5,7 @@ import logging
 import json
 from django.core.management.base import BaseCommand
 from uw_hrp.models import Person
-from uw_hrp.dao import HRP_DAO
+from uw_hrp import HRP
 from uw_bridge.models import BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.pws import get_person
@@ -30,6 +30,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         uwnetid = options['uwnetid']
+        hrp = HRP()
         try:
             person = get_person(uwnetid)
             logger.info("PWS data: {}\n\n".format(person))
@@ -40,14 +41,12 @@ class Command(BaseCommand):
 
             url = "/hrp/v3/person/{}.json".format(person.uwregid)
             logger.info("HRP URL: {}\n\n".format(url))
-            response = HRP_DAO().getURL(url, {'Accept': 'application/json'})
-            logger.info("{0} ==status==> {1}".format(url, response.status))
-            logger.info("{0} ==data==> {1}".format(url, response.data))
-            logger.info("HRP Person: {}".format(
+            response = hrp.get_resource(url)
+            logger.info("HRP Person: {}\n\n".format(
                 Person(data=json.loads(response.data))))
 
-            hrp_wkr = get_worker(person)
-            logger.info("HRP data: {}\n\n".format(hrp_wkr))
+            hrp_wkr = hrp.get_person_by_regid(person.uwregid)
+            logger.info("HRP data: {} {}\n\n".format(hrp.req_url, hrp_wkr))
 
             uw_acc = save_uw_account(person)
             logger.info("UW account in DB: {}\n\n".format(uw_acc))
