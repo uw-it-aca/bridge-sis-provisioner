@@ -31,10 +31,8 @@ if os.getenv('BRIDGE_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     else:
         RESTCLIENTS_BRIDGE_HOST = 'https://uwtest.bridgeapp.com:443'
 
-if os.getenv('BRIDGE_ENV') != 'PROD':
-    DEBUG = True
-
 if os.getenv('ENV', 'localdev') == 'localdev':
+    DEBUG = True
     BRIDGE_AUTHOR_GROUP_NAME = 'u_bridgeap_authors'
     BRIDGE_IMPORT_USER_FILE_SIZE = 3
     BRIDGE_LOGIN_WINDOW = 0
@@ -43,6 +41,7 @@ if os.getenv('ENV', 'localdev') == 'localdev':
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_ROOT = os.getenv('IMPORT_CSV_ROOT', '/data')
 else:
+    DEBUG = False
     RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
     BRIDGE_USER_WORK_POSITIONS = 2
     BRIDGE_AUTHOR_GROUP_NAME = os.getenv('AUTHOR_GROUP')
