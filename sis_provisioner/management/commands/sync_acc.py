@@ -44,7 +44,7 @@ class Command(BaseCommand):
             logger.info("HRP URL: {}\n\n".format(url))
             response = hrp.get_resource(url)
             logger.info("HRP Person: {}\n\n".format(
-                Person(data=json.loads(response.data))))
+                Person(data=json.loads(response.data.decode('utf-8')))))
 
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {} {}\n\n".format(hrp.req_url, hrp_wkr))
