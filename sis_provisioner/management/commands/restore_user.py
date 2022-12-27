@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.dao.bridge import BridgeUsers
 from sis_provisioner.dao.pws import get_person

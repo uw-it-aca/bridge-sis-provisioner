@@ -1,7 +1,6 @@
 # Copyright 2022 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-import time
 from django.test import TransactionTestCase
 from django.core.management import call_command
 from sis_provisioner.dao.uw_account import get_by_netid

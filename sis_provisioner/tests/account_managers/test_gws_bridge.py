@@ -147,7 +147,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
             hrp_wkr = get_worker(person)
             bridge_account = loader.get_bridge().get_user_by_uwnetid(
                 'javerage')
-            self.assertFalse(
+            self.assertTrue(
                 loader.account_not_changed(bridge_account, person, hrp_wkr))
 
     def test_field_not_changed(self):
