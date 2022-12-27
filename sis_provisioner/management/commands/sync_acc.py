@@ -43,7 +43,8 @@ class Command(BaseCommand):
             response = HRP_DAO().getURL(url, {'Accept': 'application/json'})
             logger.info("{0} ==status==> {1}".format(url, response.status))
             logger.info("{0} ==data==> {1}".format(url, response.data))
-            logger.info("HRP Person: {}".format(Person(data=json.loads(response.data))))
+            logger.info("HRP Person: {}".format(
+                Person(data=json.loads(response.data))))
 
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {}\n\n".format(hrp_wkr))
