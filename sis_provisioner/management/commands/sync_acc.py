@@ -3,6 +3,7 @@
 
 import logging
 import json
+import traceback
 from django.core.management.base import BaseCommand
 from uw_hrp.models import Person
 from uw_hrp import HRP
@@ -63,6 +64,7 @@ class Command(BaseCommand):
 
         except Exception as ex:
             logger.error(ex)
+            logger.error(traceback)
 
     def account_not_changed(self, bridge_acc, person, hrp_wkr):
         """
