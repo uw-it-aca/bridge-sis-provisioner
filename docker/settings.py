@@ -31,8 +31,10 @@ if os.getenv('BRIDGE_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     else:
         RESTCLIENTS_BRIDGE_HOST = 'https://uwtest.bridgeapp.com:443'
 
-if os.getenv('ENV', 'localdev') == 'localdev':
+if os.getenv('BRIDGE_ENV') != 'PROD':
     DEBUG = True
+
+if os.getenv('ENV', 'localdev') == 'localdev':
     BRIDGE_AUTHOR_GROUP_NAME = 'u_bridgeap_authors'
     BRIDGE_IMPORT_USER_FILE_SIZE = 3
     BRIDGE_LOGIN_WINDOW = 0
