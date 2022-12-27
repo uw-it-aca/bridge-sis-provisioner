@@ -3,6 +3,7 @@
 
 import logging
 from django.core.management.base import BaseCommand
+from uw_hrp.dao import HRP_DAO
 from uw_bridge.models import BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.pws import get_person
@@ -34,6 +35,13 @@ class Command(BaseCommand):
                 logger.error(
                     "{} IsTestEntity in PWS, skip!".format(uwnetid))
                 return
+
+            url = "/hrp/v3/person/{}.json".format(person.uwregid)
+            logger.info("HRP URL: {}\n\n".format(url))
+            response = HRP_DAO().getURL(url, {'Accept': 'application/json'})
+            logger.info("{0} ==status==> {1}".format(url, response.status))
+            logger.info("{0} ==data==> {1}".format(url, response.data))
+
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {}\n\n".format(hrp_wkr))
 
