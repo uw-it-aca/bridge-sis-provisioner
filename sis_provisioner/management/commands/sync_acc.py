@@ -46,7 +46,7 @@ class Command(BaseCommand):
             logger.info("HRP Person: {}\n\n".format(
                 Person(data=json.loads(response.data))))
 
-            hrp_wkr = hrp.get_person_by_regid(person.uwregid)
+            hrp_wkr = get_worker(person)
             logger.info("HRP data: {} {}\n\n".format(hrp.req_url, hrp_wkr))
 
             uw_acc = save_uw_account(person)
@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
         except Exception as ex:
             logger.error(ex)
-            logger.error(traceback)
+            logger.error(traceback.format_exc(chain=False))
 
     def account_not_changed(self, bridge_acc, person, hrp_wkr):
         """
