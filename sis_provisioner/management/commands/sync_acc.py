@@ -38,6 +38,8 @@ class Command(BaseCommand):
 
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {}\n\n".format(hrp_wkr))
+            logger.info("Supervisor Bridge Id: {}\n\n".format(
+                get_supervisor_bridge_id(hrp_wkr)))
 
             uw_acc = save_uw_account(person)
             logger.info("UW account in DB: {}\n\n".format(uw_acc))
