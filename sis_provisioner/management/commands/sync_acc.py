@@ -2,11 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-import json
 import traceback
 from django.core.management.base import BaseCommand
-from uw_hrp.models import Person
-from uw_hrp import HRP
 from uw_bridge.models import BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.pws import get_person
@@ -31,7 +28,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         uwnetid = options['uwnetid']
-        hrp = HRP()
         try:
             person = get_person(uwnetid)
             logger.info("PWS data: {}\n\n".format(person))
@@ -40,17 +36,8 @@ class Command(BaseCommand):
                     "{} IsTestEntity in PWS, skip!".format(uwnetid))
                 return
 
-            url = "/hrp/v3/person/{}.json".format(person.uwregid)
-            logger.info("HRP URL: {}\n\n".format(url))
-            response = hrp.get_resource(url)
-            data = response.data
-            if type(data) is bytes:
-                data = response.data.decode('utf-8')
-            logger.info("HRP Person: {}\n\n".format(
-                Person(data=json.loads(data))))
-
             hrp_wkr = get_worker(person)
-            logger.info("HRP data: {} {}\n\n".format(hrp.req_url, hrp_wkr))
+            logger.info("HRP data: {}\n\n".format(hrp_wkr))
 
             uw_acc = save_uw_account(person)
             logger.info("UW account in DB: {}\n\n".format(uw_acc))
