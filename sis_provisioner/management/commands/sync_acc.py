@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from uw_bridge.models import BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.pws import get_person
-from sis_provisioner.dao.uw_account import save_uw_account
+from sis_provisioner.dao.uw_account import save_uw_account, get_by_employee_id
 from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers import (
@@ -35,14 +35,14 @@ class Command(BaseCommand):
                 logger.error(
                     "{} IsTestEntity in PWS, skip!".format(uwnetid))
                 return
+            uw_acc = save_uw_account(person)
+            logger.info("UW account in DB: {}\n\n".format(uw_acc))
+            uw_acc.set_employee_id(person.employee_id)
 
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {}\n\n".format(hrp_wkr))
-            logger.info("Supervisor Bridge Id: {}\n\n".format(
-                get_supervisor_bridge_id(hrp_wkr)))
-
-            uw_acc = save_uw_account(person)
-            logger.info("UW account in DB: {}\n\n".format(uw_acc))
+            logger.info("Supervisor UW Acc: {}\n\n".format(
+                get_by_employee_id(hrp_wkr.primary_manager_id)))
 
             workr = BridgeWorker()
             bridge_acc = workr.bridge.get_user_by_uwnetid(uw_acc.netid)

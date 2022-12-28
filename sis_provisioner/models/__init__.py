@@ -105,6 +105,7 @@ class UwAccount(models.Model):
         return {
             "netid": self.netid,
             "bridge_id": self.bridge_id,
+            'employee_id': self.employee_id,
             "prev_netid": self.prev_netid,
             "disabled": self.disabled,
             "last_updated": datetime_to_str(self.last_updated),

@@ -28,6 +28,8 @@ class TestModels(TransactionTestCase):
         self.assertEqual(user.bridge_id, 123)
         self.assertTrue(user.has_employee_id())
         self.assertEqual(user.employee_id, "100000005")
+        self.assertISNotNone(user.json_data())
+        self.assertISNotNone(str(user))
 
         qset = UwAccount.objects.filter(employee_id="100000005")
         self.assertEqual(len(qset), 1)
