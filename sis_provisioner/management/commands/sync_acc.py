@@ -44,7 +44,7 @@ class Command(BaseCommand):
             logger.info("HRP URL: {}\n\n".format(url))
             response = hrp.get_resource(url)
             data = response.data
-            if type(data) == 'bytes':
+            if type(data) is bytes:
                 data = response.data.decode('utf-8')
             logger.info("HRP Person: {}\n\n".format(
                 Person(data=json.loads(data))))
