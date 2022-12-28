@@ -43,7 +43,7 @@ certs:
   secretName: test.bridge.uw.edu-ic-certs
 
 cronjob:
-  enabled: false
+  enabled: true
   jobs:
     #- name: daily-active-users
     #  schedule: "1 2 * * 2-6"
@@ -78,6 +78,17 @@ cronjob:
     #    requests:
     #      cpu: 50m
     #      memory: 128Mi
+    - name: sync-eid
+      schedule: "1 6 * * 3"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_eid"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 1024Mi
+        requests:
+          cpu: 50m
+          memory: 768Mi
     - name: db-accounts
       schedule: "1 8 * * 6"
       command: ["/scripts/management_command.sh"]
