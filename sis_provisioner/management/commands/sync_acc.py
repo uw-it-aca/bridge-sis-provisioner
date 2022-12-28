@@ -43,8 +43,11 @@ class Command(BaseCommand):
             url = "/hrp/v3/person/{}.json".format(person.uwregid)
             logger.info("HRP URL: {}\n\n".format(url))
             response = hrp.get_resource(url)
+            data = response.data
+            if type(data) == 'bytes':
+                data = response.data.decode('utf-8')
             logger.info("HRP Person: {}\n\n".format(
-                Person(data=json.loads(response.data.decode('utf-8')))))
+                Person(data=json.loads(data))))
 
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {} {}\n\n".format(hrp.req_url, hrp_wkr))
