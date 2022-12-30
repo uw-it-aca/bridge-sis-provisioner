@@ -78,19 +78,20 @@ cronjob:
     #    requests:
     #      cpu: 50m
     #      memory: 128Mi
-    - name: sync-eid
-      schedule: "1 6 * * 3"
-      command: ["/scripts/management_command.sh"]
-      args: ["sync_eid"]
-      resources:
-        limits:
-          cpu: 100m
-          memory: 1024Mi
-        requests:
-          cpu: 50m
-          memory: 768Mi
+    #- name: sync-eid
+    #  schedule: "1 6 * * 3"
+      # duration ~6hr
+    #  command: ["/scripts/management_command.sh"]
+    #  args: ["sync_eid"]
+    #  resources:
+    #    limits:
+    #      cpu: 110m
+    #      memory: 832Mi
+    #    requests:
+    #      cpu: 110m
+    #      memory: 512Mi
     - name: db-accounts
-      schedule: "1 8 * * 6"
+      schedule: "1 14 * * 0"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
       resources:
@@ -133,7 +134,7 @@ environmentVariables:
     value: "5"
 
   - name: HRPWS_ENV
-    value: EVAL
+    value: PROD
   - name: HRPWS_TIMEOUT
     value: "600"
   - name: HRPWS_POOL_SIZE
@@ -150,6 +151,7 @@ environmentVariables:
 
   - name: GMEMBER_ADD_WINDOW
     value: "1470"
+
 
   - name: GMEMBER_DEL_WINDOW
     value: "10080"
