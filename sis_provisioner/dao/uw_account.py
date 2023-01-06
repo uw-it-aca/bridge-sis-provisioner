@@ -90,8 +90,7 @@ def save_uw_account(person, create=True):
             prior_acc = get_by_netid(prior_netid)
             if prior_acc is not None:
                 # purge the prior account
-                uw_account.prev_netid = prior_netid
-                uw_account.save()
+                uw_account.set_prev_netid(prior_netid)
                 prior_acc.delete()
                 logger.info(
                     "{0} has two accounts in DB: KEEP {1}, DELETE {2}".format(
