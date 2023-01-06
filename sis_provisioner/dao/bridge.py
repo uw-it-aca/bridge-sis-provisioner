@@ -8,7 +8,7 @@ This module encapsulates the interactions with uw_bridge.users
 import logging
 import traceback
 from uw_bridge.models import BridgeUserRole
-from uw_bridge.users import Users
+from uw_bridge.users import BridgeAccounts
 from sis_provisioner.dao import DataFailureException
 from sis_provisioner.util.log import log_exception
 
@@ -16,7 +16,7 @@ from sis_provisioner.util.log import log_exception
 logger = logging.getLogger(__name__)
 
 
-class BridgeUsers(Users):
+class BridgeUsers(BridgeAccounts):
     """
     These two methods are defined in super class:
     add_user(self, bridge_user)
