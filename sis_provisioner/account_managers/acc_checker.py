@@ -17,7 +17,7 @@ class UserAccountChecker(GwsBridgeLoader):
 
     """
     This class will validate the user accounts in the database
-    against GWS groups and PWS person.
+    against GWS groups, HRP and PWS person.
     1. Schedule terminate if the user left the groups
     2. If uw account passed the grace period for termination, disable it
     3. Restore account
