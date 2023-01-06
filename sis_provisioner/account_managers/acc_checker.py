@@ -1,4 +1,4 @@
-# Copyright 2022 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
@@ -17,7 +17,7 @@ class UserAccountChecker(GwsBridgeLoader):
 
     """
     This class will validate the user accounts in the database
-    against GWS groups and PWS person.
+    against GWS groups, HRP and PWS person.
     1. Schedule terminate if the user left the groups
     2. If uw account passed the grace period for termination, disable it
     3. Restore account

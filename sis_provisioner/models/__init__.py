@@ -1,4 +1,4 @@
-# Copyright 2022 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import json
@@ -31,34 +31,31 @@ class UwAccount(models.Model):
     # scheduled terminate date
     terminate_at = models.DateTimeField(null=True, default=None)
 
+    def set_last_updated(self):
+        self.last_updated = get_now()
+        self.save()
+
     def has_bridge_id(self):
         return self.bridge_id > 0
 
     def set_bridge_id(self, bridge_id):
-        self.bridge_id = bridge_id
+        if bridge_id > 0 and bridge_id != self.bridge_id:
+            self.bridge_id = bridge_id
+            self.set_last_updated()
 
     def has_employee_id(self):
-        return self.employee_id is not None
+        return self.employee_id and len(self.employee_id)
 
     def set_employee_id(self, employee_id):
-        if self.has_employee_id() or employee_id != self.employee_id:
+        if (employee_id and len(employee_id) and
+                (not self.has_employee_id() or
+                 employee_id != self.employee_id)):
             self.employee_id = employee_id
-            self.save()
+            self.set_last_updated()
 
     def set_ids(self, bridge_id, employee_id):
-        upded = False
-        if bridge_id > 0 and bridge_id != self.bridge_id:
-            self.set_bridge_id(bridge_id)
-            upded = True
-
-        if (employee_id is not None and
-                self.has_employee_id() or employee_id != self.employee_id):
-            self.employee_id = employee_id
-            upded = True
-
-        if upded:
-            self.last_updated = get_now()
-            self.save()
+        self.set_bridge_id(bridge_id)
+        self.set_employee_id(employee_id)
 
     def has_prev_netid(self):
         return self.prev_netid is not None and len(self.prev_netid) > 0
@@ -66,16 +63,18 @@ class UwAccount(models.Model):
     def netid_changed(self):
         return self.has_prev_netid()
 
+    def set_prev_netid(self, prev_netid):
+        self.prev_netid = prev_netid
+        self.set_last_updated()
+
     def set_disable(self):
         self.disabled = True
-        self.last_updated = get_now()
-        self.save()
+        self.set_last_updated()
 
     def set_restored(self):
         self.disabled = False
         self.terminate_at = None
-        self.last_updated = get_now()
-        self.save()
+        self.set_last_updated()
 
     def has_terminate_date(self):
         return self.terminate_at is not None
@@ -87,8 +86,7 @@ class UwAccount(models.Model):
         self.terminate_at = get_now()
         if graceful:
             self.terminate_at += timedelta(days=GRACE_PERIOD)
-        self.last_updated = get_now()
-        self.save()
+        self.set_last_updated()
 
     def passed_terminate_date(self):
         return self.has_terminate_date() and\
@@ -98,13 +96,13 @@ class UwAccount(models.Model):
         self.disabled = False
         self.prev_netid = None
         self.terminate_at = None
-        self.last_updated = get_now()
-        self.save()
+        self.set_last_updated()
 
     def json_data(self):
         return {
             "netid": self.netid,
             "bridge_id": self.bridge_id,
+            'employee_id': self.employee_id,
             "prev_netid": self.prev_netid,
             "disabled": self.disabled,
             "last_updated": datetime_to_str(self.last_updated),
