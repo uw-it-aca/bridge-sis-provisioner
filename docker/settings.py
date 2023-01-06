@@ -41,7 +41,6 @@ if os.getenv('ENV', 'localdev') == 'localdev':
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_ROOT = os.getenv('IMPORT_CSV_ROOT', '/data')
 else:
-    DEBUG = False
     RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
     BRIDGE_USER_WORK_POSITIONS = 2
     BRIDGE_AUTHOR_GROUP_NAME = os.getenv('AUTHOR_GROUP')
