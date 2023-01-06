@@ -3,10 +3,11 @@
 
 from uw_bridge.custom_fields import CustomFields
 from uw_bridge.models import BridgeCustomField, BridgeUser
+from uw_bridge import Bridge
 
 
 def new_custom_field(name, value):
-    return CustomFields().new_custom_field(name, value)
+    return CustomFields(Bridge()).new_custom_field(name, value)
 
 
 def get_mock_bridge_user(bridge_id,
