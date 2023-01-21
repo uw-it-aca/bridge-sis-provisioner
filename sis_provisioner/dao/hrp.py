@@ -1,4 +1,4 @@
-# Copyright 2022 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 """
@@ -9,11 +9,12 @@ import logging
 import traceback
 from sis_provisioner.dao import (
     DataFailureException, InvalidRegID, changed_since_str)
-from uw_hrp.worker import get_worker_by_regid, worker_search
+from uw_hrp import HRP
 from sis_provisioner.util.log import log_exception, log_resp_time, Timer
 
 
 logger = logging.getLogger(__name__)
+hrp = HRP()
 
 
 def get_worker(person):
@@ -22,7 +23,7 @@ def get_worker(person):
     """
     try:
         if person.is_emp_state_current():
-            return get_worker_by_regid(person.uwregid)
+            return hrp.get_person_by_regid(person.uwregid)
     except InvalidRegID:
         logger.error("'{0}' has invalid uwregid".format(person.uwnetid))
     except DataFailureException as ex:
@@ -40,7 +41,8 @@ def get_worker_updates(duration):
     """
     timer = Timer()
     try:
-        return worker_search(changed_since=changed_since_str(duration))
+        return hrp.person_search(
+            changed_since_date=changed_since_str(duration, iso=True))
     except Exception:
         log_exception(logger, "get_worker_updates",
                       traceback.format_exc(chain=False))

@@ -43,7 +43,7 @@ certs:
   secretName: test.bridge.uw.edu-ic-certs
 
 cronjob:
-  enabled: true
+  enabled: false
   jobs:
     #- name: daily-active-users
     #  schedule: "1 2 * * 2-6"
@@ -56,30 +56,42 @@ cronjob:
     #    requests:
     #      cpu: 50m
     #      memory: 2048Mi
-    - name: sync-authors
-      schedule: "1 20 * * 1-5"
-      command: ["/scripts/management_command.sh"]
-      args: ["sync_authors"]
-      resources:
-        limits:
-          cpu: 100m
-          memory: 512Mi
-        requests:
-          cpu: 50m
-          memory: 128Mi
-    - name: custom-groups
-      schedule: "1 21 * * 1-5"
-      command: ["/scripts/management_command.sh"]
-      args: ["sync_accounts", "customg"]
-      resources:
-        limits:
-          cpu: 100m
-          memory: 512Mi
-        requests:
-          cpu: 50m
-          memory: 128Mi
+    #- name: sync-authors
+    #  schedule: "1 20 * * 1-5"
+    #  command: ["/scripts/management_command.sh"]
+    #  args: ["sync_authors"]
+    #  resources:
+    #    limits:
+    #      cpu: 100m
+    #      memory: 512Mi
+    #    requests:
+    #      cpu: 50m
+    #      memory: 128Mi
+    #- name: custom-groups
+    #  schedule: "1 21 * * 1-5"
+    #  command: ["/scripts/management_command.sh"]
+    #  args: ["sync_accounts", "customg"]
+    #  resources:
+    #    limits:
+    #      cpu: 100m
+    #      memory: 512Mi
+    #    requests:
+    #      cpu: 50m
+    #      memory: 128Mi
+    #- name: sync-eid
+    #  schedule: "1 6 * * 3"
+      # duration ~6hr
+    #  command: ["/scripts/management_command.sh"]
+    #  args: ["sync_eid"]
+    #  resources:
+    #    limits:
+    #      cpu: 110m
+    #      memory: 832Mi
+    #    requests:
+    #      cpu: 110m
+    #      memory: 512Mi
     - name: db-accounts
-      schedule: "1 8 * * 6"
+      schedule: "1 14 * * 0"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
       resources:
@@ -89,7 +101,6 @@ cronjob:
         requests:
           cpu: 50m
           memory: 768Mi
-    
 
 environmentVariables:
   - name: ENV
@@ -109,7 +120,7 @@ environmentVariables:
     value: "5"
 
   - name: PWS_ENV
-    value: EVAL
+    value: PROD
   - name: PWS_TIMEOUT
     value: "600"
   - name: PWS_POOL_SIZE
@@ -123,7 +134,7 @@ environmentVariables:
     value: "5"
 
   - name: HRPWS_ENV
-    value: EVAL
+    value: PROD
   - name: HRPWS_TIMEOUT
     value: "600"
   - name: HRPWS_POOL_SIZE
@@ -140,6 +151,7 @@ environmentVariables:
 
   - name: GMEMBER_ADD_WINDOW
     value: "1470"
+
 
   - name: GMEMBER_DEL_WINDOW
     value: "10080"

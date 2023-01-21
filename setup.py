@@ -1,4 +1,4 @@
-# Copyright 2022 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import os
@@ -31,11 +31,11 @@ setup(
         'pytz',
         'django-storages[google]>=1.10',
         'uw-memcached-clients~=1.0',
-        'UW-RestClients-Core~=1.3',
+        'UW-RestClients-Core~=1.4',
         'UW-RestClients-PWS~=2.1',
         'UW-RestClients-GWS~=2.3',
-        'uw-restclients-hrp~=1.2',
-        'uw-restclients-bridge~=1.5',
+        'uw-restclients-hrp~=1.3',
+        'uw-restclients-bridge~=1.6',
         'freezegun',
     ],
     license='Apache License, Version 2.0',

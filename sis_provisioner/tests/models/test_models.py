@@ -1,4 +1,4 @@
-# Copyright 2022 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import json
@@ -28,6 +28,8 @@ class TestModels(TransactionTestCase):
         self.assertEqual(user.bridge_id, 123)
         self.assertTrue(user.has_employee_id())
         self.assertEqual(user.employee_id, "100000005")
+        self.assertIsNotNone(user.json_data())
+        self.assertIsNotNone(str(user))
 
         qset = UwAccount.objects.filter(employee_id="100000005")
         self.assertEqual(len(qset), 1)

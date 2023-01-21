@@ -1,9 +1,8 @@
-# Copyright 2022 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
 from sis_provisioner.models import UwAccount, get_now
-from sis_provisioner.dao import DataFailureException
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import (
     delete_uw_account, get_all_uw_accounts, get_by_bridgeid,
