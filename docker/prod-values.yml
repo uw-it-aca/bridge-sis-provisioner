@@ -111,19 +111,19 @@ cronjob:
         requests:
           cpu: 50m
           memory: 128Mi
-    #- name: sync-eid
-    #  schedule: "30 7 * * 6"
-    #  command: ["/scripts/management_command.sh"]
-    #  args: ["sync_eid"]
-    #  resources:
-    #    limits:
-    #      cpu: 100m
-    #      memory: 1024Mi
-    #    requests:
-    #      cpu: 50m
-    #      memory: 768Mi
-    - name: db-accounts
+    - name: sync-eid
       schedule: "30 7 * * 6"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_eid"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 1024Mi
+        requests:
+          cpu: 50m
+          memory: 768Mi
+    - name: db-accounts
+      schedule: "1 14 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
       resources:
