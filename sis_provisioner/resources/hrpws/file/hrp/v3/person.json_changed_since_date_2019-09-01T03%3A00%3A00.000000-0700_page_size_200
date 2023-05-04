@@ -1,0 +1,915 @@
+{
+  "PageStart": "1",
+  "TotalCount": 154909,
+  "Current": {
+    "Href": "/hrp/v3/person.json?name=&page_start=1&page_size=1&worker_wid=&last_name=&first_name=&legal_last_name=&legal_first_name=&preferred_last_name=&preferred_first_name=&position=&retired=&terminated=&current_faculty=&active_appointment=&supervisory_organization=&cost_center=&custom_organization_type=&custom_organization=&location=&future_worker=",
+    "ResourceName": null,
+    "PageStart": "1",
+    "PageSize": "1",
+    "WorkerWID": null,
+    "LastName": null,
+    "FirstName": null,
+    "LegalLastName": null,
+    "LegalFirstName": null,
+    "PreferredLastName": null,
+    "PreferredFirstName": null,
+    "Position": null,
+    "Retired": null,
+    "Terminated": null,
+    "CurrentFaculty": null,
+    "ActiveAppointment": null,
+    "SupervisoryOrganization": null,
+    "CostCenter": null,
+    "CustomOrganizationType": null,
+    "CustomOrganization": null,
+    "Location": null,
+    "FutureWorker": null
+  },
+  "Next": {
+    "Href": null,
+    "ResourceName": null,
+    "PageStart": "2",
+    "PageSize": "1",
+    "WorkerWID": null,
+    "LastName": null,
+    "FirstName": null,
+    "LegalLastName": null,
+    "LegalFirstName": null,
+    "PreferredLastName": null,
+    "PreferredFirstName": null,
+    "Position": null,
+    "Retired": null,
+    "Terminated": null,
+    "CurrentFaculty": null,
+    "ActiveAppointment": null,
+    "SupervisoryOrganization": null,
+    "CostCenter": null,
+    "CustomOrganizationType": null,
+    "CustomOrganization": null,
+    "Location": null,
+    "FutureWorker": null
+  },
+  "Previous": null,
+  "Persons": [
+    {
+      "Name": "Bill Faculty",
+      "EmployeeID": "100000005",
+      "RegID": "10000000000000000000000000000005",
+      "IDs": [
+        {
+          "Type": "RegID",
+          "Value": "10000000000000000000000000000005"
+        },
+        {
+          "Type": "EmployeeID",
+          "Value": "100000005"
+        },
+        {
+          "Type": "NetID",
+          "Value": "faculty"
+        },
+        {
+          "Type": "StudentID",
+          "Value": "1234567"
+        }
+      ],
+      "Href": "/hrp/v3/person/10000000000000000000000000000005.json",
+      "RepositoryTimeStamp": "2022-11-29T10:56:28.477-08:00",
+      "FirstName": "Bill",
+      "LastName": "Faculty",
+      "PreferredName": {
+        "FirstName": "Bill",
+        "LastName": "Faculty",
+        "MiddleName": null
+      },
+      "WorkerDetails": [
+        {
+          "Name": "Faculty, Bill",
+          "WID": "1b68136df25201c0710e3ddad462fa1d",
+          "IDs": [
+            {
+              "Type": "WID",
+              "Value": "1b68136df25201c0710e3ddad462fa1d"
+            },
+            {
+              "Type": "Employee_ID",
+              "Value": "100000005"
+            }
+          ],
+          "WorkerType": "Employee",
+          "HuskyCardOverride": null,
+          "EmploymentStatus": {
+            "HireDate": "2006-05-16T00:00:00-07:00",
+            "OriginalHireDate": "2006-05-16T00:00:00-07:00",
+            "ExpectedFixedTermEndDate": null,
+            "FirstDayOfWork": "2006-05-16T00:00:00-07:00",
+            "ActiveStatusDate": "2006-05-16T00:00:00-07:00",
+            "Active": true,
+            "EmployeeStatus": "Active",
+            "Terminated": false,
+            "TerminationDate": null,
+            "TerminationInvoluntary": null,
+            "TerminationReason": null,
+            "Retired": false,
+            "RetirementDate": null,
+            "RetirementApplicationDate": null,
+            "DisplayLeave": false,
+            "LeaveStatusDetails": []
+          },
+          "EmploymentDetails": [
+            {
+              "Position": {
+                "Name": "PN-0054525 CLINICAL ASSOCIATE PROFESSOR, Family Medicine JM Academic - Faculty, Bill",
+                "WID": "1b68136df2520192c53b3ddad462ff1d",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "1b68136df2520192c53b3ddad462ff1d"
+                  },
+                  {
+                    "Type": "Position_ID",
+                    "Value": "PN-0054525"
+                  }
+                ],
+                "Href": "/hrp/v3/position/1b68136df2520192c53b3ddad462ff1d.json"
+              },
+              "PositionRestriction": null,
+              "PrimaryPosition": true,
+              "BusinessTitle": "Clinical Associate Professor",
+              "PositionTitle": "CLINICAL ASSOCIATE PROFESSOR, Family Medicine JM Academic",
+              "EffectiveDate": "2019-05-01T00:00:00-07:00",
+              "StartDate": "2012-07-01T00:00:00-07:00",
+              "PositionVacateDate": null,
+              "ExpectedFixedTermEndDate": null,
+              "PositionWorkerType": {
+                "Name": "Unpaid Academic",
+                "WID": "d957207a306801cf268cd2d86a5c8415",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801cf268cd2d86a5c8415"
+                  },
+                  {
+                    "Type": "Employee_Type_ID",
+                    "Value": "Unpaid_Academic"
+                  }
+                ]
+              },
+              "FTEPercent": 0.0,
+              "PayRateType": {
+                "Name": "N/A",
+                "WID": "d957207a306801e0ff0dbb026d5cda1d",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801e0ff0dbb026d5cda1d"
+                  },
+                  {
+                    "Type": "Pay_Rate_Type_ID",
+                    "Value": "N/A"
+                  }
+                ]
+              },
+              "WorkShift": {
+                "Name": "First Shift (United States of America)",
+                "WID": "d957207a306801ac611a09fe6e5c7432",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801ac611a09fe6e5c7432"
+                  },
+                  {
+                    "Type": "Work_Shift_ID",
+                    "Value": "First Shift"
+                  }
+                ]
+              },
+              "TotalPayAnnualizedAmount": 0.0,
+              "TimeType": {
+                "Name": "Part time",
+                "WID": "afa35b88537f015bd4e4faafb6574800",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "afa35b88537f015bd4e4faafb6574800"
+                  },
+                  {
+                    "Type": "Position_Time_Type_ID",
+                    "Value": "Part_time"
+                  }
+                ]
+              },
+              "CompensationStep": null,
+              "TotalBasePayAmount": 0.0,
+              "TotalBasePayFrequency": {
+                "Name": "Monthly",
+                "WID": "afa35b88537f01c22b33fbafb6574c00",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "afa35b88537f01c22b33fbafb6574c00"
+                  },
+                  {
+                    "Type": "Frequency_ID",
+                    "Value": "Monthly"
+                  }
+                ]
+              },
+              "TotalBasePayAnnualizedAmount": 0.0,
+              "JobProfile": {
+                "Name": "Unpaid Academic",
+                "WID": "d957207a306801fc5c30a8906f5c6b57",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801fc5c30a8906f5c6b57"
+                  },
+                  {
+                    "Type": "Job_Profile_ID",
+                    "Value": "21184"
+                  }
+                ],
+                "Href": "/hrp/v3/jobprofile/d957207a306801fc5c30a8906f5c6b57.json"
+              },
+              "JobClassificationSummaries": [
+                {
+                  "JobClassification": {
+                    "Name": "F - Academic Personnel (Employment Program)",
+                    "WID": "d957207a306801cd215e34e46d5c5122",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a306801cd215e34e46d5c5122"
+                      },
+                      {
+                        "Type": "Job_Classification_Reference_ID",
+                        "Value": "ECS_F"
+                      }
+                    ],
+                    "Href": "/hrp/v3/jobclassification/d957207a306801cd215e34e46d5c5122.json"
+                  },
+                  "JobClassificationGroup": {
+                    "Name": "Employment Program",
+                    "WID": "d957207a30680132aa0534e46d5c4d22",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a30680132aa0534e46d5c4d22"
+                      },
+                      {
+                        "Type": "Job_Classification_Group_ID",
+                        "Value": "ECS"
+                      }
+                    ],
+                    "Href": "/hrp/v3/jobclassificationgroup/d957207a30680132aa0534e46d5c4d22.json"
+                  }
+                }
+              ],
+              "Location": {
+                "Name": "Seattle Campus",
+                "WID": "d957207a306801c93acc30b96e5cae30",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801c93acc30b96e5cae30"
+                  },
+                  {
+                    "Type": "Location_ID",
+                    "Value": "Seattle Campus"
+                  }
+                ],
+                "Href": "/financial/v2/location/d957207a306801c93acc30b96e5cae30.json"
+              },
+              "OrganizationDetails": [
+                {
+                  "Type": {
+                    "Name": "Cost Center",
+                    "WID": "afa35b88537f0176f922f9afb6573000",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "afa35b88537f0176f922f9afb6573000"
+                      },
+                      {
+                        "Type": "Organization_Type_ID",
+                        "Value": "COST_CENTER"
+                      }
+                    ]
+                  },
+                  "Organization": {
+                    "Name": "681925 WORKDAY DEFAULT DEPTBG",
+                    "WID": "cea06499724601a5b9617be66daec594",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "cea06499724601a5b9617be66daec594"
+                      },
+                      {
+                        "Type": "Organization_Reference_ID",
+                        "Value": "681925"
+                      },
+                      {
+                        "Type": "Cost_Center_Reference_ID",
+                        "Value": "681925"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Type": {
+                    "Name": "Academic Job Families Org type",
+                    "WID": "9a03a28c5baf01383f79bdc89a452b1f",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "9a03a28c5baf01383f79bdc89a452b1f"
+                      },
+                      {
+                        "Type": "Organization_Type_ID",
+                        "Value": "Academic_Job_Families_Org_type"
+                      }
+                    ]
+                  },
+                  "Organization": {
+                    "Name": "Academic Job Families Custom Org",
+                    "WID": "9a03a28c5baf018f36d4da049b45f61f",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "9a03a28c5baf018f36d4da049b45f61f"
+                      },
+                      {
+                        "Type": "Organization_Reference_ID",
+                        "Value": "Academic_Job_Families_Custom_Org"
+                      },
+                      {
+                        "Type": "Custom_Organization_Reference_ID",
+                        "Value": "Academic_Job_Families_Custom_Org"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Type": {
+                    "Name": "Supervisory",
+                    "WID": "afa35b88537f014fa5e2f8afb6572d00",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "afa35b88537f014fa5e2f8afb6572d00"
+                      },
+                      {
+                        "Type": "Organization_Type_ID",
+                        "Value": "SUPERVISORY"
+                      }
+                    ]
+                  },
+                  "Organization": {
+                    "Name": "SOM: Family Medicine: King Pierce JM Academic (James, Bob (Inherited))",
+                    "WID": "751e82d2c30301b7f5dc547e053971d4",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "751e82d2c30301b7f5dc547e053971d4"
+                      },
+                      {
+                        "Type": "Organization_Reference_ID",
+                        "Value": "SOM_002422_JM_Academic"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "JobScheduledWeeklyHours": 0.0,
+              "JobDefaultWeeklyHours": 40.0,
+              "JobFamilySummaries": [
+                {
+                  "JobFamily": {
+                    "Name": "01 - Academic Personnel - Faculty - Annual or Shorter",
+                    "WID": "d957207a30680108b5d6280d6e5cd82e",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a30680108b5d6280d6e5cd82e"
+                      },
+                      {
+                        "Type": "Job_Family_ID",
+                        "Value": "Faculty - Annual or Shorter"
+                      }
+                    ],
+                    "Href": "/hrp/v3/jobfamily/d957207a30680108b5d6280d6e5cd82e.json"
+                  },
+                  "JobFamilyGroup": {
+                    "Name": "01 - Academic Personnel",
+                    "WID": "d957207a306801b8081ab3e36e5c4b32",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a306801b8081ab3e36e5c4b32"
+                      },
+                      {
+                        "Type": "Job_Family_ID",
+                        "Value": "01 - Academic Personnel"
+                      }
+                    ],
+                    "Href": "/hrp/v3/jobfamilygroup/d957207a306801b8081ab3e36e5c4b32.json"
+                  }
+                }
+              ],
+              "JobCategory": {
+                "Name": "Faculty",
+                "WID": "d957207a30680180eba3f5266e5c482f",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a30680180eba3f5266e5c482f"
+                  },
+                  {
+                    "Type": "Job_Category_ID",
+                    "Value": "Faculty"
+                  }
+                ],
+                "Href": "/hrp/v3/jobcategory/d957207a30680180eba3f5266e5c482f.json"
+              },
+              "CompensationMostRecentChangeDate": "2021-03-16T00:00:00-07:00",
+              "Managers": [
+                {
+                  "Name": "James, Bob",
+                  "WID": "1b68136df25201eb472087dad162bca4",
+                  "IDs": [
+                    {
+                      "Type": "WID",
+                      "Value": "1b68136df25201eb472087dad162bca4"
+                    },
+                    {
+                      "Type": "Employee_ID",
+                      "Value": "100000001"
+                    }
+                  ],
+                  "Href": "/hrp/v3/person/845007271.json"
+                }
+              ],
+              "IsManager": false,
+              "ProbationEndDate": null,
+              "SupervisoryOrganization": {
+                "Name": "SOM: Family Medicine: King Pierce JM Academic (James, Bob (Inherited))",
+                "WID": "751e82d2c30301b7f5dc547e053971d4",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "751e82d2c30301b7f5dc547e053971d4"
+                  },
+                  {
+                    "Type": "Organization_Reference_ID",
+                    "Value": "SOM_002422_JM_Academic"
+                  }
+                ],
+                "Href": "/hrp/v3/supervisoryorganization/751e82d2c30301b7f5dc547e053971d4.json"
+              },
+              "WorkerCompensationPlanAssignment": {
+                "Href": "/hrp/v3/workercompensationplanassignment/1b68136df25201c0710e3ddad462fa1d.json"
+              },
+              "WorkerPeriodActivityPayAssignment": {
+                "Href": "/hrp/v3/workerperiodactivitypayassignment/1b68136df25201c0710e3ddad462fa1d.json"
+              },
+              "WorkerPayrollCostingAllocation": {
+                "Href": "/hrp/v3/workerpayrollcostingallocation/1b68136df25201c0710e3ddad462fa1d.json"
+              }
+            }
+          ],
+          "ActiveAppointment": true,
+          "CurrentFaculty": true,
+          "PostdocAnniversaryDate": null,
+          "TeleworkParticipation": null,
+          "FutureRecord": false
+        }
+      ]
+    },
+    {
+      "Name": "Contingent Worker",
+      "EmployeeID": "100000001",
+      "RegID": "00000000000000000000000000000001",
+      "IDs": [
+        {
+          "Type": "RegID",
+          "Value": "00000000000000000000000000000001"
+        },
+        {
+          "Type": "EmployeeID",
+          "Value": "100000001"
+        },
+        {
+          "Type": "NetID",
+          "Value": "abcde"
+        },
+        {
+          "Type": "StudentID",
+          "Value": "2131206"
+        },
+        {
+          "Type": "PriorEmployeeID",
+          "Value": "T000072061"
+        }
+      ],
+      "Href": "/hrp/v3/person/00000000000000000000000000000001.json",
+      "RepositoryTimeStamp": "2022-11-29T10:47:11.676-08:00",
+      "FirstName": "Contingent",
+      "LastName": "Worker",
+      "PreferredName": null,
+      "WorkerDetails": [
+        {
+          "Name": "Worker, Contingent [C] (Contract Ended)",
+          "WID": "6d879e625f930113010b92ad8a3d0000",
+          "IDs": [
+            {
+              "Type": "WID",
+              "Value": "6d879e625f930113010b92ad8a3d0000"
+            },
+            {
+              "Type": "Contingent_Worker_ID",
+              "Value": "100000001"
+            }
+          ],
+          "WorkerType": "Contingent Worker",
+          "HuskyCardOverride": null,
+          "EmploymentStatus": {
+            "HireDate": "2022-06-13T00:00:00-07:00",
+            "OriginalHireDate": "2022-06-13T00:00:00-07:00",
+            "ExpectedFixedTermEndDate": null,
+            "FirstDayOfWork": "2022-06-13T00:00:00-07:00",
+            "ActiveStatusDate": "2022-07-16T00:00:00-07:00",
+            "Active": false,
+            "EmployeeStatus": "Terminated",
+            "Terminated": true,
+            "TerminationDate": "2022-07-15T00:00:00-07:00",
+            "TerminationInvoluntary": null,
+            "TerminationReason": null,
+            "Retired": false,
+            "RetirementDate": null,
+            "RetirementApplicationDate": null,
+            "DisplayLeave": false,
+            "LeaveStatusDetails": []
+          },
+          "EmploymentDetails": [
+            {
+              "Position": {
+                "Name": "PN-0226401 Peer Educator - Worker, Contingent [C]",
+                "WID": "6d879e625f930113010b93e1aeb20002",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "6d879e625f930113010b93e1aeb20002"
+                  },
+                  {
+                    "Type": "Position_ID",
+                    "Value": "PN-0226401"
+                  }
+                ],
+                "Href": "/hrp/v3/position/6d879e625f930113010b93e1aeb20002.json"
+              },
+              "PositionRestriction": null,
+              "PrimaryPosition": true,
+              "BusinessTitle": "FYP FIG Leader",
+              "PositionTitle": "Peer Educator",
+              "EffectiveDate": "2022-06-13T00:00:00-07:00",
+              "StartDate": "2022-06-13T00:00:00-07:00",
+              "PositionVacateDate": "2022-07-15T00:00:00-07:00",
+              "ExpectedFixedTermEndDate": null,
+              "PositionWorkerType": {
+                "Name": "Non-Academic Affiliate (General)",
+                "WID": "d957207a306801e5508c3ddf6a5c8e15",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801e5508c3ddf6a5c8e15"
+                  },
+                  {
+                    "Type": "Contingent_Worker_Type_ID",
+                    "Value": "Non-Academic_Affiliate_General"
+                  }
+                ]
+              },
+              "FTEPercent": 0.0,
+              "PayRateType": null,
+              "WorkShift": {
+                "Name": "First Shift (United States of America)",
+                "WID": "d957207a306801ac611a09fe6e5c7432",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801ac611a09fe6e5c7432"
+                  },
+                  {
+                    "Type": "Work_Shift_ID",
+                    "Value": "First Shift"
+                  }
+                ]
+              },
+              "TotalPayAnnualizedAmount": 0.0,
+              "TimeType": {
+                "Name": "Part time",
+                "WID": "afa35b88537f015bd4e4faafb6574800",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "afa35b88537f015bd4e4faafb6574800"
+                  },
+                  {
+                    "Type": "Position_Time_Type_ID",
+                    "Value": "Part_time"
+                  }
+                ]
+              },
+              "CompensationStep": null,
+              "TotalBasePayAmount": 0.0,
+              "TotalBasePayFrequency": null,
+              "TotalBasePayAnnualizedAmount": 0.0,
+              "JobProfile": {
+                "Name": "Peer Educator",
+                "WID": "d957207a306801fb8fecfd7e6f5ccc47",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801fb8fecfd7e6f5ccc47"
+                  },
+                  {
+                    "Type": "Job_Profile_ID",
+                    "Value": "21163"
+                  }
+                ],
+                "Href": "/hrp/v3/jobprofile/d957207a306801fb8fecfd7e6f5ccc47.json"
+              },
+              "JobClassificationSummaries": [
+                {
+                  "JobClassification": {
+                    "Name": "V - Affiliate (Employment Program)",
+                    "WID": "d957207a306801d91e4434e46d5c4f22",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a306801d91e4434e46d5c4f22"
+                      },
+                      {
+                        "Type": "Job_Classification_Reference_ID",
+                        "Value": "ECS_V"
+                      }
+                    ],
+                    "Href": "/hrp/v3/jobclassification/d957207a306801d91e4434e46d5c4f22.json"
+                  },
+                  "JobClassificationGroup": {
+                    "Name": "Employment Program",
+                    "WID": "d957207a30680132aa0534e46d5c4d22",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a30680132aa0534e46d5c4d22"
+                      },
+                      {
+                        "Type": "Job_Classification_Group_ID",
+                        "Value": "ECS"
+                      }
+                    ],
+                    "Href": "/hrp/v3/jobclassificationgroup/d957207a30680132aa0534e46d5c4d22.json"
+                  }
+                }
+              ],
+              "Location": {
+                "Name": "Seattle Campus",
+                "WID": "d957207a306801c93acc30b96e5cae30",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801c93acc30b96e5cae30"
+                  },
+                  {
+                    "Type": "Location_ID",
+                    "Value": "Seattle Campus"
+                  }
+                ],
+                "Href": "/financial/v2/location/d957207a306801c93acc30b96e5cae30.json"
+              },
+              "OrganizationDetails": [
+                {
+                  "Type": {
+                    "Name": "Cost Center",
+                    "WID": "afa35b88537f0176f922f9afb6573000",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "afa35b88537f0176f922f9afb6573000"
+                      },
+                      {
+                        "Type": "Organization_Type_ID",
+                        "Value": "COST_CENTER"
+                      }
+                    ]
+                  },
+                  "Organization": {
+                    "Name": "039334 FYP OPTIONAL PROGRAMS",
+                    "WID": "d957207a306801dcdad4e4ba8d5c8b50",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a306801dcdad4e4ba8d5c8b50"
+                      },
+                      {
+                        "Type": "Organization_Reference_ID",
+                        "Value": "039334"
+                      },
+                      {
+                        "Type": "Cost_Center_Reference_ID",
+                        "Value": "039334"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Type": {
+                    "Name": "Service Period",
+                    "WID": "d957207a3068013093c007746e5c6c2f",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a3068013093c007746e5c6c2f"
+                      },
+                      {
+                        "Type": "Organization_Type_ID",
+                        "Value": "Service_Period"
+                      }
+                    ]
+                  },
+                  "Organization": {
+                    "Name": "12",
+                    "WID": "d957207a306801e0c42f59276f5c6133",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a306801e0c42f59276f5c6133"
+                      },
+                      {
+                        "Type": "Organization_Reference_ID",
+                        "Value": "Service_Period_12.00"
+                      },
+                      {
+                        "Type": "Custom_Organization_Reference_ID",
+                        "Value": "Service_Period_12.00"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Type": {
+                    "Name": "Campus Mailbox",
+                    "WID": "d957207a3068011013570a746e5c6d2f",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a3068011013570a746e5c6d2f"
+                      },
+                      {
+                        "Type": "Organization_Type_ID",
+                        "Value": "Campus_Mailbox"
+                      }
+                    ]
+                  },
+                  "Organization": {
+                    "Name": "",
+                    "WID": "d957207a3068010205dd8e2b6f5c7136",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a3068010205dd8e2b6f5c7136"
+                      },
+                      {
+                        "Type": "Organization_Reference_ID",
+                        "Value": ""
+                      },
+                      {
+                        "Type": "Custom_Organization_Reference_ID",
+                        "Value": ""
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Type": {
+                    "Name": "Supervisory",
+                    "WID": "afa35b88537f014fa5e2f8afb6572d00",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "afa35b88537f014fa5e2f8afb6572d00"
+                      },
+                      {
+                        "Type": "Organization_Type_ID",
+                        "Value": "SUPERVISORY"
+                      }
+                    ]
+                  },
+                  "Organization": {
+                    "Name": "UAA: SAS - FYP Program JM Contingent Worker (... (Inherited))",
+                    "WID": "995754e647b7012cc88d14001864a959",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "995754e647b7012cc88d14001864a959"
+                      },
+                      {
+                        "Type": "Organization_Reference_ID",
+                        "Value": "UAA_000031_JM_Contingent_Worker"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "JobScheduledWeeklyHours": 0.0,
+              "JobDefaultWeeklyHours": 40.0,
+              "JobFamilySummaries": [
+                {
+                  "JobFamily": {
+                    "Name": "01 - Contingent Workers - Contingent Worker",
+                    "WID": "d957207a306801ebc2028a0d6e5c222f",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a306801ebc2028a0d6e5c222f"
+                      },
+                      {
+                        "Type": "Job_Family_ID",
+                        "Value": "Contingent Worker"
+                      }
+                    ],
+                    "Href": "/hrp/v3/jobfamily/d957207a306801ebc2028a0d6e5c222f.json"
+                  },
+                  "JobFamilyGroup": {
+                    "Name": "01 - Contingent Workers",
+                    "WID": "d957207a3068011b359d0de56e5c5832",
+                    "IDs": [
+                      {
+                        "Type": "WID",
+                        "Value": "d957207a3068011b359d0de56e5c5832"
+                      },
+                      {
+                        "Type": "Job_Family_ID",
+                        "Value": "01 - Contingent Workers"
+                      }
+                    ],
+                    "Href": "/hrp/v3/jobfamilygroup/d957207a3068011b359d0de56e5c5832.json"
+                  }
+                }
+              ],
+              "JobCategory": {
+                "Name": "Contingent Worker",
+                "WID": "d957207a306801e697281e276e5c532f",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801e697281e276e5c532f"
+                  },
+                  {
+                    "Type": "Job_Category_ID",
+                    "Value": "Contingent Worker"
+                  }
+                ],
+                "Href": "/hrp/v3/jobcategory/d957207a306801e697281e276e5c532f.json"
+              },
+              "CompensationMostRecentChangeDate": null,
+              "Managers": [],
+              "IsManager": false,
+              "ProbationEndDate": null,
+              "SupervisoryOrganization": {
+                "Name": "UAA: SAS - FYP Program JM Contingent Worker (Skirven, Matt (Inherited))",
+                "WID": "995754e647b7012cc88d14001864a959",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "995754e647b7012cc88d14001864a959"
+                  },
+                  {
+                    "Type": "Organization_Reference_ID",
+                    "Value": "UAA_000031_JM_Contingent_Worker"
+                  }
+                ],
+                "Href": "/hrp/v3/supervisoryorganization/995754e647b7012cc88d14001864a959.json"
+              },
+              "WorkerCompensationPlanAssignment": {
+                "Href": "/hrp/v3/workercompensationplanassignment/6d879e625f930113010b92ad8a3d0000.json"
+              },
+              "WorkerPeriodActivityPayAssignment": {
+                "Href": "/hrp/v3/workerperiodactivitypayassignment/6d879e625f930113010b92ad8a3d0000.json"
+              },
+              "WorkerPayrollCostingAllocation": {
+                "Href": "/hrp/v3/workerpayrollcostingallocation/6d879e625f930113010b92ad8a3d0000.json"
+              }
+            }
+          ],
+          "ActiveAppointment": false,
+          "CurrentFaculty": false,
+          "PostdocAnniversaryDate": null,
+          "TeleworkParticipation": null,
+          "FutureRecord": false
+        }
+      ]
+    }
+  ]
+}

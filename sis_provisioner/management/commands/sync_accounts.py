@@ -1,4 +1,4 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
@@ -84,6 +84,9 @@ class Command(BaseCommand):
             err = self.loader.get_error_report()
             logger.error("Errors: {0}".format(err))
             if not is_using_file_dao():
-                send_mail(
-                    "Check source: {}".format(self.source),
-                    err, self.sender, [self.sender])
+                try:
+                    send_mail(
+                        "Check source: {}".format(self.source),
+                        err, self.sender, [self.sender])
+                except Exception as ex:
+                    logger.error(ex)

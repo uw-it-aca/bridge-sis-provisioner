@@ -1,4 +1,4 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
@@ -17,4 +17,5 @@ class TestLoadUserViaBridgeApi(TransactionTestCase):
     def test_load_from_gws_to_bridge(self):
         set_db_records()
         set_db_err_records()
+        call_command('sync_authors', '-n')
         call_command('sync_authors')

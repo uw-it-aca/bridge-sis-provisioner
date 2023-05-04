@@ -1,0 +1,978 @@
+{
+  "Name": "James K Staff",
+  "EmployeeID": "100000001",
+  "RegID": "10000000000000000000000000000001",
+  "IDs": [
+    {
+      "Type": "RegID",
+      "Value": "10000000000000000000000000000001"
+    },
+    {
+      "Type": "EmployeeID",
+      "Value": "100000001"
+    },
+    {
+      "Type": "NetID",
+      "Value": "staff"
+    },
+    {
+      "Type": "StudentID",
+      "Value": null
+    },
+    {
+      "Type": "PriorEmployeeID",
+      "Value": "T000004935"
+    }
+  ],
+  "Href": "/hrp/v3/person/10000000000000000000000000000001.json",
+  "RepositoryTimeStamp": "2022-12-21T00:49:46.458-08:00",
+  "FirstName": "James K",
+  "LastName": "Staff",
+  "PreferredName": null,
+  "WorkerDetails": [
+    {
+      "Name": "Staff, James K",
+      "WID": "b0de31fafaae0113d3e038df425fc6e6",
+      "IDs": [
+        {
+          "Type": "WID",
+          "Value": "b0de31fafaae0113d3e038df425fc6e6"
+        },
+        {
+          "Type": "Employee_ID",
+          "Value": "100000001"
+        }
+      ],
+      "WorkerType": "Employee",
+      "HuskyCardOverride": null,
+      "EmploymentStatus": {
+        "HireDate": "2017-10-12T00:00:00-07:00",
+        "OriginalHireDate": "2017-10-12T00:00:00-07:00",
+        "ExpectedFixedTermEndDate": null,
+        "FirstDayOfWork": "2017-10-12T00:00:00-07:00",
+        "ActiveStatusDate": "2017-10-12T00:00:00-07:00",
+        "Active": true,
+        "EmployeeStatus": "Active",
+        "Terminated": false,
+        "TerminationDate": null,
+        "TerminationInvoluntary": null,
+        "TerminationReason": null,
+        "Retired": false,
+        "RetirementDate": null,
+        "RetirementApplicationDate": null,
+        "DisplayLeave": false,
+        "LeaveStatusDetails": []
+      },
+      "EmploymentDetails": [
+        {
+          "Position": {
+            "Name": "PN-0060531 Organization Development and Training Specialist - Staff, James K",
+            "WID": "b0de31fafaae01f5401439df425fcbe6",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "b0de31fafaae01f5401439df425fcbe6"
+              }
+            ],
+            "Href": "/hrp/v3/position/b0de31fafaae01f5401439df425fcbe6.json"
+          },
+          "PositionRestriction": {
+            "Name": "PN-0060531 Organization Development and Training Specialist - Staff, James K",
+            "WID": "a9d451238f0d010fc1e7182db4629c2a",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "a9d451238f0d010fc1e7182db4629c2a"
+              },
+              {
+                "Type": "Position_ID",
+                "Value": "PN-0060531"
+              }
+            ]
+          },
+          "PrimaryPosition": true,
+          "BusinessTitle": "Director, Organization Development & Training",
+          "PositionTitle": "Organization Development and Training Specialist",
+          "EffectiveDate": "2022-12-20T00:00:00-08:00",
+          "StartDate": "2017-10-12T00:00:00-07:00",
+          "PositionVacateDate": null,
+          "ExpectedFixedTermEndDate": null,
+          "PositionWorkerType": {
+            "Name": "Regular Salary",
+            "WID": "d957207a306801756bd1abd86a5c7a15",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a306801756bd1abd86a5c7a15"
+              },
+              {
+                "Type": "Employee_Type_ID",
+                "Value": "Regular"
+              }
+            ]
+          },
+          "FTEPercent": 100.0,
+          "PayRateType": {
+            "Name": "Salary",
+            "WID": "d957207a3068019058bda6026d5cd71d",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a3068019058bda6026d5cd71d"
+              },
+              {
+                "Type": "Pay_Rate_Type_ID",
+                "Value": "Salary"
+              }
+            ]
+          },
+          "WorkShift": {
+            "Name": "First Shift (United States of America)",
+            "WID": "d957207a306801ac611a09fe6e5c7432",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a306801ac611a09fe6e5c7432"
+              },
+              {
+                "Type": "Work_Shift_ID",
+                "Value": "First Shift"
+              }
+            ]
+          },
+          "TotalPayAnnualizedAmount": 12345.0,
+          "TimeType": {
+            "Name": "Full time",
+            "WID": "afa35b88537f01356af8faafb6574900",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "afa35b88537f01356af8faafb6574900"
+              },
+              {
+                "Type": "Position_Time_Type_ID",
+                "Value": "Full_time"
+              }
+            ]
+          },
+          "CompensationStep": null,
+          "TotalBasePayAmount": 1234.0,
+          "TotalBasePayFrequency": {
+            "Name": "Monthly",
+            "WID": "afa35b88537f01c22b33fbafb6574c00",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "afa35b88537f01c22b33fbafb6574c00"
+              },
+              {
+                "Type": "Frequency_ID",
+                "Value": "Monthly"
+              }
+            ]
+          },
+          "TotalBasePayAnnualizedAmount": 67644.0,
+          "JobProfile": {
+            "Name": "Program Operations Specialist (E S 7)",
+            "WID": "d957207a30680162c9c3f9ea6f5c1664",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a30680162c9c3f9ea6f5c1664"
+              },
+              {
+                "Type": "Job_Profile_ID",
+                "Value": "11540"
+              }
+            ],
+            "Href": "/hrp/v3/jobprofile/d957207a30680162c9c3f9ea6f5c1664.json"
+          },
+          "JobClassificationSummaries": [
+            {
+              "JobClassification": {
+                "Name": "E - Professional Staff (Employment Program)",
+                "WID": "d957207a3068011a129234e46d5c5522",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a3068011a129234e46d5c5522"
+                  },
+                  {
+                    "Type": "Job_Classification_Reference_ID",
+                    "Value": "ECS_E"
+                  }
+                ],
+                "Href": "/hrp/v3/jobclassification/d957207a3068011a129234e46d5c5522.json"
+              },
+              "JobClassificationGroup": {
+                "Name": "Employment Program",
+                "WID": "d957207a30680132aa0534e46d5c4d22",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a30680132aa0534e46d5c4d22"
+                  },
+                  {
+                    "Type": "Job_Classification_Group_ID",
+                    "Value": "ECS"
+                  }
+                ],
+                "Href": "/hrp/v3/jobclassificationgroup/d957207a30680132aa0534e46d5c4d22.json"
+              }
+            },
+            {
+              "JobClassification": {
+                "Name": "0170 - Professional Staff and Librarians (Financial Account Codes (Object-Codes))",
+                "WID": "d957207a30680168bb9b97e46d5cbe24",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a30680168bb9b97e46d5cbe24"
+                  },
+                  {
+                    "Type": "Job_Classification_Reference_ID",
+                    "Value": "OBJ_0170"
+                  }
+                ],
+                "Href": "/hrp/v3/jobclassification/d957207a30680168bb9b97e46d5cbe24.json"
+              },
+              "JobClassificationGroup": {
+                "Name": "Financial Account Codes (Object-Codes)",
+                "WID": "d957207a3068014cb35d97e46d5cb924",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a3068014cb35d97e46d5cb924"
+                  },
+                  {
+                    "Type": "Job_Classification_Group_ID",
+                    "Value": "OBJ"
+                  }
+                ],
+                "Href": "/hrp/v3/jobclassificationgroup/d957207a3068014cb35d97e46d5cb924.json"
+              }
+            }
+          ],
+          "Location": {
+            "Name": "Seattle Campus",
+            "WID": "d957207a306801c93acc30b96e5cae30",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a306801c93acc30b96e5cae30"
+              },
+              {
+                "Type": "Location_ID",
+                "Value": "Seattle Campus"
+              }
+            ],
+            "Href": "/financial/v2/location/d957207a306801c93acc30b96e5cae30.json"
+          },
+          "OrganizationDetails": [
+            {
+              "Type": {
+                "Name": "Cost Center",
+                "WID": "afa35b88537f0176f922f9afb6573000",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "afa35b88537f0176f922f9afb6573000"
+                  },
+                  {
+                    "Type": "Organization_Type_ID",
+                    "Value": "COST_CENTER"
+                  }
+                ]
+              },
+              "Organization": {
+                "Name": "054256 LIBRARY",
+                "WID": "d957207a3068016dc742c5c28d5c4f53",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a3068016dc742c5c28d5c4f53"
+                  },
+                  {
+                    "Type": "Organization_Reference_ID",
+                    "Value": "054256"
+                  },
+                  {
+                    "Type": "Cost_Center_Reference_ID",
+                    "Value": "054256"
+                  }
+                ]
+              }
+            },
+            {
+              "Type": {
+                "Name": "Service Period",
+                "WID": "d957207a3068013093c007746e5c6c2f",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a3068013093c007746e5c6c2f"
+                  },
+                  {
+                    "Type": "Organization_Type_ID",
+                    "Value": "Service_Period"
+                  }
+                ]
+              },
+              "Organization": {
+                "Name": "12",
+                "WID": "d957207a306801e0c42f59276f5c6133",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801e0c42f59276f5c6133"
+                  },
+                  {
+                    "Type": "Organization_Reference_ID",
+                    "Value": "Service_Period_12.00"
+                  },
+                  {
+                    "Type": "Custom_Organization_Reference_ID",
+                    "Value": "Service_Period_12.00"
+                  }
+                ]
+              }
+            },
+            {
+              "Type": {
+                "Name": "Campus Mailbox",
+                "WID": "d957207a3068011013570a746e5c6d2f",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a3068011013570a746e5c6d2f"
+                  },
+                  {
+                    "Type": "Organization_Type_ID",
+                    "Value": "Campus_Mailbox"
+                  }
+                ]
+              },
+              "Organization": {
+                "Name": "",
+                "WID": "d957207a3068010f7bafa62b6f5c8336",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a3068010f7bafa62b6f5c8336"
+                  },
+                  {
+                    "Type": "Organization_Reference_ID",
+                    "Value": ""
+                  },
+                  {
+                    "Type": "Custom_Organization_Reference_ID",
+                    "Value": ""
+                  }
+                ]
+              }
+            },
+            {
+              "Type": {
+                "Name": "Supervisory",
+                "WID": "afa35b88537f014fa5e2f8afb6572d00",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "afa35b88537f014fa5e2f8afb6572d00"
+                  },
+                  {
+                    "Type": "Organization_Type_ID",
+                    "Value": "SUPERVISORY"
+                  }
+                ]
+              },
+              "Organization": {
+                "Name": "LIB: Organizational Development and Inclusion (Mar, Kim)",
+                "WID": "a9d451238f0d0103410596e0aa623357",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "a9d451238f0d0103410596e0aa623357"
+                  },
+                  {
+                    "Type": "Organization_Reference_ID",
+                    "Value": "LIB_000009"
+                  }
+                ]
+              }
+            }
+          ],
+          "JobScheduledWeeklyHours": 40.0,
+          "JobDefaultWeeklyHours": 40.0,
+          "JobFamilySummaries": [
+            {
+              "JobFamily": {
+                "Name": "01 - Staff - Professional Staff",
+                "WID": "d957207a306801a0a7f99c0d6e5c302f",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801a0a7f99c0d6e5c302f"
+                  },
+                  {
+                    "Type": "Job_Family_ID",
+                    "Value": "Professional"
+                  }
+                ],
+                "Href": "/hrp/v3/jobfamily/d957207a306801a0a7f99c0d6e5c302f.json"
+              },
+              "JobFamilyGroup": {
+                "Name": "01 - Staff",
+                "WID": "d957207a306801c98a0674e46e5c4e32",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801c98a0674e46e5c4e32"
+                  },
+                  {
+                    "Type": "Job_Family_ID",
+                    "Value": "01 - Staff"
+                  }
+                ],
+                "Href": "/hrp/v3/jobfamilygroup/d957207a306801c98a0674e46e5c4e32.json"
+              }
+            }
+          ],
+          "JobCategory": {
+            "Name": "Professional Staff & Librarians",
+            "WID": "d957207a306801a5223b12276e5c4e2f",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a306801a5223b12276e5c4e2f"
+              },
+              {
+                "Type": "Job_Category_ID",
+                "Value": "Professional Staff & Librarians"
+              }
+            ],
+            "Href": "/hrp/v3/jobcategory/d957207a306801a5223b12276e5c4e2f.json"
+          },
+          "CompensationMostRecentChangeDate": "2019-09-01T00:00:00-07:00",
+          "Managers": [
+            {
+              "Name": "A, B",
+              "WID": "c9f4091e781210010da21b563efc0000",
+              "IDs": [
+                {
+                  "Type": "WID",
+                  "Value": "c9f4091e781210010da21b563efc0000"
+                },
+                {
+                  "Type": "Employee_ID",
+                  "Value": "000000005"
+                }
+              ],
+              "Href": "/hrp/v3/person/814003996.json"
+            }
+          ],
+          "IsManager": false,
+          "ProbationEndDate": null,
+          "SupervisoryOrganization": {
+            "Name": "LIB: Organizational Development and Inclusion (Mar, Kim)",
+            "WID": "a9d451238f0d0103410596e0aa623357",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "a9d451238f0d0103410596e0aa623357"
+              },
+              {
+                "Type": "Organization_Reference_ID",
+                "Value": "LIB_000009"
+              }
+            ],
+            "Href": "/hrp/v3/supervisoryorganization/a9d451238f0d0103410596e0aa623357.json"
+          },
+          "WorkerCompensationPlanAssignment": {
+            "Href": "/hrp/v3/workercompensationplanassignment/b0de31fafaae0113d3e038df425fc6e6.json"
+          },
+          "WorkerPeriodActivityPayAssignment": {
+            "Href": "/hrp/v3/workerperiodactivitypayassignment/b0de31fafaae0113d3e038df425fc6e6.json"
+          },
+          "WorkerPayrollCostingAllocation": {
+            "Href": "/hrp/v3/workerpayrollcostingallocation/b0de31fafaae0113d3e038df425fc6e6.json"
+          }
+        }
+      ],
+      "OrganizationDetails": [
+        {
+          "Type": {
+            "Name": "Cost Center",
+            "WID": "afa35b88537f0176f922f9afb6573000",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "afa35b88537f0176f922f9afb6573000"
+              },
+              {
+                "Type": "Organization_Type_ID",
+                "Value": "COST_CENTER"
+              }
+            ]
+          },
+          "Organization": {
+            "Name": "054256 LIBRARY",
+            "WID": "d957207a3068016dc742c5c28d5c4f53",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a3068016dc742c5c28d5c4f53"
+              },
+              {
+                "Type": "Organization_Reference_ID",
+                "Value": "054256"
+              },
+              {
+                "Type": "Cost_Center_Reference_ID",
+                "Value": "054256"
+              }
+            ]
+          }
+        },
+        {
+          "Type": {
+            "Name": "Service Period",
+            "WID": "d957207a3068013093c007746e5c6c2f",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a3068013093c007746e5c6c2f"
+              },
+              {
+                "Type": "Organization_Type_ID",
+                "Value": "Service_Period"
+              }
+            ]
+          },
+          "Organization": {
+            "Name": "12",
+            "WID": "d957207a306801e0c42f59276f5c6133",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a306801e0c42f59276f5c6133"
+              },
+              {
+                "Type": "Organization_Reference_ID",
+                "Value": "Service_Period_12.00"
+              },
+              {
+                "Type": "Custom_Organization_Reference_ID",
+                "Value": "Service_Period_12.00"
+              }
+            ]
+          }
+        },
+        {
+          "Type": {
+            "Name": "Campus Mailbox",
+            "WID": "d957207a3068011013570a746e5c6d2f",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a3068011013570a746e5c6d2f"
+              },
+              {
+                "Type": "Organization_Type_ID",
+                "Value": "Campus_Mailbox"
+              }
+            ]
+          },
+          "Organization": {
+            "Name": "",
+            "WID": "d957207a3068010f7bafa62b6f5c8336",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "d957207a3068010f7bafa62b6f5c8336"
+              },
+              {
+                "Type": "Organization_Reference_ID",
+                "Value": ""
+              },
+              {
+                "Type": "Custom_Organization_Reference_ID",
+                "Value": ""
+              }
+            ]
+          }
+        },
+        {
+          "Type": {
+            "Name": "Supervisory",
+            "WID": "afa35b88537f014fa5e2f8afb6572d00",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "afa35b88537f014fa5e2f8afb6572d00"
+              },
+              {
+                "Type": "Organization_Type_ID",
+                "Value": "SUPERVISORY"
+              }
+            ]
+          },
+          "Organization": {
+            "Name": "LIB: Organizational Development and Inclusion (Mar, Kim)",
+            "WID": "a9d451238f0d0103410596e0aa623357",
+            "IDs": [
+              {
+                "Type": "WID",
+                "Value": "a9d451238f0d0103410596e0aa623357"
+              },
+              {
+                "Type": "Organization_Reference_ID",
+                "Value": "LIB_000009"
+              }
+            ]
+          }
+        }
+      ],
+      "PersonalData": {
+        "LegalName": null,
+        "DateOfBirth": null,
+        "USCitizenshipStatuses": [],
+        "IsHispanicOrLatino": null,
+        "FederalReportingEthnicityCode": null,
+        "Gender": null,
+        "DisabilityStatusDetails": [],
+        "SelfIdentificationOfDisability": {
+          "SelfIdentificationOfDisabilityStatus": null,
+          "SelfIdentificationID": null
+        },
+        "MaritalStatus": null,
+        "Ethnicities": [],
+        "MilitaryStatuses": [],
+        "Contact": {
+          "Addresses": [
+            {
+              "Address": {
+                "Name": "ADDRESS_REFERENCE-6-49",
+                "WID": "d957207a306801b535f630b96e5cb130",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801b535f630b96e5cb130"
+                  },
+                  {
+                    "Type": "Address_ID",
+                    "Value": "ADDRESS_REFERENCE-6-49"
+                  }
+                ]
+              },
+              "Lines": [
+                {
+                  "Name": "Address Line 1",
+                  "Type": "ADDRESS_LINE_1",
+                  "Value": "Seattle Main Campus"
+                }
+              ],
+              "Country": {
+                "Name": "United States of America",
+                "WID": "bc33aa3152ec42d4995f4791a106ed09",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "bc33aa3152ec42d4995f4791a106ed09"
+                  },
+                  {
+                    "Type": "ISO_3166-1_Alpha-2_Code",
+                    "Value": "US"
+                  },
+                  {
+                    "Type": "ISO_3166-1_Alpha-3_Code",
+                    "Value": "USA"
+                  },
+                  {
+                    "Type": "ISO_3166-1_Numeric-3_Code",
+                    "Value": "840"
+                  }
+                ]
+              },
+              "Region": {
+                "Name": "Washington",
+                "WID": "de9b48948ef8421db97ddf4ea206e931",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "de9b48948ef8421db97ddf4ea206e931"
+                  },
+                  {
+                    "Type": "Country_Region_ID",
+                    "Value": "USA-WA"
+                  },
+                  {
+                    "Type": "ISO_3166-2_Code",
+                    "Value": "WA"
+                  }
+                ]
+              },
+              "Municipality": "Seattle",
+              "PostalCode": "98195",
+              "FormattedAddress": "Seattle Main Campus",
+              "EffectiveDate": "1900-01-01T00:00:00-08:00",
+              "Usages": [
+                {
+                  "Types": [
+                    {
+                      "Primary": true,
+                      "CommunicationType": {
+                        "Name": "Work",
+                        "WID": "1f27f250dfaa4724ab1e1617174281e4",
+                        "IDs": [
+                          {
+                            "Type": "WID",
+                            "Value": "1f27f250dfaa4724ab1e1617174281e4"
+                          },
+                          {
+                            "Type": "Communication_Usage_Type_ID",
+                            "Value": "WORK"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "UsesFor": [],
+                  "UsesForTenanted": [],
+                  "Public": true
+                }
+              ],
+              "SubRegions": []
+            },
+            {
+              "Address": {
+                "Name": "ADDRESS_REFERENCE-3-196470",
+                "WID": "105f420ff66501f03ba5b9d889635507",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "105f420ff66501f03ba5b9d889635507"
+                  },
+                  {
+                    "Type": "Address_ID",
+                    "Value": "ADDRESS_REFERENCE-3-196470"
+                  }
+                ]
+              },
+              "Lines": [
+                {
+                  "Name": "Address Line 1",
+                  "Type": "ADDRESS_LINE_1",
+                  "Value": "1900 NE Grant Lane"
+                },
+                {
+                  "Name": "Address Line 2",
+                  "Type": "ADDRESS_LINE_2",
+                  "Value": "Suzallo and Allen Libraries"
+                }
+              ],
+              "Country": {
+                "Name": "United States of America",
+                "WID": "bc33aa3152ec42d4995f4791a106ed09",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "bc33aa3152ec42d4995f4791a106ed09"
+                  },
+                  {
+                    "Type": "ISO_3166-1_Alpha-2_Code",
+                    "Value": "US"
+                  },
+                  {
+                    "Type": "ISO_3166-1_Alpha-3_Code",
+                    "Value": "USA"
+                  },
+                  {
+                    "Type": "ISO_3166-1_Numeric-3_Code",
+                    "Value": "840"
+                  }
+                ]
+              },
+              "Region": {
+                "Name": "Washington",
+                "WID": "de9b48948ef8421db97ddf4ea206e931",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "de9b48948ef8421db97ddf4ea206e931"
+                  },
+                  {
+                    "Type": "Country_Region_ID",
+                    "Value": "USA-WA"
+                  },
+                  {
+                    "Type": "ISO_3166-2_Code",
+                    "Value": "WA"
+                  }
+                ]
+              },
+              "Municipality": "Seattle",
+              "PostalCode": "98195",
+              "FormattedAddress": "",
+              "EffectiveDate": "2017-12-26T00:00:00-08:00",
+              "Usages": [
+                {
+                  "Types": [
+                    {
+                      "Primary": false,
+                      "CommunicationType": {
+                        "Name": "Work",
+                        "WID": "1f27f250dfaa4724ab1e1617174281e4",
+                        "IDs": [
+                          {
+                            "Type": "WID",
+                            "Value": "1f27f250dfaa4724ab1e1617174281e4"
+                          },
+                          {
+                            "Type": "Communication_Usage_Type_ID",
+                            "Value": "WORK"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "UsesFor": [],
+                  "UsesForTenanted": [],
+                  "Public": true
+                }
+              ],
+              "SubRegions": []
+            }
+          ],
+          "Emails": [
+            {
+              "Email": {
+                "Name": "EMAIL_REFERENCE-3-935069",
+                "WID": "b0de31fafaae01e04b3dbdd8495f7b6e",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "b0de31fafaae01e04b3dbdd8495f7b6e"
+                  },
+                  {
+                    "Type": "Email_ID",
+                    "Value": "EMAIL_REFERENCE-3-935069"
+                  }
+                ]
+              },
+              "EmailAddress": "staff@uw.edu",
+              "Usages": [
+                {
+                  "Types": [
+                    {
+                      "Primary": true,
+                      "CommunicationType": {
+                        "Name": "Work",
+                        "WID": "1f27f250dfaa4724ab1e1617174281e4",
+                        "IDs": [
+                          {
+                            "Type": "WID",
+                            "Value": "1f27f250dfaa4724ab1e1617174281e4"
+                          },
+                          {
+                            "Type": "Communication_Usage_Type_ID",
+                            "Value": "WORK"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "UsesFor": [],
+                  "UsesForTenanted": [],
+                  "Public": true
+                }
+              ]
+            }
+          ],
+          "Phones": [
+            {
+              "Phone": {
+                "Name": "PHONE_REFERENCE-3",
+                "WID": "1074ee40fe4c01efd6cf809d1a889211",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "1074ee40fe4c01efd6cf809d1a889211"
+                  },
+                  {
+                    "Type": "Phone_ID",
+                    "Value": "PHONE_REFERENCE-3"
+                  }
+                ]
+              },
+              "CountryISOCode": "USA",
+              "InternationalPhoneCode": "1",
+              "PhoneNumber": "",
+              "FormattedPhoneNumber": "",
+              "DeviceType": {
+                "Name": "Telephone",
+                "WID": "d957207a306801bfcadadacc665c3913",
+                "IDs": [
+                  {
+                    "Type": "WID",
+                    "Value": "d957207a306801bfcadadacc665c3913"
+                  },
+                  {
+                    "Type": "Phone_Device_Type_ID",
+                    "Value": "Telephone"
+                  }
+                ]
+              },
+              "Usages": [
+                {
+                  "Types": [
+                    {
+                      "Primary": true,
+                      "CommunicationType": {
+                        "Name": "Work",
+                        "WID": "1f27f250dfaa4724ab1e1617174281e4",
+                        "IDs": [
+                          {
+                            "Type": "WID",
+                            "Value": "1f27f250dfaa4724ab1e1617174281e4"
+                          },
+                          {
+                            "Type": "Communication_Usage_Type_ID",
+                            "Value": "WORK"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "UsesFor": [],
+                  "UsesForTenanted": [],
+                  "Public": true
+                }
+              ]
+            }
+          ],
+          "CampusMailbox": ""
+        },
+        "CustomIDs": []
+      },
+      "ActiveAppointment": false,
+      "CurrentFaculty": false,
+      "PostdocAnniversaryDate": null,
+      "TeleworkParticipation": {
+        "Name": "Yes - hybrid telework arrangement (3 days or more/week)",
+        "WID": "34af100b935a011caaa80349c1107360",
+        "IDs": [
+          {
+            "Type": "WID",
+            "Value": "34af100b935a011caaa80349c1107360"
+          },
+          {
+            "Type": "Custom_List__Value_Alias",
+            "Value": "yesHybridTeleworkArrangement3DaysOrMoreWeek"
+          }
+        ]
+      },
+      "FutureRecord": false
+    }
+  ]
+}

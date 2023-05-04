@@ -1,4 +1,4 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 """
@@ -105,7 +105,7 @@ class BridgeWorker(Worker):
 
     def update_user(self, bridge_account, uw_account, person, hrp_wkr):
         self.set_bridge_user_to_update(person, hrp_wkr, bridge_account)
-        action = "UPDATE in Bridge: {0}".format(bridge_account.netid)
+        action = "UPDATE in Bridge: {}".format(bridge_account)
         try:
             if uw_account.netid_changed():
                 self.update_uid(uw_account)

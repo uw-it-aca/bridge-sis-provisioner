@@ -1,3 +1,6 @@
+# Copyright 2023 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 from setuptools import setup
 
@@ -23,16 +26,16 @@ setup(
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires = [
-        'Django~=2.2',
+        'Django~=3.2',
         'python-dateutil',
         'pytz',
         'django-storages[google]>=1.10',
         'uw-memcached-clients~=1.0',
-        'UW-RestClients-Core~=1.3',
+        'UW-RestClients-Core~=1.4',
         'UW-RestClients-PWS~=2.1',
         'UW-RestClients-GWS~=2.3',
-        'uw-restclients-hrp~=1.2',
-        'uw-restclients-bridge~=1.5',
+        'uw-restclients-hrp~=1.3',
+        'uw-restclients-bridge~=1.6',
         'freezegun',
     ],
     license='Apache License, Version 2.0',
@@ -44,6 +47,6 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.8',
     ],
 )

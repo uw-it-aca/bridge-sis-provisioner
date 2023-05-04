@@ -1,4 +1,4 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import time
@@ -10,9 +10,9 @@ from sis_provisioner.tests.account_managers import set_db_records
 
 
 @fdao_pws_override
-class TestLoadUserViaBridgeApi(TransactionTestCase):
+class TestDisableUser(TransactionTestCase):
 
-    def test_load_from_gws_to_bridge(self):
+    def test_disable_user(self):
         set_db_records()
 
         # existing user

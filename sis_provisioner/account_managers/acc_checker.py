@@ -1,4 +1,4 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
@@ -10,13 +10,14 @@ from sis_provisioner.util.settings import check_all_accounts
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 logger = logging.getLogger(__name__)
+MAX_DELETION = 40000
 
 
 class UserAccountChecker(GwsBridgeLoader):
 
     """
     This class will validate the user accounts in the database
-    against GWS groups and PWS person.
+    against GWS groups, HRP and PWS person.
     1. Schedule terminate if the user left the groups
     2. If uw account passed the grace period for termination, disable it
     3. Restore account
@@ -26,6 +27,7 @@ class UserAccountChecker(GwsBridgeLoader):
     def __init__(self, worker, clogger=logger):
         super(UserAccountChecker, self).__init__(worker, clogger)
         self.data_source = "Accounts in DB"
+        self.total_deleted = 0
 
     def fetch_users(self):
         return get_all_uw_accounts()
@@ -53,7 +55,7 @@ class UserAccountChecker(GwsBridgeLoader):
 
             if (not self.in_uw_groups(person.uwnetid) or
                     person.is_test_entity):
-                if not (uw_acc.disabled or uw_acc.has_terminate_date()):
+                if not uw_acc.disabled:
                     self.process_termination(uw_acc)
                 continue
 
@@ -83,14 +85,13 @@ class UserAccountChecker(GwsBridgeLoader):
         Check the existing users for termination.
         If the user's termination date has been reached, disable user.
         """
-        if uw_acc.has_terminate_date() is False:
-            self.logger.info(
-                "{0} has left UW, schedule terminate".format(uw_acc))
+        if not uw_acc.has_terminate_date():
+            # Left UW, schedule terminate
             uw_acc.set_terminate_date(graceful=True)
         else:
-            if uw_acc.passed_terminate_date() and not uw_acc.disabled:
-                self.logger.info(
-                    "Passed terminate date, delete {0}".format(uw_acc))
+            if (uw_acc.passed_terminate_date() and not uw_acc.disabled and
+                    self.total_deleted < MAX_DELETION):
+                # Passed terminate date, to delete
                 self.terminate_uw_account(uw_acc)
 
     def terminate_uw_account(self, uw_acc):
@@ -99,27 +100,25 @@ class UserAccountChecker(GwsBridgeLoader):
         if uw_acc.has_bridge_id():
             bridge_acc2 = self.get_bridge().get_user_by_bridgeid(
                 uw_acc.bridge_id)
-
-            if bridge_acc2 is None:
-                self.add_error("{0} never existed in Bridge!".format(uw_acc))
-                return
-
-            if (bridge_acc1 is not None and
+            if (bridge_acc1 and bridge_acc2 and
                     (bridge_acc1.bridge_id != bridge_acc2.bridge_id or
                      bridge_acc1.netid != bridge_acc2.netid)):
                 self.add_error(
                     "{0} has 2 Bridge accounts {1} {2} <== {3}!".format(
                         uw_acc, bridge_acc1, bridge_acc2, "Abort deletion"))
                 return
+
         self.execute(uw_acc, bridge_acc1, bridge_acc2)
 
     def execute(self, uw_acc, bridge_acc1, bridge_acc2):
-        if bridge_acc1 is not None:
+        if bridge_acc1 and not bridge_acc1.is_deleted():
             if self.del_bridge_account(bridge_acc1, conditional_del=False):
+                self.total_deleted += 1
                 uw_acc.set_disable()
                 self.logger.info("Disabled in DB: {0}".format(uw_acc))
             return
-        if (bridge_acc2 is not None and bridge_acc2.is_deleted and
+        if (bridge_acc1 and bridge_acc1.is_deleted() or
+                bridge_acc2 and bridge_acc2.is_deleted() and
                 uw_acc.netid == bridge_acc2.netid):
             uw_acc.set_disable()
             self.logger.info("Disabled in DB: {0}".format(uw_acc))

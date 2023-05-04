@@ -32,16 +32,15 @@ memcached:
 gcsCredentials:
   mounted: true
   secretName: admin.bridge.uw.edu-gcs-credentials
+
 repo: bridge
 instance: prod
-image:
-  repository: gcr.io/uwit-mci-axdd/bridge
-  tag: IMAGE_TAG
+
 certs:
   mounted: true
-  certPath: /certs/admin.bridge.uw.edu-uwca.cert
-  keyPath: /certs/admin.bridge.uw.edu-uwca.key
-  secretName: admin.bridge.uw.edu-uwca-certs
+  certPath: /certs/admin.bridge.uw.edu-ic.cert
+  keyPath: /certs/admin.bridge.uw.edu-ic.key
+  secretName: admin.bridge.uw.edu-ic-certs
 
 cronjob:
   enabled: true
@@ -68,19 +67,8 @@ cronjob:
         requests:
           cpu: 50m
           memory: 256Mi
-    - name: daily-active-users
-      schedule: "1 1 * * 2-6"
-      command: ["/scripts/management_command.sh"]
-      args: ["sync_accounts", "bridge"]
-      resources:
-        limits:
-          cpu: 100m
-          memory: 1792Mi
-        requests:
-          cpu: 50m
-          memory: 1280Mi
     - name: hrp-updates
-      schedule: "1 3 * * *"
+      schedule: "30 2 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "hrp"]
       resources:
@@ -101,8 +89,19 @@ cronjob:
         requests:
           cpu: 50m
           memory: 128Mi
+    - name: daily-active-users
+      schedule: "30 3 * * 2-6"
+      command: ["/scripts/management_command.sh"]
+      args: ["sync_accounts", "bridge"]
+      resources:
+        limits:
+          cpu: 100m
+          memory: 1792Mi
+        requests:
+          cpu: 50m
+          memory: 1280Mi
     - name: terminate-users
-      schedule: "1 9 * * 6"
+      schedule: "1 7 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "delete"]
       resources:
@@ -113,7 +112,7 @@ cronjob:
           cpu: 50m
           memory: 128Mi
     - name: sync-eid
-      schedule: "1 12 * * 6"
+      schedule: "30 7 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_eid"]
       resources:
@@ -124,12 +123,12 @@ cronjob:
           cpu: 50m
           memory: 768Mi
     - name: db-accounts
-      schedule: "1 20 * * 6"
+      schedule: "1 14 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 125m
           memory: 1024Mi
         requests:
           cpu: 50m
@@ -198,7 +197,7 @@ externalSecrets:
   enabled: true
   secrets:
     - name: admin.bridge.uw.edu-secrets
-      externalKey: axdd/kv/data/bridge/prod/secrets
+      externalKey: bridge/prod/secrets
       data:
         - name: django-secret
           property: django-secret
@@ -209,7 +208,7 @@ externalSecrets:
         - name: storage-bucket-name
           property: storage-bucket-name
     - name: admin.bridge.uw.edu-shared-secrets
-      externalKey: axdd/kv/data/bridge/shared/secrets
+      externalKey: bridge/shared/secrets
       data:
         - name: storage-project-id
           property: storage-project-id
@@ -218,24 +217,24 @@ externalSecrets:
         - name: email-host
           property: email-host
     - name: admin.bridge.uw.edu-sql-secrets
-      externalKey: axdd/kv/data/bridge/shared/sql-secrets
+      externalKey: bridge/shared/sql-secrets
       data:
         - name: username
           property: username
         - name: password
           property: password
     - name: admin.bridge.uw.edu-gcs-credentials
-      externalKey: axdd/kv/data/bridge/shared/gcs-credentials
+      externalKey: bridge/shared/gcs-credentials
       data:
         - name: credentials.json
           property: credentials.json
-    - name: admin.bridge.uw.edu-uwca-certs
-      externalKey: axdd/kv/data/bridge/prod/uwca-certs
+    - name: admin.bridge.uw.edu-ic-certs
+      externalKey: bridge/prod/ic-certs
       data:
-        - name: admin.bridge.uw.edu-uwca.cert
-          property: admin.bridge.uw.edu-uwca.cert
-        - name: admin.bridge.uw.edu-uwca.key
-          property: admin.bridge.uw.edu-uwca.key
+        - name: admin.bridge.uw.edu-ic.cert
+          property: admin.bridge.uw.edu-ic.cert
+        - name: admin.bridge.uw.edu-ic.key
+          property: admin.bridge.uw.edu-ic.key
 
 environmentVariablesSecrets:
   djangoSecret:

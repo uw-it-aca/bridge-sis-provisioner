@@ -1,4 +1,4 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from datetime import timedelta
@@ -16,7 +16,9 @@ def get_dt_from_now(duration):
     return get_now() - timedelta(minutes=duration)
 
 
-def changed_since_str(duration):
+def changed_since_str(duration, iso=False):
+    if iso:
+        return get_dt_from_now(duration).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
     return get_dt_from_now(duration).strftime("%Y-%m-%d %H:%M:%S")
 
 

@@ -1,9 +1,9 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
 import traceback
-from uw_bridge.models import BridgeUser, BridgeCustomField
+from uw_bridge.models import BridgeCustomField
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.uw_account import save_uw_account
 from sis_provisioner.dao.gws import get_added_members
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class GwsBridgeLoader(Loader):
 
     """
-    This class will load new users in gws uw_member, uw_afiliate groups.
+    This class will load the new employees from gws.
     1. Add new user account to DB and Bridge
     2. Restore and update disabled/terminated account
     """

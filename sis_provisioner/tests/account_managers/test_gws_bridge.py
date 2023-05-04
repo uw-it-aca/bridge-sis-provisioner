@@ -1,4 +1,4 @@
-# Copyright 2021 UW-IT, University of Washington
+# Copyright 2023 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TransactionTestCase
@@ -147,7 +147,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
             hrp_wkr = get_worker(person)
             bridge_account = loader.get_bridge().get_user_by_uwnetid(
                 'javerage')
-            self.assertFalse(
+            self.assertTrue(
                 loader.account_not_changed(bridge_account, person, hrp_wkr))
 
     def test_field_not_changed(self):

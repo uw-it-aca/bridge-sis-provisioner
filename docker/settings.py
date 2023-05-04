@@ -1,3 +1,6 @@
+# Copyright 2023 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from .base_settings import *
 from google.oauth2 import service_account
 import os
@@ -5,6 +8,7 @@ import os
 INSTALLED_APPS += [
     'sis_provisioner.apps.BridgeProvisionerConfig',
 ]
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_SSL_CERTFILE = os.getenv('CERT_PATH', '')
