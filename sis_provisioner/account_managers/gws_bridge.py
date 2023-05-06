@@ -89,7 +89,8 @@ class GwsBridgeLoader(Loader):
                 return
 
         uw_account.set_ids(bridge_acc.bridge_id, person.employee_id)
-        if not self.account_not_changed(bridge_acc, person, hrp_wkr):
+        if (self.update_existing_accs() and
+                not self.account_not_changed(bridge_acc, person, hrp_wkr)):
             # update the existing account with person data
             self.worker.update_user(bridge_acc, uw_account,
                                     person, hrp_wkr)
