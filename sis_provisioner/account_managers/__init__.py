@@ -13,12 +13,14 @@ logger = logging.getLogger(__name__)
 
 
 def get_email(person):
-    if len(person.email_addresses) == 0:
+    email = None
+    for email_address in person.email_addresses:
+        if "@uw.edu" in email_address:
+            email = re.sub(" ", "", email_address)
+            break
+    if not email or len(email) == 0:
         return "{0}@uw.edu".format(person.uwnetid)
-
-    email_str = person.email_addresses[0]
-    email_s1 = re.sub(" ", "", email_str)
-    return re.sub(r"\.$", "", email_s1, flags=re.IGNORECASE)
+    return re.sub(r"\.$", "", email, flags=re.IGNORECASE)
 
 
 def get_first_name(person):

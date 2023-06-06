@@ -23,7 +23,10 @@
         "EmployeeAffiliationState":"current",
         "EmployeeWhitePages":{
             "Addresses":[],
-            "EmailAddresses":["staff@uw.edu"],
+            "EmailAddresses":[
+                "staff@@wanprc.org",
+                "staff@uw.edu",
+                "staff@cs.uw.edu"],
             "Faxes":["+1 206 543-1234"],
             "Mobiles":[],
             "Name":"Staff, Chris",
