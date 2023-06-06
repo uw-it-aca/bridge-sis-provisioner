@@ -43,6 +43,9 @@ class TestValidUser(TransactionTestCase):
         self.assertEqual(get_surname(person), "Student")
 
     def test_get_email(self):
+        person = get_person('staff')
+        self.assertEqual(get_email(person), "staff@uw.edu")
+
         person = get_person('retiree')
         self.assertEqual(get_email(person), "retiree@uw.edu")
 
