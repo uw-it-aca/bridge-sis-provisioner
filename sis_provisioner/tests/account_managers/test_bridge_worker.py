@@ -27,6 +27,7 @@ class TestBridgeWorker(TransactionTestCase):
         worker = BridgeWorker()
         person = get_person('faculty')
         user = worker.get_bridge_user_to_add(person, get_worker(person))
+        self.maxDiff = None
         self.assertEqual(
             user.to_json_post(),
             {'users': [
@@ -41,7 +42,7 @@ class TestBridgeWorker(TransactionTestCase):
                      {'custom_field_id': '7',
                       'value': '0000005'},
                      {'custom_field_id': '11',
-                      'value': '681925 WORKDAY DEFAULT DEPTBG'},
+                      'value': 'Family Medicine'},
                      {'custom_field_id': '13',
                       'value': 'Academic Personnel'},
                      {'custom_field_id': '12',
@@ -80,7 +81,7 @@ class TestBridgeWorker(TransactionTestCase):
         worker = BridgeWorker()
         user = worker.bridge.get_user_by_uwnetid('tyler')
         worker.set_bridge_user_to_update(person, get_worker(person), user)
-        # self.maxDiff = None
+        self.maxDiff = None
         self.assertEqual(
             user.to_json_patch(),
             {'user': {
@@ -101,7 +102,7 @@ class TestBridgeWorker(TransactionTestCase):
                      'id': '3',
                      'value': '0000005'},
                     {'custom_field_id': '11',
-                     'value': '681925 WORKDAY DEFAULT DEPTBG',
+                     'value': 'Family Medicine',
                      'id': '4'},
                     {'custom_field_id': '13',
                      'value': 'Academic Personnel',

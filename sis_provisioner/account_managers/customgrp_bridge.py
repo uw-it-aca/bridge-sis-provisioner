@@ -19,5 +19,8 @@ class CustomGroupLoader(GwsBridgeLoader):
         super(CustomGroupLoader, self).__init__(worker, clogger)
         self.data_source = "Custom group"
 
+    def update_existing_accs(self):
+        return False
+
     def fetch_users(self):
         return list(get_additional_users())

@@ -298,34 +298,34 @@
             },
             {
               "Type": {
-                "Name": "Cost Center",
-                "WID": "afa35b88537f0176f922f9afb6573000",
+                "Name": "HR Org",
+                "WID": "87c9ff9a8b111001721d949632ca0000",
                 "IDs": [
                   {
                     "Type": "WID",
-                    "Value": "afa35b88537f0176f922f9afb6573000"
+                    "Value": "87c9ff9a8b111001721d949632ca0000"
                   },
                   {
                     "Type": "Organization_Type_ID",
-                    "Value": "COST_CENTER"
+                    "Value": "HR_ORG"
                   }
                 ]
               },
               "Organization": {
-                "Name": "681925 WORKDAY DEFAULT DEPTBG",
-                "WID": "cea06499724601a5b9617be66daec594",
+                "Name": "Family Medicine",
+                "WID": "990283877b661001ba2b7654f95d0000",
                 "IDs": [
                   {
                     "Type": "WID",
-                    "Value": "cea06499724601a5b9617be66daec594"
+                    "Value": "990283877b661001ba2b7654f95d0000"
                   },
                   {
                     "Type": "Organization_Reference_ID",
-                    "Value": "681925"
+                    "Value": "HROrg000733"
                   },
                   {
-                    "Type": "Cost_Center_Reference_ID",
-                    "Value": "681925"
+                    "Type": "Custom_Organization_Reference_ID",
+                    "Value": "HROrg000733"
                   }
                 ]
               }
@@ -563,34 +563,34 @@
         },
         {
           "Type": {
-            "Name": "Cost Center",
-            "WID": "afa35b88537f0176f922f9afb6573000",
+            "Name": "HR Org",
+            "WID": "87c9ff9a8b111001721d949632ca0000",
             "IDs": [
               {
                 "Type": "WID",
-                "Value": "afa35b88537f0176f922f9afb6573000"
+                "Value": "87c9ff9a8b111001721d949632ca0000"
               },
               {
                 "Type": "Organization_Type_ID",
-                "Value": "COST_CENTER"
+                "Value": "HR_ORG"
               }
             ]
           },
           "Organization": {
-            "Name": "681925 WORKDAY DEFAULT DEPTBG",
-            "WID": "cea06499724601a5b9617be66daec594",
+            "Name": "Family Medicine",
+            "WID": "990283877b661001ba2b7654f95d0000",
             "IDs": [
               {
                 "Type": "WID",
-                "Value": "cea06499724601a5b9617be66daec594"
+                "Value": "990283877b661001ba2b7654f95d0000"
               },
               {
                 "Type": "Organization_Reference_ID",
-                "Value": "681925"
+                "Value": "HROrg000733"
               },
               {
-                "Type": "Cost_Center_Reference_ID",
-                "Value": "681925"
+                "Type": "Custom_Organization_Reference_ID",
+                "Value": "HROrg000733"
               }
             ]
           }

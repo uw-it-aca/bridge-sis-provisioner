@@ -98,17 +98,17 @@ class TestValidUser(TransactionTestCase):
         hrp_wkr.worker_details[0].primary_position = None
         self.assertIsNone(get_job_title(hrp_wkr))
 
-    def test_get_pos_budget_code(self):
+    def test_get_pos_hr_org(self):
         func_name = GET_POS_ATT_FUNCS[0]
         self.assertIsNone(func_name(None, 0))
         hrp_wkr = get_hrp_wkr('javerage')
         self.assertEqual(func_name(hrp_wkr, 0),
-                         "060418 CHEMISTRY")
+                         "")
         hrp_wkr.worker_details[0].primary_position = None
         self.assertIsNone(func_name(hrp_wkr, 0))
 
         self.assertEqual(func_name(hrp_wkr, 1),
-                         "141614 UNIVERSITY PRESS")
+                         "University Libraries and UW Press (Dept)")
 
     def test_get_pos_job_class(self):
         func_name = GET_POS_ATT_FUNCS[1]
