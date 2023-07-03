@@ -271,34 +271,34 @@
           "OrganizationDetails": [
             {
               "Type": {
-                "Name": "Cost Center",
-                "WID": "afa35b88537f0176f922f9afb6573000",
+                "Name": "HR Org",
+                "WID": "87c9ff9a8b111001721d949632ca0000",
                 "IDs": [
                   {
                     "Type": "WID",
-                    "Value": "afa35b88537f0176f922f9afb6573000"
+                    "Value": "87c9ff9a8b111001721d949632ca0000"
                   },
                   {
                     "Type": "Organization_Type_ID",
-                    "Value": "COST_CENTER"
+                    "Value": "HR_ORG"
                   }
                 ]
               },
               "Organization": {
-                "Name": "054256 LIBRARY",
-                "WID": "d957207a3068016dc742c5c28d5c4f53",
+                "Name": "Administrative Services",
+                "WID": "c87907a3cb0e1001ba23d77e9c890000",
                 "IDs": [
                   {
                     "Type": "WID",
-                    "Value": "d957207a3068016dc742c5c28d5c4f53"
+                    "Value": "c87907a3cb0e1001ba23d77e9c890000"
                   },
                   {
                     "Type": "Organization_Reference_ID",
-                    "Value": "054256"
+                    "Value": "HROrg000524"
                   },
                   {
-                    "Type": "Cost_Center_Reference_ID",
-                    "Value": "054256"
+                    "Type": "Custom_Organization_Reference_ID",
+                    "Value": "HROrg000524"
                   }
                 ]
               }
@@ -502,34 +502,34 @@
       "OrganizationDetails": [
         {
           "Type": {
-            "Name": "Cost Center",
-            "WID": "afa35b88537f0176f922f9afb6573000",
+            "Name": "HR Org",
+            "WID": "87c9ff9a8b111001721d949632ca0000",
             "IDs": [
               {
                 "Type": "WID",
-                "Value": "afa35b88537f0176f922f9afb6573000"
+                "Value": "87c9ff9a8b111001721d949632ca0000"
               },
               {
                 "Type": "Organization_Type_ID",
-                "Value": "COST_CENTER"
+                "Value": "HR_ORG"
               }
             ]
           },
           "Organization": {
-            "Name": "054256 LIBRARY",
-            "WID": "d957207a3068016dc742c5c28d5c4f53",
+            "Name": "Administrative Services",
+            "WID": "c87907a3cb0e1001ba23d77e9c890000",
             "IDs": [
               {
                 "Type": "WID",
-                "Value": "d957207a3068016dc742c5c28d5c4f53"
+                "Value": "c87907a3cb0e1001ba23d77e9c890000"
               },
               {
                 "Type": "Organization_Reference_ID",
-                "Value": "054256"
+                "Value": "HROrg000524"
               },
               {
-                "Type": "Cost_Center_Reference_ID",
-                "Value": "054256"
+                "Type": "Custom_Organization_Reference_ID",
+                "Value": "HROrg000524"
               }
             ]
           }

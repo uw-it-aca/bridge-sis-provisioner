@@ -102,9 +102,9 @@ def get_pos_job_code(hrp_wkr, position_num):
     return None
 
 
-def get_pos_budget_code(hrp_wkr, position_num):
+def get_pos_hr_org(hrp_wkr, position_num):
     pos = get_work_position(hrp_wkr, position_num)
-    return pos.budget_code if pos else None
+    return pos.hr_org if pos else None
 
 
 def get_pos_org_code(hrp_wkr, position_num):
@@ -124,7 +124,7 @@ def get_pos_unit_code(hrp_wkr, position_num):
 
 # make sure the order is consistent with that in
 # sis_provisioner.models.work_positions.WORK_POSITION_FIELDS
-GET_POS_ATT_FUNCS = [get_pos_budget_code, get_pos_job_class, get_pos_job_code,
+GET_POS_ATT_FUNCS = [get_pos_hr_org, get_pos_job_class, get_pos_job_code,
                      get_pos_location, get_pos_org_code, get_pos_org_name,
                      get_pos_unit_code]
 
