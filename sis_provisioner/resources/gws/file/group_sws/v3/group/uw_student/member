@@ -1,0 +1,16 @@
+{
+  "schemas": [
+    "urn:mace:washington.edu:schemas:groups:1.0"
+  ],
+  "meta": {
+    "resourceType": "members",
+    "version": "v3.0",
+    "regid": "956ad2f5bd7844ae862016b2999e9e06",
+    "id": "uw_employee",
+    "type": "effective",
+    "selfRef": "https://groups.uw.edu/group_sws/v3/group/uw_student/member",
+    "timestamp": 1552943223788
+  },
+  "data": [
+  ]
+}

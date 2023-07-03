@@ -12,6 +12,7 @@ class TestCustomGroupLoader(TransactionTestCase):
 
     def test_fetch_users(self):
         loader = CustomGroupLoader(BridgeWorker())
+        self.assertFalse(loader.update_existing_accs())
         user_list = loader.fetch_users()
         self.assertEqual(len(user_list), 1)
         self.assertEqual(user_list, ['not_in_pws'])

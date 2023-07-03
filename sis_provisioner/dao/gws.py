@@ -14,12 +14,16 @@ from sis_provisioner.util.settings import get_author_group_name
 
 
 logger = logging.getLogger(__name__)
-UW_GROUPS = [
+BASE_GROUPS = [
     "uw_employee",
     "uw_affiliation_affiliate-employee",
     "uw_affiliation_uw-medicine-workforce",
     "uw_affiliation_uw-medicine-affiliate",
-    "uw_affiliation_wwami-medical-resident"
+    "uw_affiliation_wwami-medical-resident",
+    "uw_student"
+    ]
+GROUPS_TO_ADD = [
+    "uw_student"
     ]
 CUSTOM_GROUP = "u_bridgeap_tempusers"
 gws = GWS()
@@ -41,11 +45,16 @@ def get_members_of_group(group_id):
     return None
 
 
-def append_netids_to_list(members, user_set):
+def append_netids_to_list(members, member_set):
     if members is not None and len(members) > 0:
         for gm in members:
             if gm.is_uwnetid() and gm.name is not None and len(gm.name):
-                user_set.add(gm.name)
+                member_set.add(gm.name)
+
+
+def joint_groups_members(groups, member_set):
+    for gr in groups:
+        append_netids_to_list(get_members_of_group(gr), member_set)
 
 
 def get_potential_users():
@@ -53,28 +62,28 @@ def get_potential_users():
     return a set of uwnetids
     """
     timer = Timer()
-    user_set = set()
-    groups = [CUSTOM_GROUP] + UW_GROUPS
-    for gr in groups:
-        append_netids_to_list(get_members_of_group(gr), user_set)
+    member_set = set()
+    joint_groups_members([CUSTOM_GROUP] + BASE_GROUPS, member_set)
     log_resp_time(logger, "get_potential_users", timer)
-    return user_set
+    return member_set
 
 
 def get_additional_users():
     """
     return a set of uwnetids
     """
-    user_set = set()
-    append_netids_to_list(get_members_of_group(CUSTOM_GROUP), user_set)
-    return user_set
+    timer = Timer()
+    member_set = set()
+    joint_groups_members([CUSTOM_GROUP] + GROUPS_TO_ADD, member_set)
+    log_resp_time(logger, "get_additional_users", timer)
+    return member_set
 
 
 def get_bridge_authors():
-    user_set = set()
+    member_set = set()
     append_netids_to_list(
-        get_members_of_group(get_author_group_name()), user_set)
-    return user_set
+        get_members_of_group(get_author_group_name()), member_set)
+    return member_set
 
 
 def _get_member_changes(group_id, start_timestamp):
@@ -128,7 +137,7 @@ def get_added_members(duration):
     """
     timer = Timer()
     user_set = set()
-    for gr in UW_GROUPS:
+    for gr in BASE_GROUPS:
         try:
             users_added, users_deleted = get_changed_members(gr, duration)
             user_set = user_set.union(users_added)
@@ -145,7 +154,7 @@ def get_deleted_members(duration):
     """
     timer = Timer()
     user_set = set()
-    for gr in UW_GROUPS:
+    for gr in BASE_GROUPS:
         try:
             users_added, users_deleted = get_changed_members(gr, duration)
             user_set = user_set.union(users_deleted)
