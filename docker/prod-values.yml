@@ -74,10 +74,10 @@ cronjob:
       resources:
         limits:
           cpu: 100m
-          memory: 512Mi
+          memory: 640Mi
         requests:
           cpu: 50m
-          memory: 256Mi
+          memory: 512Mi
     - name: custom-groups
       schedule: "1 17,23 * * 1-5"
       command: ["/scripts/management_command.sh"]
@@ -85,10 +85,10 @@ cronjob:
       resources:
         limits:
           cpu: 100m
-          memory: 256Mi
+          memory: 1024Mi
         requests:
           cpu: 50m
-          memory: 128Mi
+          memory: 512Mi
     - name: daily-active-users
       schedule: "30 3 * * 2-6"
       command: ["/scripts/management_command.sh"]
@@ -96,7 +96,7 @@ cronjob:
       resources:
         limits:
           cpu: 100m
-          memory: 1792Mi
+          memory: 2048Mi
         requests:
           cpu: 50m
           memory: 1280Mi

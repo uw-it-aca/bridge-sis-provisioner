@@ -61,6 +61,9 @@ class Loader:
     def process_users(self):
         pass
 
+    def update_existing_accs(self):
+        return True
+
     def log_status(self):
         self.logger.info("Checked {0:d} users in {1},".format(
                          self.get_total_checked_users(), self.data_source))
