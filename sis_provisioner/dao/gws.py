@@ -23,7 +23,7 @@ BASE_GROUPS = [
     "uw_student"
     ]
 GROUPS_TO_ADD = [
-    "uw_student"
+    # "uw_student"
     ]
 CUSTOM_GROUP = "u_bridgeap_tempusers"
 gws = GWS()
