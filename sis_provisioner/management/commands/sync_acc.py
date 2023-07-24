@@ -41,8 +41,6 @@ class Command(BaseCommand):
 
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {}\n\n".format(hrp_wkr))
-            logger.info("Supervisor UW Acc: {}\n\n".format(
-                get_by_employee_id(hrp_wkr.primary_manager_id)))
 
             workr = BridgeWorker()
             bridge_acc = workr.bridge.get_user_by_uwnetid(uw_acc.netid)
