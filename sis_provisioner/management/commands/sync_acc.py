@@ -49,12 +49,14 @@ class Command(BaseCommand):
             bridge_acc = workr.bridge.get_user_by_uwnetid(uw_acc.netid)
             logger.info("Bridge account: {}\n\n".format(bridge_acc))
 
-            if (bridge_acc and
-                    self.account_not_changed(bridge_acc, person, hrp_wkr)):
+            if bridge_acc is None:
+                workr.add_new_user(uw_acc, person, hrp_wkr)
+                return
+            if self.account_not_changed(bridge_acc, person, hrp_wkr):
                 # update the existing account with person data
                 logger.info("Account Not Changed!\n")
-                return
-            workr.update_user(bridge_acc, uw_acc, person, hrp_wkr)
+            else:
+                workr.update_user(bridge_acc, uw_acc, person, hrp_wkr)
 
         except Exception as ex:
             logger.error(ex)
