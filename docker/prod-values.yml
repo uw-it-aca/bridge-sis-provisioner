@@ -79,16 +79,16 @@ cronjob:
           cpu: 50m
           memory: 256Mi
     - name: custom-groups
-      schedule: "45 6 * * 1"
+      schedule: "1 17,23 * * 1-5"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "customg"]
       resources:
         limits:
-          cpu: 120m
-          memory: 1024Mi
+          cpu: 110m
+          memory: 512Mi
         requests:
           cpu: 50m
-          memory: 512Mi
+          memory: 256Mi
     - name: daily-active-users
       schedule: "30 3 * * 2-6"
       command: ["/scripts/management_command.sh"]
