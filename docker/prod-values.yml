@@ -84,7 +84,7 @@ cronjob:
       args: ["sync_accounts", "customg"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 110m
           memory: 512Mi
         requests:
           cpu: 50m
