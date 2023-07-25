@@ -41,18 +41,22 @@ class Command(BaseCommand):
 
             hrp_wkr = get_worker(person)
             logger.info("HRP data: {}\n\n".format(hrp_wkr))
-            logger.info("Supervisor UW Acc: {}\n\n".format(
-                get_by_employee_id(hrp_wkr.primary_manager_id)))
+            if hrp_wkr:
+                logger.info("Supervisor UW Acc: {}\n\n".format(
+                    get_by_employee_id(hrp_wkr.primary_manager_id)))
 
             workr = BridgeWorker()
             bridge_acc = workr.bridge.get_user_by_uwnetid(uw_acc.netid)
             logger.info("Bridge account: {}\n\n".format(bridge_acc))
 
+            if bridge_acc is None:
+                workr.add_new_user(uw_acc, person, hrp_wkr)
+                return
             if self.account_not_changed(bridge_acc, person, hrp_wkr):
                 # update the existing account with person data
                 logger.info("Account Not Changed!\n")
-                return
-            workr.update_user(bridge_acc, uw_acc, person, hrp_wkr)
+            else:
+                workr.update_user(bridge_acc, uw_acc, person, hrp_wkr)
 
         except Exception as ex:
             logger.error(ex)

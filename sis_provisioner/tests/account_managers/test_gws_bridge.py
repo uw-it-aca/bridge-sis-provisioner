@@ -26,6 +26,7 @@ class TestGwsBridgeLoader(TransactionTestCase):
 
     def test_del_bridge_account(self):
         loader = GwsBridgeLoader(BridgeWorker())
+        self.assertTrue(loader.update_existing_accs())
         ellen = loader.get_bridge().get_user_by_uwnetid('ellen')
         self.assertFalse(loader.del_bridge_account(ellen))
 

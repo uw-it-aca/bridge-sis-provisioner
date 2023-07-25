@@ -73,7 +73,7 @@ cronjob:
       args: ["sync_accounts", "hrp"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 110m
           memory: 512Mi
         requests:
           cpu: 50m
@@ -84,11 +84,11 @@ cronjob:
       args: ["sync_accounts", "customg"]
       resources:
         limits:
-          cpu: 100m
-          memory: 256Mi
+          cpu: 110m
+          memory: 512Mi
         requests:
           cpu: 50m
-          memory: 128Mi
+          memory: 256Mi
     - name: daily-active-users
       schedule: "30 3 * * 2-6"
       command: ["/scripts/management_command.sh"]
@@ -96,7 +96,7 @@ cronjob:
       resources:
         limits:
           cpu: 100m
-          memory: 1792Mi
+          memory: 2048Mi
         requests:
           cpu: 50m
           memory: 1280Mi

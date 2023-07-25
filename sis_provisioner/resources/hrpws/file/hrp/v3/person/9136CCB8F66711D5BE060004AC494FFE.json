@@ -759,34 +759,34 @@
             },
             {
               "Type": {
-                "Name": "Cost Center",
-                "WID": "afa35b88537f0176f922f9afb6573000",
+                "Name": "HR Org",
+                "WID": "87c9ff9a8b111001721d949632ca0000",
                 "IDs": [
                   {
                     "Type": "WID",
-                    "Value": "afa35b88537f0176f922f9afb6573000"
+                    "Value": "87c9ff9a8b111001721d949632ca0000"
                   },
                   {
                     "Type": "Organization_Type_ID",
-                    "Value": "COST_CENTER"
+                    "Value": "HR_ORG"
                   }
                 ]
               },
               "Organization": {
-                "Name": "141614 UNIVERSITY PRESS",
-                "WID": "d957207a30680173686e5f588e5c3088",
+                "Name": "University Libraries and UW Press (Dept)",
+                "WID": "c87907a3cb0e1001ba17fc1638a10000",
                 "IDs": [
                   {
                     "Type": "WID",
-                    "Value": "d957207a30680173686e5f588e5c3088"
+                    "Value": "c87907a3cb0e1001ba17fc1638a10000"
                   },
                   {
                     "Type": "Organization_Reference_ID",
-                    "Value": "141614"
+                    "Value": "HROrg000175"
                   },
                   {
-                    "Type": "Cost_Center_Reference_ID",
-                    "Value": "141614"
+                    "Type": "Custom_Organization_Reference_ID",
+                    "Value": "HROrg000175"
                   }
                 ]
               }

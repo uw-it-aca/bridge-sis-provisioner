@@ -66,7 +66,7 @@ class TestUserFormatter(TransactionTestCase):
         self.assertEqual(user_attr_list[8], "Clinical Associate Professor")
         self.assertEqual(user_attr_list[9], 196)
         self.assertEqual(user_attr_list[10], "Family Medicine")
-        self.assertEqual(user_attr_list[11], "681925 WORKDAY DEFAULT DEPTBG")
+        self.assertEqual(user_attr_list[11], "Family Medicine")
         self.assertEqual(user_attr_list[12], "Academic Personnel")
         self.assertEqual(user_attr_list[13], "21184")
         self.assertEqual(user_attr_list[14], "Seattle Campus")
