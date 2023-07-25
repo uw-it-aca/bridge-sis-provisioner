@@ -4,8 +4,12 @@ FROM gcr.io/uwit-mci-axdd/django-container:${DJANGO_CONTAINER_VERSION} as app-co
 
 USER root
 
-RUN apt-get update && apt-get install libpq-dev -y
-RUN apt-get update && apt-get install postgresql-client -y
+RUN apt-get update && apt-get install -y \
+    gnupg \
+    lsb-release \
+    wget \
+    libpq-dev \
+    postgresql-client
 
 # Add Google Cloud SDK package repository to the system
 RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" \
