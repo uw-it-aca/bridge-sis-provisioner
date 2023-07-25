@@ -6,16 +6,13 @@ USER root
 
 RUN apt-get update && apt-get install -y \
     gnupg \
-    lsb-release \
-    wget \
     libpq-dev \
     postgresql-client
 
 # Add Google Cloud SDK package repository to the system
-RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" \
-    && echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | \
+RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk main" | \
     tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get update && apt-get install google-cloud-sdk -y
 
 RUN mkdir /data
