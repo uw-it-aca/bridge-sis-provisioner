@@ -5,15 +5,15 @@ FROM gcr.io/uwit-mci-axdd/django-container:${DJANGO_CONTAINER_VERSION} as app-co
 USER root
 
 RUN apt-get update && apt-get install -y \
-    gnupg \
     libpq-dev \
     postgresql-client
 
 # Add Google Cloud SDK package repository to the system
-RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk main" | \
-    tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-RUN apt-get update && apt-get install google-cloud-sdk -y
+RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz \
+    && tar zxvf google-cloud-sdk.tar.gz -C /usr/local/ \
+    && /usr/local/google-cloud-sdk/install.sh
+# Add Google Cloud SDK to the PATH
+ENV PATH $PATH:/usr/local/google-cloud-sdk/bin
 
 RUN mkdir /data
 RUN chown -R acait:acait /data
