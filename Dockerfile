@@ -6,6 +6,13 @@ USER root
 
 RUN apt-get update && apt-get install mysql-client libmysqlclient-dev -y
 
+# Add Google Cloud SDK package repository to the system
+RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz \
+    && tar zxvf google-cloud-sdk.tar.gz -C /usr/local/ \
+    && /usr/local/google-cloud-sdk/install.sh
+# Add Google Cloud SDK to the PATH
+ENV PATH $PATH:/usr/local/google-cloud-sdk/bin
+
 RUN mkdir /data
 RUN chown -R acait:acait /data
 
