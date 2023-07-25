@@ -6,6 +6,7 @@ USER root
 
 RUN apt-get update && apt-get install libpq-dev -y
 RUN apt-get update && apt-get install postgresql-client -y
+RUN apt-get update && apt-get install google-cloud-sdk
 
 RUN mkdir /data
 RUN chown -R acait:acait /data
