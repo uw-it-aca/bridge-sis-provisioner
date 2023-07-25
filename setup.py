@@ -34,7 +34,7 @@ setup(
         'UW-RestClients-Core~=1.4',
         'UW-RestClients-PWS~=2.1',
         'UW-RestClients-GWS~=2.3',
-        'uw-restclients-hrp==1.3.1.2',
+        'uw-restclients-hrp~=1.3',
         'uw-restclients-bridge~=1.6',
         'freezegun',
     ],
