@@ -3,8 +3,8 @@
 
 import logging
 import os
-import subprocess
-from django.core.management.base import BaseCommand
+from django.core.management import call_command
+from django.core.management.base import BaseCommand, CommandError
 
 
 fixture_file = 'mysql_data_fixture.json'
@@ -24,28 +24,36 @@ class Command(BaseCommand):
         if self.action == 'dump':
             self.dump_mysql_data()
         if self.action == 'load':
-            self.load_data_into_postgresql()
+            self.load_postgresdb()
         if self.action == 'inspect':
             self.inspect_postgresqldb()
         if self.action == 'all':
+            self.clearsessions()
             self.dump_mysql_data()
-            self.load_data_into_postgresql()
+            self.load_postgresdb()
             self.inspect_postgresqldb()
 
         # Cleanup: Delete the local fixture file
         # os.remove(fixture_file)
 
-    def dump_mysql_data(self):
-        load_data_command = f'python manage.py dumpdata -o {fixture_file} --database=mysql'
-        subprocess.run(load_data_command, shell=True, check=True)
-        #call_command('dumpdata', '--database=mysql', output=fixture_file)
-        print("MySQL data dumped to fixture file")
+    def clearsessions(self):
+        try:
+            call_command('clearsessions', '--database=mysql')
+        except CommandError as e:
+            logger.error("Clear sessions in the MySQL DB: {}".format(e))
 
-    def load_data_into_postgresql(self):
-        load_data_command = f'python manage.py loaddata {fixture_file} --database=default'
-        subprocess.run(load_data_command, shell=True, check=True)
-        print("Data loaded into PostgreSQL database")
+    def dump_mysql_data(self):
+        model = 'sis_provisioner.uwaccount'
+        try:
+            call_command('dumpdata', model, '--database=mysql', output=fixture_file)
+        except CommandError as e:
+            logger.error("Dump table from the MySQL DB: {}".format(e))
+
+    def load_postgresdb(self):
+        try:
+            call_command('loaddata', fixture_file)
+        except CommandError as e:
+            logger.error("Load data into Postgres DB: {}".format(e))
 
     def inspect_postgresqldb(self):
-        load_data_command = f'python manage.py inspectdb --database=default'
-        subprocess.run(load_data_command, shell=True, check=True)
+        call_command('inspectdb')
