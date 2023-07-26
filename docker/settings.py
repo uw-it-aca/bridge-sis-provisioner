@@ -68,3 +68,21 @@ LOGGING['formatters'] = {
 }
 LOGGING['handlers']['stdout']['formatter'] = 'std'
 LOGGING['handlers']['stderr']['formatter'] = 'std'
+
+if os.getenv('DB', 'sqlite3') == 'postgres':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': os.getenv('PSQL_DATABASE_HOSTNAME', 'localhost'),
+            'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
+            'USER': os.getenv('DATABASE_USERNAME', None),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
+        },
+        'mysql': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': os.getenv('DATABASE_HOSTNAME', 'localhost'),
+            'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
+            'USER': os.getenv('DATABASE_USERNAME', None),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
+        }
+    }
