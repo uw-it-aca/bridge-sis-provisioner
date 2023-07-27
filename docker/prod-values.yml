@@ -51,7 +51,7 @@ cronjob:
       args: ["sync_accounts", "gws"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 150m
           memory: 512Mi
         requests:
           cpu: 50m
@@ -62,7 +62,7 @@ cronjob:
       args: ["sync_accounts", "pws"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 150m
           memory: 512Mi
         requests:
           cpu: 50m
@@ -73,7 +73,7 @@ cronjob:
       args: ["sync_accounts", "hrp"]
       resources:
         limits:
-          cpu: 110m
+          cpu: 150m
           memory: 512Mi
         requests:
           cpu: 50m
