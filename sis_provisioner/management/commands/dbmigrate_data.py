@@ -47,7 +47,8 @@ class Command(BaseCommand):
             cursor.execute("DELETE FROM django_session")
 
     def dump_mysql_data(self):
-        os.remove(self.fixture_file)
+        if os.path.exists(self.fixture_file):
+            os.remove(self.fixture_file)
         try:
             call_command(
                 'dumpdata', '--database=mysql', output=self.fixture_file)
