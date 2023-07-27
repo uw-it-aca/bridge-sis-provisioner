@@ -3,6 +3,7 @@
 
 import logging
 import os
+from django.db import connections
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
@@ -15,7 +16,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'action', choices=['all', 'dump', 'load', 'inspect'])
+            'action', choices=['all', 'prep', 'dump', 'load', 'inspect'])
 
     def handle(self, *args, **options):
         self.action = options['action']
@@ -27,8 +28,10 @@ class Command(BaseCommand):
             self.load_postgresdb()
         if self.action == 'inspect':
             self.inspect_postgresqldb()
+        if self.action == 'prep':
+            self.before_dump()
         if self.action == 'all':
-            self.clearsessions()
+            self.before_dump()
             self.dump_mysql_data()
             self.load_postgresdb()
             self.inspect_postgresqldb()
@@ -36,16 +39,13 @@ class Command(BaseCommand):
         # Cleanup: Delete the local fixture file
         # os.remove(fixture_file)
 
-    def clearsessions(self):
-        try:
-            call_command('clearsessions', '--database=mysql')
-        except CommandError as e:
-            logger.error("Clear sessions in the MySQL DB: {}".format(e))
+    def before_dump(self):
+        with connections['mysql'].cursor() as cursor:
+            cursor.execute("DELETE FROM django_session")
 
     def dump_mysql_data(self):
-        model = 'sis_provisioner.uwaccount'
         try:
-            call_command('dumpdata', model, '--database=mysql', output=fixture_file)
+            call_command('dumpdata', '--database=mysql', output=fixture_file)
         except CommandError as e:
             logger.error("Dump table from the MySQL DB: {}".format(e))
 
