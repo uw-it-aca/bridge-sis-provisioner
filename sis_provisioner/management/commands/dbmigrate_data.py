@@ -8,7 +8,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 
-fixture_file = 'mysql_data_fixture.json'
+fixture_file = '/app/mysql_data_fixture.json'
 logger = logging.getLogger(__name__)
 
 
