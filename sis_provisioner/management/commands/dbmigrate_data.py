@@ -45,6 +45,8 @@ class Command(BaseCommand):
     def before_dump(self):
         with connections['mysql'].cursor() as cursor:
             cursor.execute("DELETE FROM django_session")
+            logger.info("{} UwAccounts in mysql DB".format(
+                cursor.execute("select count(*) from uwuseraccounts")))
 
     def dump_mysql_data(self):
         if os.path.exists(self.fixture_file):
