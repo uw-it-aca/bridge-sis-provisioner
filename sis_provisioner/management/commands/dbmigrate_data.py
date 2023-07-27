@@ -6,7 +6,6 @@ import os
 from django.db import connections
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from sis_provisioner.util.settings import get_csv_file_path_prefix
 from sis_provisioner.models import UwAccount
 
 
@@ -21,7 +20,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.fixture_file = os.path.join(
-            get_csv_file_path_prefix(), 'mysql_data_fixture.json')
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            'mysql_data_fixture.json')
 
         self.action = options['action']
 
