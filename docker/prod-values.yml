@@ -4,6 +4,13 @@ lifecycle:
   enabled: true
   preStop:
     enabled: true
+resources:
+  limits:
+    cpu: 2.0
+    memory: 2.0Gi
+  requests:
+    cpu: 512m
+    memory: 1.0Gi
 affinity:
   podsSpanNodes: true
 readiness:
