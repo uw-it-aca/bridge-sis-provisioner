@@ -44,7 +44,7 @@ class Command(BaseCommand):
 
     def before_dump(self):
         logger.info("{} UwAccounts in mysql DB".format(
-            len(UwAccount.objects.using('mysql').all()))
+            len(UwAccount.objects.using('mysql').all())))
         # with connections['mysql'].cursor() as cursor:
         # cursor.execute("DELETE FROM django_session")
 
