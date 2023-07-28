@@ -44,7 +44,7 @@ class Command(BaseCommand):
 
     def before_dump(self):
         with connections['mysql'].cursor() as cursor:
-            cursor.execute("DELETE FROM django_session")
+            # cursor.execute("DELETE FROM django_session")
             logger.info("{} UwAccounts in mysql DB".format(
                 cursor.execute("select count(*) from uwuseraccounts")))
 
@@ -52,8 +52,10 @@ class Command(BaseCommand):
         if os.path.exists(self.fixture_file):
             os.remove(self.fixture_file)
         try:
+            model_list = ['sis_provisioner.UwAccount']
             call_command(
-                'dumpdata', '--database=mysql', output=self.fixture_file)
+                'dumpdata', *model_list, '--database=mysql',
+                output=self.fixture_file)
         except CommandError as e:
             logger.error("Dump table from the MySQL DB: {}".format(e))
 
