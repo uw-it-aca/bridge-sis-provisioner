@@ -66,5 +66,5 @@ class Command(BaseCommand):
             logger.error("Load data into Postgres DB: {}".format(e))
 
     def inspect_postgresqldb(self):
-        logger.info("{} UwAccount loaded".format(
+        logger.info("{} UwAccount loaded into Postgres DB".format(
             len(UwAccount.objects.all())))
