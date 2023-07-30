@@ -7,6 +7,7 @@ from django.db import connections
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.models import UwAccount
+from sis_provisioner.util.log import log_resp_time, Timer
 
 
 logger = logging.getLogger(__name__)
@@ -53,6 +54,7 @@ class Command(BaseCommand):
         # cursor.execute("DELETE FROM django_session")
 
     def dump_mysql_data(self):
+        timer = Timer()
         try:
             model_list = ['sis_provisioner.UwAccount']
             call_command(
@@ -60,12 +62,15 @@ class Command(BaseCommand):
                 output=self.fixture_file)
         except CommandError as e:
             logger.error("Dump table from the MySQL DB: {}".format(e))
+        log_resp_time(logger, "dump_mysql_data", timer)
 
     def load_postgresdb(self):
+        timer = Timer()
         try:
             call_command('loaddata', self.fixture_file)
         except CommandError as e:
             logger.error("Load data into Postgres DB: {}".format(e))
+        log_resp_time(logger, "load_postgresdb", timer)
 
     def inspect_postgresqldb(self):
         logger.info("{} UwAccount loaded into Postgres DB".format(
