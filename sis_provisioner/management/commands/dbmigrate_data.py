@@ -16,7 +16,10 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'action', choices=['all', 'prep', 'dump', 'load', 'inspect'])
+            'action', choices=[
+                'all', 'prep', 'dump', 'load', 'inspect', 'tidy'
+            ]
+        )
 
     def handle(self, *args, **options):
         self.fixture_file = os.path.join(
@@ -25,32 +28,31 @@ class Command(BaseCommand):
 
         self.action = options['action']
 
+        if self.action == 'prep':
+            self.prep()
         if self.action == 'dump':
             self.dump_mysql_data()
         if self.action == 'load':
             self.load_postgresdb()
         if self.action == 'inspect':
             self.inspect_postgresqldb()
-        if self.action == 'prep':
-            self.before_dump()
+        if self.action == 'tidy':
+            self.cleanup()
+
         if self.action == 'all':
-            self.before_dump()
+            self.prep()
             self.dump_mysql_data()
             self.load_postgresdb()
             self.inspect_postgresqldb()
+            self.cleanup()
 
-        # Cleanup: Delete the local fixture file
-        # os.remove(self.fixture_file)
-
-    def before_dump(self):
+    def prep(self):
         logger.info("{} UwAccounts in mysql DB".format(
             len(UwAccount.objects.using('mysql').all())))
         # with connections['mysql'].cursor() as cursor:
         # cursor.execute("DELETE FROM django_session")
 
     def dump_mysql_data(self):
-        if os.path.exists(self.fixture_file):
-            os.remove(self.fixture_file)
         try:
             model_list = ['sis_provisioner.UwAccount']
             call_command(
@@ -68,3 +70,8 @@ class Command(BaseCommand):
     def inspect_postgresqldb(self):
         logger.info("{} UwAccount loaded into Postgres DB".format(
             len(UwAccount.objects.all())))
+
+    def cleanup(self):
+        # Cleanup: Delete the local fixture file
+        if os.path.exists(self.fixture_file):
+            os.remove(self.fixture_file)
