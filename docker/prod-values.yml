@@ -6,8 +6,8 @@ lifecycle:
     enabled: true
 resources:
   limits:
-    cpu: 2.0
-    memory: 2.0Gi
+    cpu: 3.0
+    memory: 3.0Gi
   requests:
     cpu: 512m
     memory: 1.0Gi
@@ -50,7 +50,7 @@ certs:
   secretName: admin.bridge.uw.edu-ic-certs
 
 cronjob:
-  enabled: true
+  enabled: false
   jobs:
     - name: add-new-users
       schedule: "1 12 * * *"
