@@ -4,6 +4,13 @@ lifecycle:
   enabled: true
   preStop:
     enabled: true
+#resources:
+#  limits:
+#    cpu: 2.0
+#    memory: 2.0Gi
+#  requests:
+#    cpu: 512m
+#    memory: 1.0Gi
 affinity:
   podsSpanNodes: true
 readiness:
@@ -15,10 +22,10 @@ externalService:
   enabled: true
   name: bridge-db-service
   type: ClusterIP
-  serviceAddress: 172.18.0.198
-  servicePort: 3306
+  serviceAddress: 172.18.1.49
+  servicePort: 5432
 database:
-  engine: mysql
+  engine: postgres
   name: bridge_test
   hostname: bridge-db-service
   secretName: test.bridge.uw.edu-sql-secrets
