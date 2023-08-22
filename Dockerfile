@@ -4,9 +4,7 @@ FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-container:${DJANGO_CONTAI
 
 USER root
 
-RUN apt-get update && apt-get install -y \
-    postgresql-client libpq-dev \
-    mysql-client libmysqlclient-dev
+RUN apt-get update && apt-get install -y postgresql-client libpq-dev
 
 RUN mkdir /data
 RUN chown -R acait:acait /data
@@ -17,7 +15,6 @@ ADD --chown=acait:acait . /app/
 ADD --chown=acait:acait docker/ /app/project/
 
 RUN /app/bin/pip install -r requirements.txt
-RUN /app/bin/pip install mysqlclient
 RUN /app/bin/pip install psycopg2
 
 FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-test-container:${DJANGO_CONTAINER_VERSION} as app-test-container
