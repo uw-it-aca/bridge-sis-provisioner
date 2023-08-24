@@ -6,7 +6,7 @@ lifecycle:
     enabled: true
 #resources:
 #  limits:
-#    cpu: 2.0
+#    cpu: 1.5
 #    memory: 2.0Gi
 #  requests:
 #    cpu: 512m
