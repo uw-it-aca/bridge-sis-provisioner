@@ -29,7 +29,7 @@ setup(
         'Django~=4.2',
         'python-dateutil',
         'pytz',
-        'django-storages[google]>=1.10',
+        'django-storages[google]',
         'uw-memcached-clients~=1.0',
         'UW-RestClients-Core~=1.4',
         'UW-RestClients-GWS~=2.3',
