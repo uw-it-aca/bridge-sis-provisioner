@@ -49,7 +49,7 @@ class Command(BaseCommand):
 
     def prep(self):
         logger.info("{} UwAccounts in mysql DB".format(
-            len(UwAccount.objects.using('mysql').all())))
+            UwAccount.objects.using('mysql').all().count()))
         # with connections['mysql'].cursor() as cursor:
         # cursor.execute("DELETE FROM django_session")
 
@@ -74,7 +74,7 @@ class Command(BaseCommand):
 
     def inspect_postgresqldb(self):
         logger.info("{} UwAccount loaded into Postgres DB".format(
-            len(UwAccount.objects.all())))
+            UwAccount.objects.all().count()))
 
     def cleanup(self):
         # Cleanup: Delete the local fixture file

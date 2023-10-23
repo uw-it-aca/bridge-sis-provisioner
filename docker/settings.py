@@ -51,7 +51,7 @@ else:
     BRIDGE_WORKER_CHANGE_WINDOW = os.getenv('WORKER_CHANGE_WINDOW')
     BRIDGE_CRON_SENDER = os.getenv('BRIDGE_CRON_SENDER', '')
     RESTCLIENTS_DISABLE_THREADING = True
-    ERRORS_TO_ABORT_LOADER = [401, 403, 500, 502, 503]
+    ERRORS_TO_ABORT_LOADER = [401, 403, 500, 503]
     STORAGES = {
         'default': {
             'BACKEND': 'storages.backends.gcloud.GoogleCloudStorage',
