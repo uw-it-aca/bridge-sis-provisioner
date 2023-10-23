@@ -38,7 +38,6 @@ if os.getenv('ENV', 'localdev') == 'localdev':
     BRIDGE_LOGIN_WINDOW = 0
     ERRORS_TO_ABORT_LOADER = []
     RESTCLIENTS_DAO_CACHE_CLASS = None
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_ROOT = os.getenv('IMPORT_CSV_ROOT', '/data')
 else:
     RESTCLIENTS_DAO_CACHE_CLASS = 'sis_provisioner.cache.BridgeAccountCache'
@@ -53,13 +52,21 @@ else:
     BRIDGE_CRON_SENDER = os.getenv('BRIDGE_CRON_SENDER', '')
     RESTCLIENTS_DISABLE_THREADING = True
     ERRORS_TO_ABORT_LOADER = [401, 403, 500, 503]
-
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    GS_PROJECT_ID = os.getenv('STORAGE_PROJECT_ID', '')
-    GS_BUCKET_NAME = os.getenv('STORAGE_BUCKET_NAME', '')
-    GS_LOCATION = os.path.join(os.getenv('IMPORT_CSV_ROOT', ''))
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        '/gcs/credentials.json')
+    STORAGES = {
+        'default': {
+            'BACKEND': 'storages.backends.gcloud.GoogleCloudStorage',
+            'OPTIONS': {
+                'project_id': os.getenv('STORAGE_PROJECT_ID', ''),
+                'bucket_name': os.getenv('STORAGE_BUCKET_NAME', ''),
+                'location': os.path.join(os.getenv('IMPORT_CSV_ROOT', '')),
+                'credentials': service_account.Credentials.from_service_account_file(
+                    '/gcs/credentials.json'),
+            }
+        },
+        'staticfiles': {
+            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        },
+    }
 
 LOGGING['formatters'] = {
     'std': {
