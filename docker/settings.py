@@ -9,14 +9,6 @@ INSTALLED_APPS += [
     'sis_provisioner.apps.BridgeProvisionerConfig',
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_SSL_CERTFILE = os.getenv('CERT_PATH', '')
-EMAIL_SSL_KEYFILE = os.getenv('KEY_PATH', '')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = 587
-EMAIL_TIMEOUT = 60
-
 RESTCLIENTS_DEFAULT_CONNECT_TIMEOUT = 300
 if os.getenv('BRIDGE_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_BRIDGE_DAO_CLASS = 'Live'
