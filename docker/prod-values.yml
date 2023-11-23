@@ -85,7 +85,7 @@ cronjob:
       resources:
         limits:
           cpu: 110m
-          memory: 512Mi
+          memory: 384Mi
         requests:
           cpu: 50m
           memory: 256Mi
@@ -95,11 +95,11 @@ cronjob:
       args: ["sync_accounts", "bridge"]
       resources:
         limits:
-          cpu: 100m
-          memory: 2048Mi
+          cpu: 150m
+          memory: 1280Mi
         requests:
           cpu: 50m
-          memory: 1280Mi
+          memory: 512Mi
     - name: terminate-users
       schedule: "1 7 * * 6"
       command: ["/scripts/management_command.sh"]
@@ -117,7 +117,7 @@ cronjob:
       args: ["sync_eid"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 150m
           memory: 1024Mi
         requests:
           cpu: 50m
@@ -128,7 +128,7 @@ cronjob:
       args: ["sync_accounts", "db-acc"]
       resources:
         limits:
-          cpu: 125m
+          cpu: 150m
           memory: 1024Mi
         requests:
           cpu: 50m
