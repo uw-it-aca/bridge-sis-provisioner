@@ -22,8 +22,6 @@ BASE_GROUPS = [
     "uw_affiliation_wwami-medical-resident",
     "uw_student"
     ]
-GROUPS_TO_ADD = [
-    ]
 CUSTOM_GROUP = "u_bridgeap_tempusers"
 gws = GWS()
 
@@ -73,7 +71,7 @@ def get_additional_users():
     """
     timer = Timer()
     member_set = set()
-    joint_groups_members([CUSTOM_GROUP] + GROUPS_TO_ADD, member_set)
+    joint_groups_members(["uw_student"], member_set)
     log_resp_time(logger, "get_additional_users", timer)
     return member_set
 
