@@ -71,7 +71,7 @@ def get_additional_users():
     """
     timer = Timer()
     member_set = set()
-    joint_groups_members(["uw_student"], member_set)
+    joint_groups_members([CUSTOM_GROUP], member_set)
     log_resp_time(logger, "get_additional_users", timer)
     return member_set
 
