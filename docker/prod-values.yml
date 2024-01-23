@@ -74,7 +74,7 @@ cronjob:
       resources:
         limits:
           cpu: 150m
-          memory: 512Mi
+          memory: 768Mi
         requests:
           cpu: 50m
           memory: 256Mi
