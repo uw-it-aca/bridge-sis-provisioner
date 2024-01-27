@@ -164,6 +164,8 @@ class TestGwsBridgeLoader(TransactionTestCase):
             self.assertTrue(loader.sid_not_changed(bridge_account, person))
             self.assertTrue(loader.pos_data_not_changed(
                 bridge_account, hrp_wkr))
+            self.assertTrue(loader.hired_date_not_changed(
+                bridge_account, hrp_wkr))
 
             person = get_person('faculty')
             hrp_wkr = get_worker(person)
@@ -172,4 +174,6 @@ class TestGwsBridgeLoader(TransactionTestCase):
             self.assertFalse(loader.eid_not_changed(bridge_account, person))
             self.assertFalse(loader.sid_not_changed(bridge_account, person))
             self.assertFalse(loader.pos_data_not_changed(
+                bridge_account, hrp_wkr))
+            self.assertFalse(loader.hired_date_not_changed(
                 bridge_account, hrp_wkr))

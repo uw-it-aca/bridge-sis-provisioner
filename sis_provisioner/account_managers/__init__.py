@@ -80,6 +80,14 @@ def get_work_position(hrp_wkr, position_num):
     return None
 
 
+def get_hired_date(hrp_wkr):
+    if hrp_wkr and len(hrp_wkr.worker_details):
+        worker = hrp_wkr.worker_details[0]
+        if worker and worker.employee_status:
+            return worker.employee_status.hire_date
+    return None
+
+
 def get_job_title(hrp_wkr):
     pos = get_work_position(hrp_wkr, 0)
     return pos.job_title if pos else None
