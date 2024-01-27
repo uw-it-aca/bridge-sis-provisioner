@@ -73,7 +73,7 @@ class TestBridgeWorker(TransactionTestCase):
                  'last_name': 'Faculty',
                  'sortable_name': 'Faculty, William E',
                  'manager_id': 196,
-                 'hired_at': '2006-05-16T00:00:00-07:00',
+                 'hire_date': '2006-05-16T00:00:00-07:00',
                  'job_title': 'Clinical Associate Professor'}]})
 
     def test_set_bridge_user_to_update(self):
@@ -94,7 +94,7 @@ class TestBridgeWorker(TransactionTestCase):
                 'last_name': 'Faculty',
                 'sortable_name': 'Faculty, William E',
                 'job_title': 'Clinical Associate Professor',
-                'hired_at': '2006-05-16T00:00:00-07:00',
+                'hire_date': '2006-05-16T00:00:00-07:00',
                 'manager_id': 196,
                 'custom_field_values': [
                     {'custom_field_id': '5',
