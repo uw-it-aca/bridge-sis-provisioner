@@ -87,7 +87,7 @@
        "sortable_name":"Student, James Joseph",
        "email":"javerage@uw.edu",
        "department":null,
-       "hire_date":null,
+       "hire_date": "2022-06-16T00:00:00.000-07:00",
        "job_title":"Student Assistant (NE H)",
        "locale":"en",
        "manager_id": 196,

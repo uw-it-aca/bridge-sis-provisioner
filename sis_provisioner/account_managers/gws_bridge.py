@@ -14,7 +14,7 @@ from sis_provisioner.util.settings import (
 from sis_provisioner.account_managers import (
     get_email, get_job_title, get_first_name, get_full_name, get_surname,
     normalize_name, GET_POS_ATT_FUNCS, get_supervisor_bridge_id,
-    get_custom_field_value)
+    get_custom_field_value, get_hired_date)
 from sis_provisioner.account_managers.loader import Loader
 
 logger = logging.getLogger(__name__)
@@ -151,6 +151,7 @@ class GwsBridgeLoader(Loader):
                 self.regid_not_changed(bridge_acc, person) and
                 self.eid_not_changed(bridge_acc, person) and
                 self.sid_not_changed(bridge_acc, person) and
+                self.hired_date_not_changed(bridge_acc, hrp_wkr) and
                 self.pos_data_not_changed(bridge_acc, hrp_wkr))
 
     def regid_not_changed(self, bridge_account, person):
@@ -181,3 +182,10 @@ class GwsBridgeLoader(Loader):
                         hrp_value is None and bri_value != ''):
                     return False
         return True
+
+    def hired_date_not_changed(self, bridge_account, hrp_wkr):
+        hire_date = get_hired_date(hrp_wkr)
+        hired_at = bridge_account.hired_at
+        return (
+            hire_date and hired_at and hired_at == hire_date or
+            hire_date is None and hired_at is None)

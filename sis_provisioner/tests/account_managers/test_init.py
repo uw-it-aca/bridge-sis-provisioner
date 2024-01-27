@@ -7,7 +7,7 @@ from uw_hrp.models import Person
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.account_managers import (
-    get_first_name, get_full_name, get_surname,
+    get_first_name, get_full_name, get_surname, get_hired_date,
     get_email, normalize_name, get_job_title, get_work_position,
     GET_POS_ATT_FUNCS, get_custom_field_value, get_supervisor_bridge_id)
 from sis_provisioner.tests.account_managers import (
@@ -15,7 +15,7 @@ from sis_provisioner.tests.account_managers import (
 
 
 def get_hrp_wkr(testid):
-    person = get_person('javerage')
+    person = get_person(testid)
     return get_worker(person)
 
 
@@ -89,6 +89,13 @@ class TestValidUser(TransactionTestCase):
 
         hrp_wkr.worker_details[0].other_active_positions = []
         self.assertIsNone(get_work_position(hrp_wkr, 1))
+
+    def test_get_hired_date(self):
+        self.assertIsNone(get_hired_date(None))
+        hrp_wkr = get_hrp_wkr('staff')
+        self.assertEqual(
+            str(get_hired_date(hrp_wkr)),
+            '2017-10-12 00:00:00-07:00')
 
     def test_get_job_title(self):
         self.assertIsNone(get_job_title(None))
