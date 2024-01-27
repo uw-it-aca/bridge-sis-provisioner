@@ -186,7 +186,6 @@ class GwsBridgeLoader(Loader):
     def hired_date_not_changed(self, bridge_account, hrp_wkr):
         hire_date = get_hired_date(hrp_wkr)
         hired_at = bridge_account.hired_at
-        logger.info("===========HRP {} BRIDGE {}".format(hire_date, hired_at))
         return (
             hire_date and hired_at and hired_at == hire_date or
             hire_date is None and hired_at is None)

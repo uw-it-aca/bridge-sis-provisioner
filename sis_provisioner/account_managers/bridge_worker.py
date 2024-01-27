@@ -14,7 +14,7 @@ from sis_provisioner.models.work_positions import WORK_POSITION_FIELDS
 from sis_provisioner.util.settings import get_total_work_positions_to_load
 from sis_provisioner.account_managers import (
     get_email, get_first_name, get_full_name, get_surname, normalize_name,
-    get_job_title, GET_POS_ATT_FUNCS, get_supervisor_bridge_id)
+    get_job_title, GET_POS_ATT_FUNCS, get_supervisor_bridge_id, get_hired_date)
 from sis_provisioner.account_managers.worker import Worker
 
 
@@ -133,6 +133,7 @@ class BridgeWorker(Worker):
             first_name=normalize_name(get_first_name(person)),
             last_name=normalize_name(get_surname(person)),
             job_title=get_job_title(hrp_wkr),
+            hired_at=get_hired_date(hrp_wkr),
             manager_id=get_supervisor_bridge_id(hrp_wkr))
         self.add_custom_field(user,
                               BridgeCustomField.REGID_NAME,
@@ -170,6 +171,7 @@ class BridgeWorker(Worker):
         bridge_account.first_name = normalize_name(get_first_name(person))
         bridge_account.last_name = normalize_name(get_surname(person))
         bridge_account.job_title = get_job_title(hrp_wkr)
+        bridge_account.hired_at = get_hired_date(hrp_wkr)
         bridge_account.manager_id = get_supervisor_bridge_id(hrp_wkr)
 
         self.update_custom_field(bridge_account,
