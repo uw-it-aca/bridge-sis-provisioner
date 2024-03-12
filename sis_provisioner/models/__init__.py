@@ -3,8 +3,8 @@
 
 import json
 from django.db import models
+from django.utils import timezone
 from datetime import datetime, timedelta
-from pytz import timezone
 
 GRACE_PERIOD = 180
 
@@ -17,7 +17,7 @@ def datetime_to_str(dt):
 
 def get_now():
     # return time-zone-aware datetime object
-    return datetime.now(timezone("US/Pacific"))
+    return timezone.localtime(timezone.now())
 
 
 class UwAccount(models.Model):

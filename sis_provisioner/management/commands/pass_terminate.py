@@ -2,11 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from dateutil.parser import parse
-from pytz import timezone
 from django.core.management.base import BaseCommand, CommandError
+from django.utils.timezone import get_default_timezone, make_aware
 from sis_provisioner.models import UwAccount
-
-TIMEZONE = timezone("US/Pacific")
 
 
 class Command(BaseCommand):
@@ -18,7 +16,8 @@ class Command(BaseCommand):
         parser.add_argument('date-str')  # yyyy-mm-ddThh:mm
 
     def handle(self, *args, **options):
-        tdate = TIMEZONE.localize(parse(options['date-str']))
+        dt = parse(options['date-str'])
+        tdate = make_aware(dt, get_default_timezone())
         try:
             total = UwAccount.objects.exclude(disabled=True).filter(
                 terminate_at__lt=tdate).count()

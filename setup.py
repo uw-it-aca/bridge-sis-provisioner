@@ -22,7 +22,7 @@ setup(
     name='Bridge-Acount-Provisioner',
     version=VERSION,
     packages=['sis_provisioner'],
-    author="UW-IT AXDD",
+    author="UW-IT T&LS",
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires = [
