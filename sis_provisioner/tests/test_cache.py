@@ -17,19 +17,19 @@ class TestCachePolicy(TestCase):
 
     def test_get_cache_time(self):
         cache = BridgeAccountCache()
-        self.assertEquals(
+        self.assertEqual(
             cache.get_cache_expiration_time("gws", "/group_sws/v3/group/"),
             ONE_HOUR)
-        self.assertEquals(
+        self.assertEqual(
             cache.get_cache_expiration_time("pws", "/identity/v2/person/"),
             FOUR_HOURS)
-        self.assertEquals(
+        self.assertEqual(
             cache.get_cache_expiration_time("hrpws", "/hrp/v2/worker/"),
             FOUR_HOURS)
-        self.assertEquals(
+        self.assertEqual(
             cache.get_cache_expiration_time("bridge", "/api/author/users/"),
             FIVE_SECONDS)
-        self.assertEquals(
+        self.assertEqual(
             cache.get_cache_expiration_time(
                 "bridge", "/api/author/custom_fields"),
             FIVE_MINS)
