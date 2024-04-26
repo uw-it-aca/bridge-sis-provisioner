@@ -22,7 +22,7 @@ setup(
     name='Bridge-Acount-Provisioner',
     version=VERSION,
     packages=['sis_provisioner'],
-    author="UW-IT AXDD",
+    author="UW-IT T&LS",
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires = [
@@ -34,7 +34,7 @@ setup(
         'UW-RestClients-Core~=1.4',
         'UW-RestClients-GWS~=2.3',
         'UW-RestClients-PWS~=2.1',
-        'uw-restclients-bridge~=1.6',
+        'uw-restclients-bridge==1.6.4',
         'uw-restclients-hrp~=1.3',
         'freezegun',
     ],
