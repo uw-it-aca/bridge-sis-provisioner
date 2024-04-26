@@ -5,10 +5,15 @@ import json
 from django.test import TransactionTestCase
 from datetime import timedelta, datetime
 from sis_provisioner.models import (
-    UwAccount, get_now, datetime_to_str, GRACE_PERIOD)
+    UwAccount, get_now, datetime_to_str, make_tz_aware, GRACE_PERIOD)
 
 
 class TestModels(TransactionTestCase):
+
+    def test_make_tz_aware(self):
+        tz_now = get_now()
+        now = str(tz_now.replace(tzinfo=None))
+        self.assertEqual(tz_now, make_tz_aware(now))
 
     def mock_uw_account(self, uwnetid):
         return UwAccount.objects.create(netid=uwnetid,

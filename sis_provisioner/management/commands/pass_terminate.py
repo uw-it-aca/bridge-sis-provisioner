@@ -1,10 +1,8 @@
 # Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from dateutil.parser import parse
 from django.core.management.base import BaseCommand, CommandError
-from django.utils.timezone import get_default_timezone, make_aware
-from sis_provisioner.models import UwAccount
+from sis_provisioner.models import UwAccount, make_tz_aware
 
 
 class Command(BaseCommand):
@@ -16,8 +14,7 @@ class Command(BaseCommand):
         parser.add_argument('date-str')  # yyyy-mm-ddThh:mm
 
     def handle(self, *args, **options):
-        dt = parse(options['date-str'])
-        tdate = make_aware(dt, get_default_timezone())
+        tdate = make_tz_aware(options['date-str'])
         try:
             total = UwAccount.objects.exclude(disabled=True).filter(
                 terminate_at__lt=tdate).count()

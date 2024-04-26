@@ -3,10 +3,12 @@
 
 import json
 from django.db import models
-from django.utils import timezone
+from dateutil.parser import parse
+from zoneinfo import ZoneInfo
 from datetime import datetime, timedelta
 
 GRACE_PERIOD = 180
+DEFAULT_TZ = ZoneInfo("America/Los_Angeles")
 
 
 def datetime_to_str(dt):
@@ -16,8 +18,14 @@ def datetime_to_str(dt):
 
 
 def get_now():
-    # return time-zone-aware datetime object
-    return timezone.localtime(timezone.now())
+    # return a time-zone-aware datetime object
+    return datetime.now(DEFAULT_TZ)
+
+
+def make_tz_aware(dt_str):
+    # Make a date-time string time-zone-aware
+    dt = parse(dt_str)
+    return dt.replace(tzinfo=DEFAULT_TZ)
 
 
 class UwAccount(models.Model):
