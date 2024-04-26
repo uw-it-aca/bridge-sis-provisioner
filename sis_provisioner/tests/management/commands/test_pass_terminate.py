@@ -16,4 +16,4 @@ class TestPassTerminateUser(TransactionTestCase):
         javerage.set_ids(195, "123456789")
         javerage.terminate_at = make_aware(dt, get_default_timezone())
         javerage.save()
-        call_command('pass_terminate', "2022-04-02T00:01")
+        call_command('pass_terminate', "2022-04-02")
