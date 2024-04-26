@@ -28,7 +28,6 @@ setup(
     install_requires = [
         'Django~=4.2',
         'python-dateutil',
-        'pytz',
         'django-storages[google]',
         'uw-memcached-clients~=1.0',
         'UW-RestClients-Core~=1.4',
