@@ -123,7 +123,7 @@ cronjob:
           cpu: 50m
           memory: 768Mi
     - name: db-accounts
-      schedule: "1 1 * * 7"
+      schedule: "1 1 * * 0"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
       resources:
