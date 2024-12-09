@@ -45,25 +45,25 @@ certs:
 cronjob:
   enabled: true
   jobs:
-    - name: add-new-users
+    - name: gws-new-users
       schedule: "1 12 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "gws"]
       resources:
         limits:
           cpu: 150m
-          memory: 512Mi
+          memory: 768Mi
         requests:
           cpu: 50m
           memory: 256Mi
-    - name: person-updates
+    - name: pws-updates
       schedule: "1 10,22 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "pws"]
       resources:
         limits:
           cpu: 150m
-          memory: 512Mi
+          memory: 896Mi
         requests:
           cpu: 50m
           memory: 256Mi
