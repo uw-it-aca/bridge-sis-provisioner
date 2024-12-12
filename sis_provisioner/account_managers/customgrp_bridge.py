@@ -2,8 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+import traceback
+from sis_provisioner.dao.pws import get_person
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.dao.gws import get_additional_users
+from sis_provisioner.util.log import log_exception
 
 logger = logging.getLogger(__name__)
 
@@ -23,4 +26,15 @@ class CustomGroupLoader(GwsBridgeLoader):
         return False
 
     def fetch_users(self):
-        return list(get_additional_users())
+        user_list = []
+        for uwnetid in list(get_additional_users()):
+            try:
+                p = get_person(uwnetid)
+                if p.is_emp_state_current() or p.is_stud_state_current():
+                    continue
+                user_list.append(uwnetid)
+            except Exception:
+                log_exception(
+                    logger, f"get_person_by_netid({uwnetid})",
+                    traceback.format_exc(chain=False)
+                )

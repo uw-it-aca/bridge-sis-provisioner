@@ -3,9 +3,11 @@
 
 import logging
 from datetime import datetime
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.eid_loader import load
 from sis_provisioner.util.log import log_resp_time, Timer
+from sis_provisioner.util.settings import get_cronjob_sender
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +32,9 @@ class Command(BaseCommand):
             logger.info(load())
 
         except Exception as ex:
-            logger.error(ex)
-            raise CommandError(ex)
+            msg = {"Source": "Sync EIDs", "Error": ex}
+            logger.error(msg)
+            send_mail("Sync EIDs", msg, self.sender, [self.sender])
         finally:
-            logger.info("Started at: {0}".format(started))
+            logger.info(f"Started at: {started}")
             log_resp_time(logger, "Sync EIDs", timer)

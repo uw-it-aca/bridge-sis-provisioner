@@ -57,11 +57,10 @@ class Command(BaseCommand):
             self.loader.load()
             self.log_msg()
         except Exception as ex:
-            logger.error(ex)
-            send_mail(
-                "Check source: {}".format(self.source),
-                "{}".format(ex), self.sender, [self.sender])
-            raise CommandError(ex)
+            msg = {"Source": self.source, "Error": ex}
+            logger.error(msg)
+            send_mail(self.source, msg, self.sender, [self.sender])
+            # raise CommandError(ex)
 
     def log_msg(self):
         log_resp_time(logger, "Load users", self.timer)
@@ -81,12 +80,17 @@ class Command(BaseCommand):
             self.loader.get_updated_count()))
 
         if self.loader.has_error():
-            err = self.loader.get_error_report()
-            logger.error("Errors: {0}".format(err))
+            msg = {
+                "Source": self.source,
+                "Error": self.loader.get_error_report()
+            }
+            logger.error(msg)
             if not is_using_file_dao():
                 try:
                     send_mail(
-                        "Check source: {}".format(self.source),
-                        err, self.sender, [self.sender])
+                        f"Check source: {self.source}", msg,
+                        self.sender, [self.sender]]
+                    )
                 except Exception as ex:
-                    logger.error(ex)
+                    exmsg = {"Source": self.source, "Error": ex}
+                    logger.error(exmsg)
