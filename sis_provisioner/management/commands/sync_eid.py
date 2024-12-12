@@ -6,6 +6,7 @@ from datetime import datetime
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.eid_loader import load
+from sis_provisioner.dao import is_using_file_dao
 from sis_provisioner.util.log import log_resp_time, Timer
 from sis_provisioner.util.settings import get_cronjob_sender
 
@@ -25,7 +26,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get('noop'):
             return
-
+        sender = get_cronjob_sender()
         timer = Timer()
         started = datetime.now()
         try:
@@ -34,7 +35,12 @@ class Command(BaseCommand):
         except Exception as ex:
             msg = {"Source": "Sync EIDs", "Error": ex}
             logger.error(msg)
-            send_mail("Sync EIDs", msg, self.sender, [self.sender])
+            if not is_using_file_dao():
+                try:
+                    send_mail("Sync EIDs", msg, sender, [sender])
+                except Exception as ex1:
+                    exmsg = {"Source": "Sync EIDs", "Error": ex1}
+                    logger.error(exmsg)
         finally:
             logger.info(f"Started at: {started}")
             log_resp_time(logger, "Sync EIDs", timer)

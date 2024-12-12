@@ -35,7 +35,7 @@ class TestGwsDao(TestCase):
 
     def test_get_additional_users(self):
         user_set = get_additional_users()
-        self.assertEqual(len(user_set), 1)
+        self.assertEqual(len(user_set), 2)
         self.assertTrue("not_in_pws" in user_set)
 
     def test_get_bridge_authors(self):

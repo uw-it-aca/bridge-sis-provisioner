@@ -38,3 +38,4 @@ class CustomGroupLoader(GwsBridgeLoader):
                     logger, f"get_person_by_netid({uwnetid})",
                     traceback.format_exc(chain=False)
                 )
+        return user_list

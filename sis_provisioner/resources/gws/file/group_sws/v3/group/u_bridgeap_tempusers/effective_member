@@ -17,6 +17,12 @@
       "id": "not_in_pws",
       "mtype": "direct",
       "source": ""
+    },
+    {
+      "type": "uwnetid",
+      "id": "staff",
+      "mtype": "direct",
+      "source": ""
     }
   ]
 }

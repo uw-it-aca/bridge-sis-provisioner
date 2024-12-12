@@ -57,9 +57,7 @@ class Command(BaseCommand):
             self.loader.load()
             self.log_msg()
         except Exception as ex:
-            msg = {"Source": self.source, "Error": ex}
-            logger.error(msg)
-            send_mail(self.source, msg, self.sender, [self.sender])
+            logger.error({"Source": self.source, "Error": ex})
             # raise CommandError(ex)
 
     def log_msg(self):
@@ -87,10 +85,6 @@ class Command(BaseCommand):
             logger.error(msg)
             if not is_using_file_dao():
                 try:
-                    send_mail(
-                        f"Check source: {self.source}", msg,
-                        self.sender, [self.sender]]
-                    )
+                    send_mail(self.source, msg, self.sender, [self.sender])
                 except Exception as ex:
-                    exmsg = {"Source": self.source, "Error": ex}
-                    logger.error(exmsg)
+                    logger.error({"Source": self.source, "Error": ex})
