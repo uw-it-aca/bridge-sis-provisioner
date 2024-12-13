@@ -40,7 +40,7 @@ def get_members_of_group(group_id):
     return []
 
 
-def append_netids_to_list(members, member_set):
+def append_netids_userset(members, member_set):
     for gm in members:
         if gm.is_uwnetid() and gm.name is not None and len(gm.name):
             member_set.add(gm.name)
@@ -48,7 +48,7 @@ def append_netids_to_list(members, member_set):
 
 def joint_groups_members(groups, member_set):
     for gr in groups:
-        append_netids_to_list(get_members_of_group(gr), member_set)
+        append_netids_userset(get_members_of_group(gr), member_set)
 
 
 def get_additional_users():
@@ -92,7 +92,7 @@ def get_potential_users():
 
 def get_bridge_authors():
     member_set = set()
-    append_netids_to_list(
+    append_netids_userset(
         get_members_of_group(get_author_group_name()), member_set)
     return member_set
 
