@@ -3,6 +3,7 @@
 
 import logging
 import traceback
+from sis_provisioner.dao.gws import get_potential_users
 from sis_provisioner.dao.pws import get_person, is_prior_netid
 from sis_provisioner.dao.uw_account import (
     get_all_uw_accounts, get_by_netid)
@@ -28,6 +29,9 @@ class UserAccountChecker(GwsBridgeLoader):
         super(UserAccountChecker, self).__init__(worker, clogger)
         self.data_source = "Accounts in DB"
         self.total_deleted = 0
+
+    def get_all_users(self):
+        return get_potential_users()  # DataFailureException
 
     def fetch_users(self):
         return get_all_uw_accounts()
