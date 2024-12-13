@@ -10,7 +10,7 @@ import traceback
 import json
 from abc import ABCMeta, abstractmethod
 from restclients_core.exceptions import DataFailureException
-from sis_provisioner.dao.gws import get_potential_users
+from sis_provisioner.dao.gws import get_base_users
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.util.settings import errors_to_abort_loader
 
@@ -27,7 +27,10 @@ class Loader:
         self.total_checked_users = 0
         self.data_source = None  # where the user is fetched from
         self.worker = worker
-        self.gws_user_set = get_potential_users()  # DataFailureException
+        self.gws_user_set = self.get_all_users()
+
+    def get_all_users(self):
+        return get_base_users()  # DataFailureException
 
     def load(self):
         self.users_to_process = self.fetch_users()

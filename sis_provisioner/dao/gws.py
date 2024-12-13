@@ -37,14 +37,13 @@ def get_members_of_group(group_id):
         return gws.get_members(group_id)
     finally:
         log_resp_time(logger, action, timer)
-    return None
+    return []
 
 
 def append_netids_to_list(members, member_set):
-    if members is not None and len(members) > 0:
-        for gm in members:
-            if gm.is_uwnetid() and gm.name is not None and len(gm.name):
-                member_set.add(gm.name)
+    for gm in members:
+        if gm.is_uwnetid() and gm.name is not None and len(gm.name):
+            member_set.add(gm.name)
 
 
 def joint_groups_members(groups, member_set):
@@ -52,25 +51,42 @@ def joint_groups_members(groups, member_set):
         append_netids_to_list(get_members_of_group(gr), member_set)
 
 
-def get_potential_users():
+def get_additional_users():
     """
-    return a set of uwnetids
+    return a set of uwnetids in the temp user groups
+    """
+    timer = Timer()
+    temp_user_groups = []
+    for gm in get_members_of_group(CUSTOM_GROUP):
+        if gm.is_group() and gm.name:
+            temp_user_groups.append(gm.name)
+
+    member_set = set()
+    if len(temp_user_groups):
+        joint_groups_members(temp_user_groups, member_set)
+    log_resp_time(logger, "get_additional_users", timer)
+    return member_set
+
+
+def get_base_users():
+    """
+    return a set of uwnetids in uw_groups
     """
     timer = Timer()
     member_set = set()
-    joint_groups_members([CUSTOM_GROUP] + BASE_GROUPS, member_set)
+    joint_groups_members(BASE_GROUPS, member_set)
     log_resp_time(logger, "get_potential_users", timer)
     return member_set
 
 
-def get_additional_users():
+def get_potential_users():
     """
-    return a set of uwnetids
+    return a set of uwnetids of base and additional user groups
     """
     timer = Timer()
-    member_set = set()
-    joint_groups_members([CUSTOM_GROUP], member_set)
-    log_resp_time(logger, "get_additional_users", timer)
+    member_set = get_additional_users()
+    joint_groups_members(BASE_GROUPS, member_set)
+    log_resp_time(logger, "get_potential_users", timer)
     return member_set
 
 

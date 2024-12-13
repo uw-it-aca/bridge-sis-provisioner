@@ -8,21 +8,13 @@
     "regid": "861c43b9214d4fdfbfa6e13dcef4c35c",
     "id": "u_bridgeap_tempusers",
     "type": "effective",
-    "selfRef": "https://groups.uw.edu/group_sws/v3/group/u_bridgeap_tempusers/effective_member",
+    "selfRef": "https://groups.uw.edu/group_sws/v3/group/u_bridgeap_tempusers/member",
     "timestamp": 1554231855409
   },
   "data": [
     {
-      "type": "uwnetid",
-      "id": "not_in_pws",
-      "mtype": "direct",
-      "source": ""
-    },
-    {
-      "type": "uwnetid",
-      "id": "staff",
-      "mtype": "direct",
-      "source": ""
+      "type": "group",
+      "id": "u_bridgeap_tempusers_subgroup"
     }
   ]
 }

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+from sis_provisioner.dao.gws import get_potential_users
 from sis_provisioner.dao.pws import get_updated_persons
 from sis_provisioner.util.settings import get_person_changed_window
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
@@ -18,6 +19,9 @@ class PwsBridgeLoader(GwsBridgeLoader):
     def __init__(self, worker, clogger=logger):
         super(PwsBridgeLoader, self).__init__(worker, clogger)
         self.data_source = "Person updates"
+
+    def get_all_users(self):
+        return get_potential_users()  # DataFailureException
 
     def fetch_users(self):
         return get_updated_persons(get_person_changed_window())

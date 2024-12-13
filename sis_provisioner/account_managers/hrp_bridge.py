@@ -3,6 +3,7 @@
 
 from datetime import datetime, timedelta
 import logging
+from sis_provisioner.dao.gws import get_base_users
 from sis_provisioner.dao.hrp import get_worker_updates
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import save_uw_account
@@ -21,6 +22,9 @@ class HrpBridgeLoader(PwsBridgeLoader):
     def __init__(self, worker, clogger=logger):
         super(HrpBridgeLoader, self).__init__(worker, clogger)
         self.data_source = "HRP updates"
+
+    def get_all_users(self):
+        return get_base_users()  # DataFailureException
 
     def fetch_users(self):
         return get_worker_updates(get_worker_changed_window())
