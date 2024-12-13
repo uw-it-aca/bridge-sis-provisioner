@@ -3,9 +3,7 @@
 
 import logging
 from datetime import datetime
-from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
-from sis_provisioner.dao import is_using_file_dao
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 from sis_provisioner.account_managers.acc_checker import UserAccountChecker
 from sis_provisioner.account_managers.terminate import TerminateUser
@@ -14,9 +12,8 @@ from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.account_managers.pws_bridge import PwsBridgeLoader
 from sis_provisioner.account_managers.hrp_bridge import HrpBridgeLoader
 from sis_provisioner.account_managers.customgrp_bridge import CustomGroupLoader
+from sis_provisioner.management.commands import send_msg
 from sis_provisioner.util.log import log_resp_time, Timer
-from sis_provisioner.util.settings import get_cronjob_sender
-
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +53,7 @@ class Command(BaseCommand):
             self.loader.load()
             self.log_msg()
         except Exception as ex:
-            self.send_msg({"Source": self.source, "Error": ex})
+            send_msg(logger, self.source, ex)
             # raise CommandError(ex)
 
     def log_msg(self):
@@ -77,17 +74,4 @@ class Command(BaseCommand):
             self.loader.get_updated_count()))
 
         if self.loader.has_error():
-            self.send_msg({
-                "Source": self.source,
-                "Error": self.loader.get_error_report()
-            })
-
-    def send_msg(self, msg):
-        logger.error(msg)
-        if is_using_file_dao():
-            return
-        sender = get_cronjob_sender()
-        try:
-            send_mail(self.source, msg, sender, [sender])
-        except Exception as ex:
-            logger.error({"Source": self.source, "Error": ex})
+            send_msg(logger, self.source, self.loader.get_error_report())
