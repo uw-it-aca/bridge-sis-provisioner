@@ -33,7 +33,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.timer = Timer()
         logger.info("Start at {0}".format(datetime.now()))
-        self.sender = get_cronjob_sender()
         self.source = options['data-source']
         workr = BridgeWorker()
         if self.source == 'gws':
@@ -57,7 +56,7 @@ class Command(BaseCommand):
             self.loader.load()
             self.log_msg()
         except Exception as ex:
-            logger.error({"Source": self.source, "Error": ex})
+            self.send_msg({"Source": self.source, "Error": ex})
             # raise CommandError(ex)
 
     def log_msg(self):
@@ -78,13 +77,17 @@ class Command(BaseCommand):
             self.loader.get_updated_count()))
 
         if self.loader.has_error():
-            msg = {
+            self.send_msg({
                 "Source": self.source,
                 "Error": self.loader.get_error_report()
-            }
-            logger.error(msg)
-            if not is_using_file_dao():
-                try:
-                    send_mail(self.source, msg, self.sender, [self.sender])
-                except Exception as ex:
-                    logger.error({"Source": self.source, "Error": ex})
+            })
+
+    def send_msg(self, msg):
+        logger.error(msg)
+        if is_using_file_dao():
+            return
+        sender = get_cronjob_sender()
+        try:
+            send_mail(self.source, msg, sender, [sender])
+        except Exception as ex:
+            logger.error({"Source": self.source, "Error": ex})
