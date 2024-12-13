@@ -30,7 +30,8 @@ class CustomGroupLoader(GwsBridgeLoader):
         for uwnetid in list(get_additional_users()):
             try:
                 p = get_person(uwnetid)
-                if p.is_emp_state_current() or p.is_stud_state_current():
+                if (not p or p.is_emp_state_current() or
+                         p.is_stud_state_current()):
                     continue
                 user_list.append(uwnetid)
             except Exception:
