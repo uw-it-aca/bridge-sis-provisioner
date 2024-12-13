@@ -84,7 +84,7 @@ cronjob:
       args: ["sync_accounts", "customg"]
       resources:
         limits:
-          cpu: 110m
+          cpu: 150m
           memory: 384Mi
         requests:
           cpu: 50m
@@ -95,7 +95,7 @@ cronjob:
       args: ["sync_accounts", "bridge"]
       resources:
         limits:
-          cpu: 150m
+          cpu: 120m
           memory: 1280Mi
         requests:
           cpu: 50m
@@ -106,7 +106,7 @@ cronjob:
       args: ["sync_accounts", "delete"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 150m
           memory: 256Mi
         requests:
           cpu: 50m
@@ -117,7 +117,7 @@ cronjob:
       args: ["sync_eid"]
       resources:
         limits:
-          cpu: 150m
+          cpu: 100m
           memory: 1024Mi
         requests:
           cpu: 50m
@@ -128,8 +128,8 @@ cronjob:
       args: ["sync_accounts", "db-acc"]
       resources:
         limits:
-          cpu: 150m
-          memory: 2048Mi
+          cpu: 200m
+          memory: 3072Mi
         requests:
           cpu: 50m
           memory: 768Mi
