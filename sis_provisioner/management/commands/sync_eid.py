@@ -6,6 +6,7 @@ from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.eid_loader import load
 from sis_provisioner.util.log import log_resp_time, Timer
+from sis_provisioner.management.commands import send_msg
 
 logger = logging.getLogger(__name__)
 
@@ -23,15 +24,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get('noop'):
             return
-
         timer = Timer()
         started = datetime.now()
         try:
             logger.info(load())
-
         except Exception as ex:
-            logger.error(ex)
-            raise CommandError(ex)
+            send_msg(logger, "Sync EIDs", ex)
         finally:
-            logger.info("Started at: {0}".format(started))
+            logger.info(f"Started at: {started}")
             log_resp_time(logger, "Sync EIDs", timer)

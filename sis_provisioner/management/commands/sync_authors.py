@@ -7,6 +7,7 @@ from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.account_managers.author_loader import AuthorChecker
 from sis_provisioner.account_managers.bridge_worker import BridgeWorker
 from sis_provisioner.util.log import log_resp_time, Timer
+from sis_provisioner.management.commands import send_msg
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get('noop'):
             return
-
+        source = "Sync authors"
         timer = Timer()
         started = datetime.now()
         loader = AuthorChecker(BridgeWorker())
@@ -34,12 +35,9 @@ class Command(BaseCommand):
             logger.info("Update {0:d} users".format(
                 loader.get_updated_count()))
             if loader.has_error():
-                logger.error("Errors: {0}".format(
-                    loader.get_error_report()
-                ))
+                send_msg(logger, source, loader.get_error_report())
         except Exception as ex:
-            logger.error(ex)
-            raise CommandError(ex)
+            send_msg(logger, source, ex)
         finally:
             logger.info("Started at: {0}".format(started))
-            log_resp_time(logger, "Sync authors", timer)
+            log_resp_time(logger, source, timer)
