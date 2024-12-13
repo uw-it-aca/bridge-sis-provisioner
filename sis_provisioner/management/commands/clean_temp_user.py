@@ -7,7 +7,6 @@ from sis_provisioner.dao.gws import gws
 from sis_provisioner.dao.pws import get_person
 
 logger = logging.getLogger(__name__)
-bridge_dao = BridgeUsers()
 
 
 class Command(BaseCommand):
