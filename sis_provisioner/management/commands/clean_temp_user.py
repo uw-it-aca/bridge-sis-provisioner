@@ -31,10 +31,11 @@ class Command(BaseCommand):
             except Exception as ex:
                 logger.error(ex)
         if action == 'purge':
-            try:
-                for uwnetid in list(uwnetids):
+            for uwnetid in list(uwnetids):
+                try:
                     p = get_person(uwnetid)
-                    if p.is_emp_state_current() or p.is_stud_state_current():
+                    if (not p or p.is_emp_state_current() or
+                            p.is_stud_state_current()):
                         gws.delete_members(groupid, [uwnetid])
-            except Exception as ex:
-                logger.error(ex)
+                except Exception as ex:
+                    logger.error(ex)
