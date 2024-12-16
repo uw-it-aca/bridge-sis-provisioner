@@ -62,9 +62,9 @@ class TestSetting(TestCase):
             self.assertEqual(get_group_member_del_window(), 8)
 
     def test_get_group_member_del_window(self):
-        self.assertFalse(check_all_accounts())
-        with self.settings(BRIDGE_CHECK_ALL_ACCOUNTS=True):
-            self.assertTrue(check_all_accounts())
+        self.assertTrue(check_all_accounts())
+        with self.settings(BRIDGE_CHECK_ALL_ACCOUNTS=False):
+            self.assertFalse(check_all_accounts())
 
     def test_get_cronjob_sender(self):
         with self.settings(BRIDGE_CRON_SENDER='x'):

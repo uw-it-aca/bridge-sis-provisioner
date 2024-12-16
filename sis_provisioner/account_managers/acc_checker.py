@@ -3,11 +3,9 @@
 
 import logging
 import traceback
-from sis_provisioner.dao.gws import get_potential_users
 from sis_provisioner.dao.pws import get_person, is_prior_netid
 from sis_provisioner.dao.uw_account import (
     get_all_uw_accounts, get_by_netid)
-from sis_provisioner.util.settings import check_all_accounts
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
 
 logger = logging.getLogger(__name__)
@@ -30,18 +28,8 @@ class UserAccountChecker(GwsBridgeLoader):
         self.data_source = "Accounts in DB"
         self.total_deleted = 0
 
-    def get_all_users(self):
-        return get_potential_users()  # DataFailureException
-
     def fetch_users(self):
         return get_all_uw_accounts()
-
-    def to_check(self, person):
-        """
-        Check only currently employed faculty, staff, affiliate, and
-        student employees.
-        """
-        return check_all_accounts() or person.is_emp_state_current()
 
     def process_users(self):
         """
@@ -53,17 +41,10 @@ class UserAccountChecker(GwsBridgeLoader):
             self.total_checked_users += 1
             person = get_person(uw_acc.netid)
 
-            if person is None:
-                # Skip this account in case PWS unavailable
-                continue
-
-            if (not self.in_uw_groups(person.uwnetid) or
-                    person.is_test_entity):
+            if (self.is_invalid_person(uw_acc.netid, person) or
+                    not self.in_uw_groups(person.uwnetid)):
                 if not uw_acc.disabled:
                     self.process_termination(uw_acc)
-                continue
-
-            if not self.to_check(person):
                 continue
 
             if uw_acc.disabled and uw_acc.netid == person.uwnetid:
