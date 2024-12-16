@@ -114,7 +114,7 @@ class BridgeWorker(Worker):
             if self._uid_matched(uw_account, ret_bri_acc):
                 uw_account.set_updated()
                 self.total_updated_count += 1
-                logger.info("{0} ==> {1}".format(
+                logger.debug("{0} ==> {1}".format(
                     action, bridge_account.to_json_patch()))
                 return
             self.append_error("Unmatched UID {0}\n".format(action))
