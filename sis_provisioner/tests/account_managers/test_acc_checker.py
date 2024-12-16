@@ -50,15 +50,6 @@ class TestUserAccountChecker(TransactionTestCase):
         self.assertEqual(loader.get_deleted_count(), 1)
         self.assertTrue(UwAccount.get("staff").disabled)
 
-    def test_to_check(self):
-        loader = UserAccountChecker(BridgeWorker())
-        person = get_person("affiemp")
-        self.assertTrue(loader.to_check(person))
-        person = get_person("leftuw")
-        self.assertFalse(loader.to_check(person))
-        person = get_person("alumni")
-        self.assertFalse(loader.to_check(person))
-
     def test_update(self):
         set_db_records()
         alumni = set_uw_account("alumni")

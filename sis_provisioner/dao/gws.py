@@ -14,7 +14,7 @@ from sis_provisioner.util.settings import get_author_group_name
 
 
 logger = logging.getLogger(__name__)
-BASE_GROUPS = [
+EMP_GROUPS = [
     "uw_employee",
     "uw_affiliation_affiliate-employee",
     "uw_affiliation_uw-medicine-workforce",
@@ -22,6 +22,9 @@ BASE_GROUPS = [
     "uw_affiliation_wwami-medical-resident",
     "uw_student"
     ]
+STU_GROUPS = [
+    "uw_student"
+]
 CUSTOM_GROUP = "u_bridgeap_tempusers"
 gws = GWS()
 
@@ -74,7 +77,7 @@ def get_base_users():
     """
     timer = Timer()
     member_set = set()
-    joint_groups_members(BASE_GROUPS, member_set)
+    joint_groups_members(EMP_GROUPS, member_set)
     log_resp_time(logger, "get_potential_users", timer)
     return member_set
 
@@ -85,7 +88,7 @@ def get_potential_users():
     """
     timer = Timer()
     member_set = get_additional_users()
-    joint_groups_members(BASE_GROUPS, member_set)
+    joint_groups_members(EMP_GROUPS + STU_GROUPS, member_set)
     log_resp_time(logger, "get_potential_users", timer)
     return member_set
 
@@ -148,7 +151,7 @@ def get_added_members(duration):
     """
     timer = Timer()
     user_set = set()
-    for gr in BASE_GROUPS:
+    for gr in EMP_GROUPS + STU_GROUPS:
         try:
             users_added, users_deleted = get_changed_members(gr, duration)
             user_set = user_set.union(users_added)
@@ -165,7 +168,7 @@ def get_deleted_members(duration):
     """
     timer = Timer()
     user_set = set()
-    for gr in BASE_GROUPS:
+    for gr in EMP_GROUPS + STU_GROUPS:
         try:
             users_added, users_deleted = get_changed_members(gr, duration)
             user_set = user_set.union(users_deleted)
