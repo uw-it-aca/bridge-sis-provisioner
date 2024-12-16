@@ -95,7 +95,7 @@ cronjob:
       args: ["sync_accounts", "bridge"]
       resources:
         limits:
-          cpu: 120m
+          cpu: 150m
           memory: 1280Mi
         requests:
           cpu: 50m
@@ -128,11 +128,11 @@ cronjob:
       args: ["sync_accounts", "db-acc"]
       resources:
         limits:
-          cpu: 200m
-          memory: 3072Mi
+          cpu: 500m
+          memory: 5120Mi
         requests:
-          cpu: 50m
-          memory: 768Mi
+          cpu: 150m
+          memory: 1024Mi
 
 environmentVariables:
   - name: ENV
