@@ -28,10 +28,11 @@ def get_worker(person):
     except InvalidRegID:
         logger.error(f"{netid} has invalid uwregid")
     except DataFailureException as ex:
-        log_exception(
-            logger,
-            f"Failed to get worker({netid}): {ex}",
-            traceback.format_exc(chain=False))
+        if ex.status != 404:
+            log_exception(
+                logger,
+                f"Failed to get worker({netid}): {ex}",
+                traceback.format_exc(chain=False))
     return None
 
 
