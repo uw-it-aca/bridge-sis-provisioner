@@ -3,8 +3,7 @@
 
 import logging
 from django.core.management.base import BaseCommand, CommandError
-from sis_provisioner.dao.gws import (
-  gws, get_members_of_group, append_netids_userset)
+from sis_provisioner.dao.gws import Gws
 from sis_provisioner.dao.pws import get_person
 
 logger = logging.getLogger(__name__)
@@ -22,20 +21,23 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         groupid = options['groupid']
         action = options['action']
-        uwnetids = set()
-        members = get_members_of_group(groupid)
-        append_netids_userset(members, uwnetids)
+
+        gws = Gws()
+        uwnetids = list(gws._get_user_set([groupid]))
+
         if action == 'all':
             try:
-                gws.delete_members(groupid, list(uwnetids))
+                gws.delete_members(groupid, uwnetids)
             except Exception as ex:
                 logger.error(ex)
         if action == 'purge':
-            for uwnetid in list(uwnetids):
+            for uwnetid in uwnetids:
                 try:
+                    if uwnetid in gws.potential_users:
+                        gws.delete_members(groupid, [uwnetid])
+                        continue
                     p = get_person(uwnetid)
-                    if (not p or p.is_emp_state_current() or
-                            p.is_stud_state_current()):
+                    if not p or p.is_test_entity:
                         gws.delete_members(groupid, [uwnetid])
                 except Exception as ex:
                     logger.error(ex)

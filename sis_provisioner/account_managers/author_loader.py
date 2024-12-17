@@ -9,7 +9,6 @@ This class will load all the Bridge authors, check against gws author group
 
 import logging
 import traceback
-from sis_provisioner.dao.gws import get_bridge_authors
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import save_uw_account, UwAccount
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
@@ -24,7 +23,7 @@ class AuthorChecker(GwsBridgeLoader):
         self.data_source = "Bridge authors"
 
     def fetch_users(self):
-        self.cur_author_set = get_bridge_authors()
+        self.cur_author_set = self.gws.get_bridge_authors()
         return self.get_bridge().get_all_authors()
 
     def process_users(self):

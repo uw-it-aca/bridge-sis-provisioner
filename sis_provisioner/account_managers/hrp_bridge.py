@@ -3,7 +3,6 @@
 
 from datetime import datetime, timedelta
 import logging
-from sis_provisioner.dao.gws import get_base_users
 from sis_provisioner.dao.hrp import get_worker_updates
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import save_uw_account
@@ -23,16 +22,13 @@ class HrpBridgeLoader(PwsBridgeLoader):
         super(HrpBridgeLoader, self).__init__(worker, clogger)
         self.data_source = "HRP updates"
 
-    def get_all_users(self):
-        return set()
-
     def fetch_users(self):
         return get_worker_updates(get_worker_changed_window())
 
     def process_users(self):
         for worker_ref in self.get_users_to_process():
             uwnetid = worker_ref.netid
-            if uwnetid not in self.hrp_user_set:
+            if not self.in_hrp_groups(uwnetid):
                 continue
             person = get_person(uwnetid)
             if self.is_invalid_person(uwnetid, person):
