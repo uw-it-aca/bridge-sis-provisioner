@@ -23,8 +23,7 @@ def get_worker(person):
     """
     netid = person.uwnetid
     try:
-        if person.is_emp_state_current():
-            return hrp.get_person_by_regid(person.uwregid)
+        return hrp.get_person_by_regid(person.uwregid)
     except InvalidRegID:
         logger.error(f"{netid} has invalid uwregid")
     except DataFailureException as ex:

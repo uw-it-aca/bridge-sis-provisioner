@@ -10,7 +10,9 @@ import traceback
 import json
 from abc import ABCMeta, abstractmethod
 from restclients_core.exceptions import DataFailureException
-from sis_provisioner.dao.gws import get_potential_users
+from sis_provisioner.dao.gws import (
+  get_base_users, get_potential_users)
+from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.util.log import log_exception
 from sis_provisioner.util.settings import errors_to_abort_loader
 
@@ -28,6 +30,7 @@ class Loader:
         self.data_source = None  # where the user is fetched from
         self.worker = worker
         self.gws_user_set = self.get_all_users()
+        self.hrp_user_set = get_base_users()
 
     def get_all_users(self):
         return get_potential_users()  # DataFailureException
@@ -55,6 +58,11 @@ class Loader:
 
     def in_uw_groups(self, uwnetid):
         return uwnetid in self.gws_user_set
+
+    def get_hrp_worker(self, person):
+        if person.uwnetid in self.hrp_user_set:
+            return get_worker(person)
+        return None
 
     @abstractmethod
     def fetch_users(self):
