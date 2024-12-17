@@ -21,15 +21,16 @@ def get_worker(person):
     """
     Return the Appointee for the given Person object
     """
+    netid = person.uwnetid
     try:
         if person.is_emp_state_current():
             return hrp.get_person_by_regid(person.uwregid)
     except InvalidRegID:
-        logger.error("'{0}' has invalid uwregid".format(person.uwnetid))
+        logger.error(f"{netid} has invalid uwregid")
     except DataFailureException as ex:
         log_exception(
             logger,
-            "Failed to get worker for '{0}'".format(person.uwnetid),
+            f"Failed to get worker({netid}): {ex}",
             traceback.format_exc(chain=False))
     return None
 
@@ -43,9 +44,10 @@ def get_worker_updates(duration):
     try:
         return hrp.person_search(
             changed_since_date=changed_since_str(duration, iso=True))
-    except Exception:
-        log_exception(logger, "get_worker_updates",
-                      traceback.format_exc(chain=False))
+    except Exception as ex:
+        log_exception(
+            logger, f"get_worker_updates: {ex}",
+            traceback.format_exc(chain=False))
         raise
     finally:
         log_resp_time(logger, "get_worker_updates", timer)

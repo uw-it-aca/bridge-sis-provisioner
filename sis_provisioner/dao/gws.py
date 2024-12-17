@@ -19,12 +19,11 @@ EMP_GROUPS = [
     "uw_affiliation_affiliate-employee",
     "uw_affiliation_uw-medicine-workforce",
     "uw_affiliation_uw-medicine-affiliate",
-    "uw_affiliation_wwami-medical-resident",
-    "uw_student"
+    "uw_affiliation_wwami-medical-resident"
     ]
 STU_GROUPS = [
     "uw_student"
-]
+    ]
 CUSTOM_GROUP = "u_bridgeap_tempusers"
 gws = GWS()
 

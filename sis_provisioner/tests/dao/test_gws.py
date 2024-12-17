@@ -25,25 +25,25 @@ class TestGwsDao(TestCase):
 
     def test_get_base_users(self):
         user_set = get_base_users()
-        self.assertEqual(len(user_set), 7)
+        self.assertEqual(len(user_set), 6)
         self.assertTrue("retiree" in user_set)
         self.assertTrue("affiemp" in user_set)
         self.assertTrue("faculty" in user_set)
         self.assertTrue("javerage" in user_set)
-        self.assertTrue("not_in_pws" in user_set)
+        self.assertFalse("not_in_pws" in user_set)
         self.assertTrue("error500" in user_set)
         self.assertTrue("staff" in user_set)
 
     def test_get_potential_users(self):
-        user_set = get_base_users()
+        user_set = get_potential_users()
         self.assertEqual(len(user_set), 7)
         self.assertTrue("retiree" in user_set)
         self.assertTrue("affiemp" in user_set)
         self.assertTrue("faculty" in user_set)
         self.assertTrue("javerage" in user_set)
-        self.assertTrue("not_in_pws" in user_set)
         self.assertTrue("error500" in user_set)
         self.assertTrue("staff" in user_set)
+        self.assertTrue("not_in_pws" in user_set)
 
     def test_get_additional_users(self):
         user_set = get_additional_users()
