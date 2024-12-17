@@ -20,13 +20,14 @@ class Command(BaseCommand):
         groupid = options['groupid']
 
         self.gws = Gws()
-        uwnetids = list(self.gws._get_user_set([groupid]))
-
         if groupid == "all":
+            # purge memebers from all the temp user groups
             for gm in self.gws._get_members_of_group(CUSTOM_GROUP):
                 if gm.is_group() and gm.name:
                     self.clean_group(gm.name)
         else:
+            # delete all the members of the specific temp user group
+            uwnetids = list(self.gws._get_user_set([groupid]))
             try:
                 self.gws.delete_members(groupid, uwnetids)
             except Exception as ex:
