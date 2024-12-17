@@ -22,7 +22,7 @@ class Command(BaseCommand):
         self.gws = Gws()
         uwnetids = list(self.gws._get_user_set([groupid]))
 
-        if groupid.startswith("all"):
+        if groupid == "all":
             for gm in self.gws._get_members_of_group(CUSTOM_GROUP):
                 if gm.is_group() and gm.name:
                     self.clean_group(gm.name)
