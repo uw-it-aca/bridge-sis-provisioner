@@ -5,7 +5,6 @@ import logging
 import traceback
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
-from sis_provisioner.dao.gws import get_additional_users
 from sis_provisioner.util.log import log_exception
 
 logger = logging.getLogger(__name__)
@@ -27,11 +26,10 @@ class CustomGroupLoader(GwsBridgeLoader):
 
     def fetch_users(self):
         user_list = []
-        for uwnetid in list(get_additional_users()):
+        for uwnetid in list(self.gws.temp_user_set):
             try:
                 p = get_person(uwnetid)
-                if (not p or p.is_emp_state_current() or
-                        p.is_stud_state_current()):
+                if not p or self.in_uw_groups(uwnetid):
                     continue
                 user_list.append(uwnetid)
             except Exception:

@@ -4,7 +4,6 @@
 import logging
 import traceback
 from sis_provisioner.account_managers.gws_bridge import GwsBridgeLoader
-from sis_provisioner.dao.gws import get_deleted_members
 from sis_provisioner.dao.pws import get_person
 from sis_provisioner.dao.uw_account import save_uw_account
 from sis_provisioner.util.settings import get_group_member_del_window
@@ -25,7 +24,8 @@ class TerminateUser(GwsBridgeLoader):
         self.data_source = "Group deleted member"
 
     def fetch_users(self):
-        return list(get_deleted_members(get_group_member_del_window()))
+        return list(
+            self.gws.get_deleted_members(get_group_member_del_window()))
 
     def process_users(self):
         for netid in self.get_users_to_process():
