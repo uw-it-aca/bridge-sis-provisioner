@@ -4,7 +4,6 @@
 import logging
 import traceback
 from uw_bridge.models import BridgeCustomField
-from sis_provisioner.dao.hrp import get_worker
 from sis_provisioner.dao.uw_account import save_uw_account
 from sis_provisioner.dao.gws import get_added_members
 from sis_provisioner.dao.pws import get_person
@@ -37,9 +36,6 @@ class GwsBridgeLoader(Loader):
 
     def get_bridge(self):
         return self.worker.bridge
-
-    def get_hrp_worker(self, person):
-        return get_worker(person)
 
     def process_users(self):
         """

@@ -24,7 +24,7 @@ class HrpBridgeLoader(PwsBridgeLoader):
         self.data_source = "HRP updates"
 
     def get_all_users(self):
-        return get_base_users()  # DataFailureException
+        return set()
 
     def fetch_users(self):
         return get_worker_updates(get_worker_changed_window())
@@ -32,7 +32,7 @@ class HrpBridgeLoader(PwsBridgeLoader):
     def process_users(self):
         for worker_ref in self.get_users_to_process():
             uwnetid = worker_ref.netid
-            if not self.in_uw_groups(uwnetid):
+            if uwnetid not in self.hrp_user_set:
                 continue
             person = get_person(uwnetid)
             if self.is_invalid_person(uwnetid, person):
