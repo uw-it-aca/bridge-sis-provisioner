@@ -193,16 +193,16 @@ environmentVariables:
     value: "1"
 
   - name: GMEMBER_ADD_WINDOW
-    value: "1470"
+    value: "1500"
 
   - name: GMEMBER_DEL_WINDOW
     value: "10080"
 
   - name: PERSON_CHANGE_WINDOW
-    value: "750"
+    value: "780"
 
   - name: WORKER_CHANGE_WINDOW
-    value: "1470"
+    value: "1500"
 
 externalSecrets:
   enabled: true
