@@ -5,12 +5,13 @@ from datetime import timedelta
 import logging
 from sis_provisioner.models import get_now
 from django.core.management.base import BaseCommand, CommandError
-from sis_provisioner.dao.bridge import get_user_by_uwnetid
+from sis_provisioner.dao.bridge import BridgeUsers
 from sis_provisioner.dao.gws import Gws, CUSTOM_GROUP
 from sis_provisioner.dao.pws import get_person
 
 logger = logging.getLogger(__name__)
-cut_off_time = get_now() - timedelta(days=1095)  # 3 years
+cut_off_time = get_now() - timedelta(days=730)  # 2 years
+TO_SKIP = ["u_bridgeap_tempusers-owa"]
 
 
 class Command(BaseCommand):
@@ -25,10 +26,12 @@ class Command(BaseCommand):
 
         self.gws = Gws()
         if groupid == "all":
+            self.briAcc = BridgeUsers()
             # purge memebers from all the temp user groups
             for gm in self.gws._get_members_of_group(CUSTOM_GROUP):
-                if gm.is_group() and gm.name:
-                    self.clean_group(gm.name)
+                if (gm.is_group() and gm.name and gm.name != TO_SKIP):
+                    logger.info("========{gm.name}")
+                    # self.clean_group(gm.name)
         else:
             # delete all the members of the specific temp user group
             uwnetids = list(self.gws._get_user_set([groupid]))
@@ -47,7 +50,7 @@ class Command(BaseCommand):
                 if not p or p.is_test_entity:
                     self.gws.delete_members(groupid, [uwnetid])
                     continue
-                bridge_acc = get_user_by_uwnetid(uwnetid)
+                bridge_acc = self.briAcc.get_user_by_uwnetid(uwnetid)
                 if bridge_acc and bridge_acc.logged_in_at is None:
                     continue
                 if bridge_acc and bridge_acc.logged_in_at < cut_off_time:
