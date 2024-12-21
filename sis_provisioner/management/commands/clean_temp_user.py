@@ -32,8 +32,7 @@ class Command(BaseCommand):
             # purge memebers from all the temp user groups
             for gm in self.gws._get_members_of_group(CUSTOM_GROUP):
                 if (gm.is_group() and gm.name and gm.name not in TO_SKIP):
-                    logger.info(f"clean_group========{gm.name}")
-                    # self.clean_group(gm.name)
+                    self.clean_group(gm.name)
         else:
             # delete all the members of the specific temp user group
             uwnetids = list(self.gws._get_user_set([groupid]))
