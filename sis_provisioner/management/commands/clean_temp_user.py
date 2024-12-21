@@ -25,12 +25,14 @@ class Command(BaseCommand):
         groupid = options['groupid']
 
         self.gws = Gws()
+        if groupid == "noop":
+            return
         if groupid == "all":
             self.briAcc = BridgeUsers()
             # purge memebers from all the temp user groups
             for gm in self.gws._get_members_of_group(CUSTOM_GROUP):
                 if (gm.is_group() and gm.name and gm.name != TO_SKIP):
-                    logger.info("========{gm.name}")
+                    logger.info(f"clean_group========{gm.name}")
                     # self.clean_group(gm.name)
         else:
             # delete all the members of the specific temp user group
