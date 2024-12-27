@@ -44,33 +44,39 @@ class Command(BaseCommand):
                 logger.error(f"{groupid} {ex}")
 
     def clean_group(self, groupid):
+        total_removed = 0
         for uwnetid in list(self.gws._get_user_set([groupid])):
             try:
                 if uwnetid in self.gws.base_users:
                     logger.info(f"{uwnetid} is base user, remove")
                     self.gws.delete_members(groupid, [uwnetid])
+                    total_removed += 1
                     continue
+
                 p = get_person(uwnetid)
                 if not p:
                     logger.info(f"{uwnetid} no pws.Person, remove")
                     self.gws.delete_members(groupid, [uwnetid])
+                    total_removed += 1
                     continue
 
-                try:
-                    bridge_acc = self.briAcc.get_user_by_uwnetid(uwnetid)
-                except DataFailureException as e:
-                    if e.status == 404:
-                        continue
-                    logger.error(f"get_user from Bridge {uwnetid} {ex}")
+                bridge_acc = self.briAcc.get_user_by_uwnetid(uwnetid)
+                if not bridge_acc:
+                    logger.info(f"{uwnetid} not in Bridge")
+                    continue
 
-                if bridge_acc and bridge_acc.logged_in_at is None:
+                if bridge_acc.logged_in_at is None:
                     # Has mot used Bridge yet
-                    logger.info(f"{uwnetid} has never accessed Bridge")
+                    logger.info(f"{uwnetid} never accessed Bridge")
                     continue
-                if bridge_acc and bridge_acc.logged_in_at < cut_off_time:
+
+                if bridge_acc.logged_in_at < cut_off_time:
                     logger.info(
                         f"{uwnetid} last login: {bridge_acc.logged_in_at}" +
                         f" before {cut_off_time}")
                     self.gws.delete_members(groupid, [uwnetid])
+                    total_removed += 1
             except Exception as ex:
                 logger.error(f"{groupid},{uwnetid} {ex}")
+
+        logger.info(f"{groupid} removed {total_removed} members")
