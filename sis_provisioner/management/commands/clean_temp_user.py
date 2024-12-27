@@ -3,6 +3,7 @@
 
 from datetime import timedelta
 import logging
+from sis_provisioner.dao import DataFailureException
 from sis_provisioner.models import get_now
 from django.core.management.base import BaseCommand, CommandError
 from sis_provisioner.dao.bridge import BridgeUsers
@@ -25,6 +26,7 @@ class Command(BaseCommand):
         groupid = options['groupid']
 
         self.gws = Gws()
+
         if groupid == "noop":
             return
         if groupid == "all":
@@ -44,18 +46,31 @@ class Command(BaseCommand):
     def clean_group(self, groupid):
         for uwnetid in list(self.gws._get_user_set([groupid])):
             try:
-                if uwnetid in self.gws.potential_users:
+                if uwnetid in self.gws.base_users:
+                    logger.info(f"{uwnetid} is base user, remove")
                     self.gws.delete_members(groupid, [uwnetid])
                     continue
                 p = get_person(uwnetid)
-                if not p or p.is_test_entity:
+                if not p:
+                    logger.info(f"{uwnetid} no pws.Person, remove")
                     self.gws.delete_members(groupid, [uwnetid])
                     continue
-                bridge_acc = self.briAcc.get_user_by_uwnetid(uwnetid)
+
+                try:
+                    bridge_acc = self.briAcc.get_user_by_uwnetid(uwnetid)
+                except DataFailureException as e:
+                    if e.status == 404:
+                        continue
+                    logger.error(f"get_user from Bridge {uwnetid} {ex}")
+
                 if bridge_acc and bridge_acc.logged_in_at is None:
+                    # Has mot used Bridge yet
+                    logger.info(f"{uwnetid} has never accessed Bridge")
                     continue
                 if bridge_acc and bridge_acc.logged_in_at < cut_off_time:
-                    # Has mot accessed Bridge for three years
+                    logger.info(
+                        f"{uwnetid} last login: {bridge_acc.logged_in_at}" +
+                        f" before {cut_off_time}")
                     self.gws.delete_members(groupid, [uwnetid])
             except Exception as ex:
                 logger.error(f"{groupid},{uwnetid} {ex}")
