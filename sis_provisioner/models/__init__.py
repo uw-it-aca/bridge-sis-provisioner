@@ -97,8 +97,7 @@ class UwAccount(models.Model):
         self.set_last_updated()
 
     def passed_terminate_date(self):
-        return self.has_terminate_date() and\
-            get_now() > self.terminate_at
+        return self.has_terminate_date() and self.terminate_at < get_now()
 
     def set_updated(self):
         self.disabled = False
