@@ -29,7 +29,8 @@ class CustomGroupLoader(GwsBridgeLoader):
         for uwnetid in list(self.gws.temp_user_set):
             try:
                 p = get_person(uwnetid)
-                if not p or uwnetid in self.gws.base_users:
+                if (self.is_invalid_person(uwnetid, p) or
+                        uwnetid in self.gws.base_users):
                     continue
                 user_list.append(uwnetid)
             except Exception:

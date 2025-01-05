@@ -55,7 +55,7 @@ cronjob:
           memory: 768Mi
         requests:
           cpu: 100m
-          memory: 512Mi
+          memory: 0.5Gi
     - name: pws-updates
       schedule: "1 10,22 * * *"
       command: ["/scripts/management_command.sh"]
@@ -66,7 +66,7 @@ cronjob:
           memory: 896Mi
         requests:
           cpu: 150m
-          memory: 512Mi
+          memory: 0.5Gi
     - name: hrp-updates
       schedule: "30 1 * * *"
       command: ["/scripts/management_command.sh"]
@@ -74,10 +74,10 @@ cronjob:
       resources:
         limits:
           cpu: 250m
-          memory: 1024Mi
+          memory: 1.0Gi
         requests:
           cpu: 150m
-          memory: 512Mi
+          memory: 0.6Gi
     - name: custom-groups
       schedule: "1 17,23 * * 1-5"
       command: ["/scripts/management_command.sh"]
@@ -95,11 +95,11 @@ cronjob:
       args: ["sync_accounts", "bridge"]
       resources:
         limits:
-          cpu: 500m
-          memory: 5120Mi
+          cpu: 200m
+          memory: 1.5Gi
         requests:
-          cpu: 300m
-          memory: 3072Mi
+          cpu: 100m
+          memory: 1.0Gi
     - name: terminate-users
       schedule: "1 7 * * 6"
       command: ["/scripts/management_command.sh"]
@@ -118,7 +118,7 @@ cronjob:
       resources:
         limits:
           cpu: 100m
-          memory: 1024Mi
+          memory: 1.0Gi
         requests:
           cpu: 70m
           memory: 768Mi
@@ -128,11 +128,11 @@ cronjob:
       args: ["sync_accounts", "db-acc"]
       resources:
         limits:
-          cpu: 500m
-          memory: 5120Mi
+          cpu: 400m
+          memory: 4.0Gi
         requests:
           cpu: 300m
-          memory: 3072Mi
+          memory: 3.0Gi
     - name: clean-custom-groups
       schedule: "1 20 1 * *"
       command: ["/scripts/management_command.sh"]

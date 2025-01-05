@@ -42,11 +42,7 @@ class Loader:
 
     def is_invalid_person(self, uwnetid, person):
         if person is None:
-            self.logger.error(f"{uwnetid} NOT in PWS, skip!")
-            return True
-        if person.is_test_entity:
-            self.logger.error(
-                f"{uwnetid} IsTestEntity in PWS, skip!")
+            self.logger.warning(f"{uwnetid} NOT in PWS, skip!")
             return True
         return False
 
