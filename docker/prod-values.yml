@@ -55,7 +55,7 @@ cronjob:
           memory: 768Mi
         requests:
           cpu: 100m
-          memory: 256Mi
+          memory: 512Mi
     - name: pws-updates
       schedule: "1 10,22 * * *"
       command: ["/scripts/management_command.sh"]
@@ -65,8 +65,8 @@ cronjob:
           cpu: 250m
           memory: 896Mi
         requests:
-          cpu: 100m
-          memory: 256Mi
+          cpu: 150m
+          memory: 512Mi
     - name: hrp-updates
       schedule: "30 1 * * *"
       command: ["/scripts/management_command.sh"]
@@ -76,7 +76,7 @@ cronjob:
           cpu: 250m
           memory: 1024Mi
         requests:
-          cpu: 100m
+          cpu: 150m
           memory: 512Mi
     - name: custom-groups
       schedule: "1 17,23 * * 1-5"
@@ -84,7 +84,7 @@ cronjob:
       args: ["sync_accounts", "customg"]
       resources:
         limits:
-          cpu: 200m
+          cpu: 100m
           memory: 384Mi
         requests:
           cpu: 50m
@@ -95,21 +95,21 @@ cronjob:
       args: ["sync_accounts", "bridge"]
       resources:
         limits:
-          cpu: 200m
-          memory: 1280Mi
+          cpu: 500m
+          memory: 5120Mi
         requests:
-          cpu: 100m
-          memory: 768Mi
+          cpu: 300m
+          memory: 3072Mi
     - name: terminate-users
       schedule: "1 7 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "delete"]
       resources:
         limits:
-          cpu: 200m
+          cpu: 150m
           memory: 256Mi
         requests:
-          cpu: 50m
+          cpu: 70m
           memory: 128Mi
     - name: sync-eid
       schedule: "30 7 * * 6"
@@ -120,7 +120,7 @@ cronjob:
           cpu: 100m
           memory: 1024Mi
         requests:
-          cpu: 50m
+          cpu: 70m
           memory: 768Mi
     - name: db-accounts
       schedule: "1 13 1-7 * 6"
@@ -131,15 +131,15 @@ cronjob:
           cpu: 500m
           memory: 5120Mi
         requests:
-          cpu: 150m
-          memory: 1024Mi
+          cpu: 300m
+          memory: 3072Mi
     - name: clean-custom-groups
       schedule: "1 20 1 * *"
       command: ["/scripts/management_command.sh"]
       args: ["clean_temp_user", "all"]
       resources:
         limits:
-          cpu: 200m
+          cpu: 100m
           memory: 384Mi
         requests:
           cpu: 50m
@@ -158,28 +158,28 @@ environmentVariables:
   - name: GWS_ENV
     value: PROD
   - name: GWS_TIMEOUT
-    value: "600"
+    value: "900"
   - name: GWS_POOL_SIZE
     value: "10"
 
   - name: PWS_ENV
     value: PROD
   - name: PWS_TIMEOUT
-    value: "600"
+    value: "900"
   - name: PWS_POOL_SIZE
     value: "30"
 
   - name: BRIDGE_ENV
     value: PROD
   - name: BRIDGE_TIMEOUT
-    value: "600"
+    value: "1800"
   - name: BRIDGE_POOL_SIZE
     value: "30"
 
   - name: HRPWS_ENV
     value: PROD
   - name: HRPWS_TIMEOUT
-    value: "600"
+    value: "900"
   - name: HRPWS_POOL_SIZE
     value: "30"
 
