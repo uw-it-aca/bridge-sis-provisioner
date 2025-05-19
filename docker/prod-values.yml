@@ -35,6 +35,8 @@ gcsCredentials:
 
 repo: bridge
 instance: prod
+namespace:
+  enabled: true
 
 certs:
   mounted: true
