@@ -42,6 +42,8 @@ gcsCredentials:
 
 repo: bridge
 instance: test
+namespace:
+  enabled: true
 
 certs:
   mounted: true
