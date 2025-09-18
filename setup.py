@@ -28,7 +28,7 @@ setup(
     install_requires = [
         'django~=5.2',
         'django-storages[google]',
-        'uw-memcached-clients~=1.0',
+        'uw-memcached-clients~=1.1',
         'uw-restclients-core~=1.4',
         'uw-restclients-gws~=2.3',
         'uw-restclients-pws~=2.1',
