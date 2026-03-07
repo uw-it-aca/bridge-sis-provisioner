@@ -1,10 +1,10 @@
-# Copyright 2025 UW-IT, University of Washington
+# Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 import json
 from django.db import models
 from dateutil.parser import parse
-from zoneinfo import ZoneInfo
+from backports.zoneinfo import ZoneInfo
 from datetime import datetime, timedelta
 
 GRACE_PERIOD = 180
