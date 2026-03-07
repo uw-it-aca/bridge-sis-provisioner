@@ -53,11 +53,11 @@ cronjob:
       args: ["sync_accounts", "gws"]
       resources:
         limits:
-          cpu: 200m
-          memory: 768Mi
+          cpu: 150m
+          memory: 640Mi
         requests:
           cpu: 100m
-          memory: 0.5Gi
+          memory: 512Mi
     - name: pws-updates
       schedule: "1 10,22 * * *"
       command: ["/scripts/management_command.sh"]
@@ -65,32 +65,32 @@ cronjob:
       resources:
         limits:
           cpu: 250m
-          memory: 896Mi
+          memory: 640Mi
         requests:
           cpu: 150m
-          memory: 0.5Gi
+          memory: 512Mi
     - name: hrp-updates
       schedule: "30 1 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "hrp"]
       resources:
         limits:
-          cpu: 250m
+          cpu: 200m
           memory: 1.0Gi
         requests:
           cpu: 150m
-          memory: 0.6Gi
+          memory: 640Mi
     - name: custom-groups
       schedule: "1 17,23 * * 1-5"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "customg"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 90m
           memory: 384Mi
         requests:
-          cpu: 50m
-          memory: 256Mi
+          cpu: 70m
+          memory: 288Mi
     - name: daily-active-users
       schedule: "30 3 * * 2-6"
       command: ["/scripts/management_command.sh"]
@@ -98,9 +98,9 @@ cronjob:
       resources:
         limits:
           cpu: 200m
-          memory: 1.5Gi
+          memory: 1.2Gi
         requests:
-          cpu: 100m
+          cpu: 160m
           memory: 1.0Gi
     - name: terminate-users
       schedule: "1 7 * * 6"
@@ -108,30 +108,30 @@ cronjob:
       args: ["sync_accounts", "delete"]
       resources:
         limits:
-          cpu: 150m
-          memory: 256Mi
+          cpu: 50m
+          memory: 196Mi
         requests:
-          cpu: 70m
-          memory: 128Mi
+          cpu: 40m
+          memory: 160Mi
     - name: sync-eid
       schedule: "30 7 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_eid"]
       resources:
         limits:
-          cpu: 100m
+          cpu: 90m
           memory: 1.0Gi
         requests:
           cpu: 70m
-          memory: 768Mi
+          memory: 800Mi
     - name: db-accounts
       schedule: "1 13 1,15 * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
       resources:
         limits:
-          cpu: 400m
-          memory: 4.0Gi
+          cpu: 350m
+          memory: 3.1Gi
         requests:
           cpu: 300m
           memory: 3.0Gi
@@ -141,11 +141,11 @@ cronjob:
       args: ["clean_temp_user", "all"]
       resources:
         limits:
-          cpu: 100m
-          memory: 384Mi
+          cpu: 60m
+          memory: 256Mi
         requests:
           cpu: 50m
-          memory: 256Mi
+          memory: 224Mi
 
 environmentVariables:
   - name: ENV
