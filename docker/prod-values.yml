@@ -53,10 +53,10 @@ cronjob:
       args: ["sync_accounts", "gws"]
       resources:
         limits:
-          cpu: 150m
-          memory: 640Mi
+          cpu: 250m
+          memory: 720Mi
         requests:
-          cpu: 100m
+          cpu: 200m
           memory: 512Mi
     - name: pws-updates
       schedule: "1 10,22 * * *"
@@ -65,9 +65,9 @@ cronjob:
       resources:
         limits:
           cpu: 250m
-          memory: 640Mi
+          memory: 720Mi
         requests:
-          cpu: 150m
+          cpu: 200m
           memory: 512Mi
     - name: hrp-updates
       schedule: "30 1 * * *"
@@ -86,10 +86,10 @@ cronjob:
       args: ["sync_accounts", "customg"]
       resources:
         limits:
-          cpu: 90m
+          cpu: 130m
           memory: 384Mi
         requests:
-          cpu: 70m
+          cpu: 100m
           memory: 288Mi
     - name: daily-active-users
       schedule: "30 3 * * 2-6"
@@ -120,10 +120,10 @@ cronjob:
       resources:
         limits:
           cpu: 90m
-          memory: 1.0Gi
+          memory: 1.1Gi
         requests:
           cpu: 70m
-          memory: 800Mi
+          memory: 960Mi
     - name: db-accounts
       schedule: "1 13 1,15 * *"
       command: ["/scripts/management_command.sh"]
@@ -131,7 +131,7 @@ cronjob:
       resources:
         limits:
           cpu: 350m
-          memory: 3.1Gi
+          memory: 3.5Gi
         requests:
           cpu: 300m
           memory: 3.0Gi
