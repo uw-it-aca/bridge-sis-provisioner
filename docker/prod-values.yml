@@ -131,10 +131,10 @@ cronjob:
       resources:
         limits:
           cpu: 350m
-          memory: 3.5Gi
+          memory: 2.5Gi
         requests:
           cpu: 300m
-          memory: 3.0Gi
+          memory: 2.0Gi
     - name: clean-custom-groups
       schedule: "1 20 1 * *"
       command: ["/scripts/management_command.sh"]
