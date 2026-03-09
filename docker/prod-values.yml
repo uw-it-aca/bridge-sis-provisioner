@@ -109,10 +109,10 @@ cronjob:
       resources:
         limits:
           cpu: 50m
-          memory: 196Mi
+          memory: 228Mi
         requests:
           cpu: 40m
-          memory: 160Mi
+          memory: 192Mi
     - name: sync-eid
       schedule: "30 7 * * 6"
       command: ["/scripts/management_command.sh"]
