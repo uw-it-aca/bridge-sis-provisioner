@@ -108,8 +108,8 @@ cronjob:
       args: ["sync_accounts", "delete"]
       resources:
         limits:
-          cpu: 50m
-          memory: 228Mi
+          cpu: 60m
+          memory: 256Mi
         requests:
           cpu: 40m
           memory: 192Mi
