@@ -4,7 +4,7 @@
 import json
 from django.db import models
 from dateutil.parser import parse
-from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 from datetime import datetime, timedelta
 
 GRACE_PERIOD = 180
