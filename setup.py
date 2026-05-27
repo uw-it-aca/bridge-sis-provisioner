@@ -22,7 +22,7 @@ setup(
     name='Bridge-Acount-Provisioner',
     version=VERSION,
     packages=['sis_provisioner'],
-    author="UW-IT Student & Educational Technology Services",
+    author="UWIT Student & Educational Technology Services",
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires = [
@@ -35,6 +35,7 @@ setup(
         'uw-restclients-bridge~=1.6',
         'uw-restclients-hrp~=1.3',
         'freezegun',
+        'psycopg[c]',
     ],
     license='Apache License, Version 2.0',
     description='An Django application that provisions UW users to Bridge',
