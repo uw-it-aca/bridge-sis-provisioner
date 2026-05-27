@@ -2,6 +2,8 @@ ARG DJANGO_CONTAINER_VERSION=3.1.1
 
 FROM us-docker.pkg.dev/uwit-mci-axdd/containers/django-container:${DJANGO_CONTAINER_VERSION} AS app-container
 
+USER root
+
 RUN mkdir /data
 RUN chown -R acait:acait /data
 
