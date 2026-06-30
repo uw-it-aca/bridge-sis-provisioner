@@ -54,7 +54,7 @@ certs:
 cronjob:
   enabled: false
   jobs:
-    #- name: daily-active-users
+    #- name: sync-accounts-bridge
     #  schedule: "1 2 * * 2-6"
     #  command: ["/scripts/management_command.sh"]
     #  args: ["sync_accounts", "bridge"]
@@ -76,7 +76,7 @@ cronjob:
     #    requests:
     #      cpu: 50m
     #      memory: 128Mi
-    #- name: custom-groups
+    #- name: sync-accounts-customgrp
     #  schedule: "1 21 * * 1-5"
     #  command: ["/scripts/management_command.sh"]
     #  args: ["sync_accounts", "customg"]
@@ -99,7 +99,7 @@ cronjob:
     #    requests:
     #      cpu: 110m
     #      memory: 512Mi
-    - name: db-accounts
+    - name: sync-accounts-db-acc
       schedule: "1 14 * * 0"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
