@@ -47,7 +47,7 @@ certs:
 cronjob:
   enabled: true
   jobs:
-    - name: gws-new-users
+    - name: sync-accounts-gws
       schedule: "1 12 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "gws"]
@@ -58,7 +58,7 @@ cronjob:
         requests:
           cpu: 200m
           memory: 512Mi
-    - name: pws-updates
+    - name: sync-accounts-pws
       schedule: "1 10,22 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "pws"]
@@ -69,7 +69,7 @@ cronjob:
         requests:
           cpu: 200m
           memory: 512Mi
-    - name: hrp-updates
+    - name: sync-accounts-hrp
       schedule: "30 1 * * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "hrp"]
@@ -80,7 +80,7 @@ cronjob:
         requests:
           cpu: 150m
           memory: 640Mi
-    - name: custom-groups
+    - name: sync-accounts-customgrp
       schedule: "1 17,23 * * 1-5"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "customg"]
@@ -91,7 +91,7 @@ cronjob:
         requests:
           cpu: 100m
           memory: 288Mi
-    - name: daily-active-users
+    - name: sync-accounts-bridge
       schedule: "30 3 * * 2-6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "bridge"]
@@ -102,7 +102,7 @@ cronjob:
         requests:
           cpu: 160m
           memory: 1.0Gi
-    - name: terminate-users
+    - name: sync-accounts-delete
       schedule: "1 7 * * 6"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "delete"]
@@ -124,7 +124,7 @@ cronjob:
         requests:
           cpu: 70m
           memory: 960Mi
-    - name: db-accounts
+    - name: sync-accounts-db-acc
       schedule: "1 13 1,15 * *"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
@@ -135,7 +135,7 @@ cronjob:
         requests:
           cpu: 300m
           memory: 2.0Gi
-    - name: clean-custom-groups
+    - name: clean-temp-user
       schedule: "1 20 1 * *"
       command: ["/scripts/management_command.sh"]
       args: ["clean_temp_user", "all"]
