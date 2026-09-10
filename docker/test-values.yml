@@ -1,4 +1,4 @@
-ingress:
+gateway:
   enabled: false
 lifecycle:
   enabled: true
@@ -47,14 +47,19 @@ namespace:
 
 certs:
   mounted: true
-  certPath: /certs/test.bridge.uw.edu-ic.cert
-  keyPath: /certs/test.bridge.uw.edu-ic.key
-  secretName: test.bridge.uw.edu-ic-certs
+  certPath: /certs/test.bridge.uw.edu-uwca.cert
+  keyPath: /certs/test.bridge.uw.edu-uwca.key
+  secretName: test.bridge.uw.edu-uwca-certs
+
+mountedSecrets:
+  enabled: true
+  mountPath: /ssl
+  secretName: test.bridge.uw.edu-openssl-conf
 
 cronjob:
   enabled: false
   jobs:
-    #- name: daily-active-users
+    #- name: sync-accounts-bridge
     #  schedule: "1 2 * * 2-6"
     #  command: ["/scripts/management_command.sh"]
     #  args: ["sync_accounts", "bridge"]
@@ -76,7 +81,7 @@ cronjob:
     #    requests:
     #      cpu: 50m
     #      memory: 128Mi
-    #- name: custom-groups
+    #- name: sync-accounts-customgrp
     #  schedule: "1 21 * * 1-5"
     #  command: ["/scripts/management_command.sh"]
     #  args: ["sync_accounts", "customg"]
@@ -99,7 +104,7 @@ cronjob:
     #    requests:
     #      cpu: 110m
     #      memory: 512Mi
-    - name: db-accounts
+    - name: sync-accounts-db-acc
       schedule: "1 14 * * 0"
       command: ["/scripts/management_command.sh"]
       args: ["sync_accounts", "db-acc"]
@@ -114,6 +119,9 @@ cronjob:
 environmentVariables:
   - name: ENV
     value: test
+
+  - name: OPENSSL_CONF
+    value: /ssl/openssl.cnf
 
   - name: CLUSTER_CNAME
     value: test.bridge.uw.edu
@@ -161,7 +169,6 @@ environmentVariables:
   - name: GMEMBER_ADD_WINDOW
     value: "1470"
 
-
   - name: GMEMBER_DEL_WINDOW
     value: "10080"
 
@@ -206,13 +213,18 @@ externalSecrets:
       data:
         - name: credentials.json
           property: credentials.json
-    - name: test.bridge.uw.edu-ic-certs
-      externalKey: bridge/test/ic-certs
+    - name: test.bridge.uw.edu-uwca-certs
+      externalKey: bridge/test/uwca-certs
       data:
-        - name: test.bridge.uw.edu-ic.cert
-          property: test.bridge.uw.edu-ic.cert
-        - name: test.bridge.uw.edu-ic.key
-          property: test.bridge.uw.edu-ic.key
+        - name: test.bridge.uw.edu-uwca.cert
+          property: test.bridge.uw.edu-uwca.cert
+        - name: test.bridge.uw.edu-uwca.key
+          property: test.bridge.uw.edu-uwca.key
+    - name: test.bridge.uw.edu-openssl-conf
+      externalKey: openssl-conf
+      data:
+        - name: openssl.cnf
+          property: openssl.cnf
 
 environmentVariablesSecrets:
   djangoSecret:
